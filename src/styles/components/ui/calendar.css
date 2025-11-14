@@ -1,0 +1,354 @@
+/* ============================================
+   CALENDAR STYLES - Fácil de modificar
+   ============================================
+   
+   INSTRUCCIONES:
+   - Modifica las variables CSS en la sección ".calendar-container" para cambiar:
+     * Espaciados (gaps, padding, margins)
+     * Tamaños (días, fuentes, botones)
+     * Colores (fondos, textos, bordes)
+     * Bordes y radios
+   
+   Todas las variables están claramente documentadas y organizadas.
+   ============================================ */
+
+/* ============================================
+   VARIABLES DEL CALENDARIO - MODIFICA AQUÍ
+   ============================================ */
+.calendar-container {
+  /* ===== ESPACIADOS ===== */
+  /* Espacio entre meses (horizontal en desktop, vertical en mobile) */
+  --calendar-month-gap: 2px;
+  
+  /* Padding interno de cada mes */
+  --calendar-month-padding: 12px;
+  
+  /* Espacio interno entre elementos del mes (título, tabla, etc.) */
+  --calendar-month-internal-gap: 2px;
+  
+  /* Espacio entre filas de días del calendario */
+  --calendar-row-gap: 1px;
+  
+  /* Espacio horizontal entre columnas/días del calendario */
+  --calendar-column-gap: 0px;
+  
+  /* ===== TAMAÑOS ===== */
+  /* Tamaño del contenedor del calendario (opcional - dejar en 'auto' para tamaño automático) */
+  --calendar-width: auto;
+  --calendar-height: auto;
+  --calendar-max-width: 1000px;
+  --calendar-max-height: 500px;
+  --calendar-min-width: 0;
+  --calendar-min-height: 0;
+  
+  /* Tamaño de cada día (ancho y alto) */
+  --calendar-day-size: 28px;
+  
+  /* Tamaño de fuente de los días */
+  --calendar-day-font-size: 13px;
+  
+  /* Tamaño de fuente de los encabezados (Lun, Mar, Mié...) */
+  --calendar-header-font-size: 11px;
+  
+  /* Tamaño de fuente del título del mes */
+  --calendar-caption-font-size: 15px;
+  
+  /* ===== COLORES ===== */
+  /* Fondo del contenedor del calendario */
+  --calendar-bg: var(--background-secondary);
+  
+  /* Color del borde del contenedor */
+  --calendar-border: var(--border-medium);
+  
+  /* Color de texto principal */
+  --calendar-text-primary: var(--foreground);
+  
+  /* Color de texto secundario (días normales) */
+  --calendar-text-secondary: var(--foreground-secondary);
+  
+  /* Color de texto terciario (encabezados) */
+  --calendar-text-tertiary: var(--foreground-tertiary);
+  
+  /* Color de texto deshabilitado */
+  --calendar-text-disabled: var(--foreground-disabled);
+  
+  /* ===== COLORES DE ESTADOS ===== */
+  /* Fondo del día seleccionado */
+  --calendar-selected-bg: var(--accent-blue-primary);
+  
+  /* Fondo del día seleccionado al hacer hover */
+  --calendar-selected-hover: var(--accent-blue-hover);
+  
+  /* Color del borde del día de hoy */
+  --calendar-today-border: var(--accent-blue-primary);
+  
+  /* Color del texto del día de hoy */
+  --calendar-today-text-color: #FF0000;
+  
+  /* Fondo al hacer hover sobre un día */
+  --calendar-hover-bg: var(--background-secondary);
+  
+  /* ===== BORDES Y RADIOS ===== */
+  /* Radio de borde del contenedor */
+  --calendar-border-radius: var(--radius-md);
+  
+  /* Radio de borde de los días */
+  --calendar-day-border-radius: var(--radius-md);
+  
+  /* ===== BOTONES DE NAVEGACIÓN ===== */
+  /* Tamaño de los botones de navegación (anterior/siguiente) */
+  --calendar-nav-button-size: 28px;
+  
+  /* Opacidad de los botones de navegación */
+  --calendar-nav-button-opacity: 0.7;
+}
+
+/* Contenedor principal del calendario */
+.calendar-container {
+  background-color: var(--calendar-bg);
+  border: 1px solid var(--calendar-border);
+  border-radius: var(--calendar-border-radius);
+  padding: var(--spacing-lg);
+  
+  /* Tamaños del contenedor */
+  width: var(--calendar-width);
+  height: var(--calendar-height);
+  max-width: var(--calendar-max-width);
+  max-height: var(--calendar-max-height);
+  min-width: var(--calendar-min-width);
+  min-height: var(--calendar-min-height);
+}
+
+/* Contenedor de meses */
+.calendar-months {
+  display: flex;
+  flex-direction: column;
+  gap: var(--calendar-month-gap);
+}
+
+@media (min-width: 1024px) {
+  .calendar-months {
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .calendar-month:not(:last-child) {
+    margin-right: var(--calendar-month-gap);
+  }
+}
+
+/* Mes individual */
+.calendar-month {
+  display: flex;
+  flex-direction: column;
+  gap: var(--calendar-month-internal-gap);
+  flex: 1;
+  min-width: 0;
+  padding: var(--calendar-month-padding);
+}
+
+/* Encabezado del mes (título) */
+.calendar-caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--calendar-month-internal-gap);
+  position: relative;
+  padding: 0 32px; /* Espacio para botones de navegación */
+}
+
+.calendar-caption-label {
+  font-size: var(--calendar-caption-font-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--calendar-text-primary);
+  text-align: center;
+  flex: 1;
+}
+
+/* Botones de navegación */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.calendar-nav-button {
+  width: var(--calendar-nav-button-size);
+  height: var(--calendar-nav-button-size);
+  background-color: transparent;
+  border: 1px solid var(--calendar-border);
+  border-radius: var(--calendar-day-border-radius);
+  padding: 0;
+  color: var(--calendar-text-secondary);
+  opacity: var(--calendar-nav-button-opacity);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-nav-button:hover {
+  background-color: var(--calendar-hover-bg);
+  color: var(--calendar-text-primary);
+  opacity: 1;
+}
+
+.calendar-nav-button-previous {
+  position: absolute;
+  left: 0;
+}
+
+.calendar-nav-button-next {
+  position: absolute;
+  right: 0;
+}
+
+/* Tabla del calendario */
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Fila de encabezado (días de la semana) */
+.calendar-head-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--calendar-column-gap);
+}
+
+.calendar-head-cell {
+  width: calc(100% / 7);
+  font-size: var(--calendar-header-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--calendar-text-tertiary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+}
+
+/* Fila de días */
+.calendar-row {
+  display: flex;
+  width: 100%;
+  margin-top: var(--calendar-row-gap);
+  justify-content: space-between;
+  gap: var(--calendar-column-gap);
+}
+
+/* Celda del día */
+.calendar-cell {
+  position: relative;
+  padding: 0;
+  text-align: center;
+  width: calc(100% / 7);
+  display: flex;
+  justify-content: center;
+  /* El gap se aplica automáticamente desde la fila */
+}
+
+.calendar-cell:has([aria-selected]) {
+  background-color: rgba(67, 83, 255, 0.2);
+  border-radius: var(--calendar-day-border-radius);
+}
+
+/* Día individual */
+.calendar-day {
+  width: var(--calendar-day-size);
+  height: var(--calendar-day-size);
+  padding: 0;
+  font-size: var(--calendar-day-font-size);
+  font-weight: var(--font-weight-normal);
+  border-radius: var(--calendar-day-border-radius);
+  margin: 0 auto;
+  color: var(--calendar-text-secondary);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day:hover {
+  background-color: var(--calendar-hover-bg);
+  color: var(--calendar-text-primary);
+}
+
+/* Día seleccionado (click) - Azul */
+.calendar-day[aria-selected="true"],
+.calendar-day.day-selected {
+  background-color: var(--calendar-selected-bg) !important;
+  color: var(--calendar-text-primary) !important;
+}
+
+.calendar-day[aria-selected="true"]:hover,
+.calendar-day.day-selected:hover {
+  background-color: var(--calendar-selected-hover) !important;
+  color: var(--calendar-text-primary) !important;
+}
+
+/* Día de hoy (día actual) - Rojo - Mayor especificidad para sobrescribir estilos de Tailwind */
+.calendar-container button.calendar-day[aria-current="date"],
+.calendar-container button.calendar-day.day-today,
+.calendar-container .calendar-day[aria-current="date"],
+.calendar-container .calendar-day.day-today,
+button.calendar-day[aria-current="date"],
+button.calendar-day.day-today,
+.calendar-day[aria-current="date"],
+.calendar-day.day-today {
+  background-color: var(--calendar-bg) !important;
+  color: var(--calendar-today-text-color) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: 1px solid var(--calendar-today-border) !important;
+}
+
+/* Si el día de hoy está seleccionado, mantener el fondo azul pero el texto rojo */
+.calendar-day[aria-current="date"][aria-selected="true"],
+.calendar-day.day-today.day-selected {
+  background-color: var(--calendar-selected-bg) !important;
+  color: var(--calendar-today-text-color) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: 1px solid var(--calendar-selected-bg) !important;
+}
+
+/* Día fuera del rango */
+.calendar-day.day-outside,
+.calendar-day[class*="day-outside"] {
+  color: var(--calendar-text-disabled) !important;
+  opacity: 0.5 !important;
+}
+
+/* Día deshabilitado */
+.calendar-day:disabled,
+.calendar-day[aria-disabled="true"],
+.calendar-day.day-disabled {
+  color: var(--calendar-text-disabled) !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Rangos de días */
+.calendar-day.day-range-start[aria-selected="true"],
+.calendar-day.day-range-end[aria-selected="true"] {
+  background-color: var(--calendar-selected-bg) !important;
+  color: var(--calendar-text-primary) !important;
+}
+
+.calendar-day.day-range-middle[aria-selected="true"] {
+  background-color: rgba(67, 83, 255, 0.2) !important;
+  color: var(--calendar-text-primary) !important;
+}
+
+/* Día oculto */
+.calendar-day-hidden {
+  visibility: hidden;
+}
+
