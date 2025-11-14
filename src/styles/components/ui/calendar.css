@@ -83,10 +83,10 @@
   --calendar-today-border: var(--accent-blue-primary);
   
   /* Color del texto del día de hoy */
-  --calendar-today-text-color: #FF0000;
+  --calendar-today-text-color: inherit;
   
   /* Fondo al hacer hover sobre un día */
-  --calendar-hover-bg: var(--background-secondary);
+  --calendar-hover-bg: rgba(67, 83, 255, 0.2);
   
   /* ===== BORDES Y RADIOS ===== */
   /* Radio de borde del contenedor */
@@ -254,7 +254,7 @@
 }
 
 .calendar-cell:has([aria-selected]) {
-  background-color: rgba(67, 83, 255, 0.2);
+  background-color: transparent;
   border-radius: var(--calendar-day-border-radius);
 }
 
@@ -304,10 +304,10 @@ button.calendar-day[aria-current="date"],
 button.calendar-day.day-today,
 .calendar-day[aria-current="date"],
 .calendar-day.day-today {
-  background-color: var(--calendar-bg) !important;
+  background-color: transparent !important;
   color: var(--calendar-today-text-color) !important;
   font-weight: var(--font-weight-semibold) !important;
-  border: 1px solid var(--calendar-today-border) !important;
+  border: 2px solid var(--calendar-today-border) !important;
 }
 
 /* Si el día de hoy está seleccionado, mantener el fondo azul pero el texto rojo */
@@ -351,4 +351,3 @@ button.calendar-day.day-today,
 .calendar-day-hidden {
   visibility: hidden;
 }
-
