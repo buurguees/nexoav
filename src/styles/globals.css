@@ -192,15 +192,27 @@
     @apply border-border outline-ring/50;
   }
 
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'SUSE', monospace;
     background-color: var(--background);
     color: var(--foreground);
+    margin: 0;
+    padding: 0;
   }
   
   html {
     font-size: var(--font-size);
+  }
+
+  #root {
+    height: 100vh;
+    overflow: hidden;
   }
 }
 
@@ -351,6 +363,19 @@
   
   .btn-icon:hover {
     background-color: var(--background-secondary);
+  }
+  
+  /* Page Content Scroll - Ocultar scrollbar pero mantener funcionalidad */
+  .page-content-scroll {
+    overflow: auto;
+    height: 100%;
+    /* Ocultar scrollbar en Chrome, Safari y Edge */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE y Edge antiguos */
+  }
+  
+  .page-content-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari y Opera */
   }
   
   /* Badges */

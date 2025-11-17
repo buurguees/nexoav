@@ -1,0 +1,46 @@
+/* ============================================
+   TASK BAR STYLES - Franja de Tarea en Calendario
+   ============================================
+   
+   Estilos para las franjas de tareas que se muestran
+   en las celdas del calendario.
+   ============================================ */
+
+.task-bar {
+  /* Variables para personalización */
+  --task-bar-height: 20px;
+  --task-bar-font-size: 11px;
+  --task-bar-padding: 8px;
+  --task-bar-border-radius: 2px;
+  
+  /* Transiciones */
+  transition: opacity var(--transition-default),
+              transform var(--transition-default);
+}
+
+.task-bar:hover {
+  opacity: 0.9 !important;
+  transform: translateY(-1px);
+}
+
+/* Tarea completada */
+.task-bar.completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+/* Tarea de alta prioridad */
+.task-bar.priority-high {
+  box-shadow: 0 0 4px rgba(239, 68, 68, 0.3);
+}
+
+/* Tarea de prioridad media */
+.task-bar.priority-medium {
+  box-shadow: 0 0 2px rgba(67, 83, 255, 0.2);
+}
+
+/* Tarea de baja prioridad */
+.task-bar.priority-low {
+  opacity: 0.8;
+}
+

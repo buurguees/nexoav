@@ -37,7 +37,7 @@ import {
   PieChart,
   Landmark
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HeaderSection } from './Header';
 
 interface SidebarProps {
@@ -45,13 +45,15 @@ interface SidebarProps {
   currentPath?: string;
   currentSection?: HeaderSection;
   onNavigate?: (path: string) => void;
+  onCollapseChange?: (isCollapsed: boolean) => void;
 }
 
 export function Sidebar({ 
   className = '', 
   currentPath = '/', 
   currentSection = 'inicio',
-  onNavigate 
+  onNavigate,
+  onCollapseChange
 }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -62,8 +64,19 @@ export function Sidebar({
   };
 
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+    if (onCollapseChange) {
+      onCollapseChange(newCollapsedState);
+    }
   };
+
+  // Notificar el estado inicial al montar
+  useEffect(() => {
+    if (onCollapseChange) {
+      onCollapseChange(isCollapsed);
+    }
+  }, []); // Solo al montar
 
   // Sidebar content based on current section
   const renderSidebarContent = () => {
@@ -384,8 +397,14 @@ export function Sidebar({
       transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
       className={`flex flex-col ${className}`}
       style={{
+        position: 'fixed',
+        top: 'var(--header-height)',
+        left: 0,
+        bottom: 0,
+        height: 'calc(100vh - var(--header-height))',
         backgroundColor: 'var(--background-sidebar)',
         borderRight: '1px solid var(--border-soft)',
+        zIndex: 999,
       }}
     >
       {/* Logo Header with Toggle */}

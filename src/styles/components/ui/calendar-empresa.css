@@ -1,0 +1,381 @@
+/* ============================================
+   CALENDAR EMPRESA STYLES - Calendario Grande
+   ============================================
+   
+   Este calendario está diseñado para mostrar eventos,
+   instalaciones, tareas y fechas importantes de la empresa.
+   Tamaño grande para mejor visualización.
+   ============================================ */
+
+/* ============================================
+   VARIABLES DEL CALENDARIO EMPRESA
+   ============================================ */
+.calendar-empresa-container {
+  /* ===== ESPACIADOS ===== */
+  /* Padding interno del contenedor */
+  --calendar-empresa-padding: 24px;
+  
+  /* Espacio interno entre elementos del mes */
+  --calendar-empresa-month-internal-gap: 16px;
+  
+  /* Espacio entre filas de días del calendario */
+  --calendar-empresa-row-gap: 0px;
+  
+  /* Espacio horizontal entre columnas/días del calendario */
+  --calendar-empresa-column-gap: 0px;
+  
+  /* Color del borde de la cuadrícula - más sutil */
+  --calendar-empresa-grid-border: rgba(255, 255, 255, 0.05);
+  
+  /* ===== TAMAÑOS ===== */
+  /* Tamaño de cada día (ancho y alto) - Se puede sobrescribir con --cell-size */
+  --calendar-empresa-day-size: 4rem;
+  
+  /* Tamaño de fuente de los días */
+  --calendar-empresa-day-font-size: 16px;
+  
+  /* Tamaño de fuente de los encabezados (Lun, Mar, Mié...) */
+  --calendar-empresa-header-font-size: 14px;
+  
+  /* Tamaño de fuente del título del mes */
+  --calendar-empresa-caption-font-size: 20px;
+  
+  /* ===== COLORES ===== */
+  /* Fondo del contenedor del calendario */
+  --calendar-empresa-bg: var(--background-secondary);
+  
+  /* Color del borde del contenedor */
+  --calendar-empresa-border: var(--border-medium);
+  
+  /* Color de texto principal */
+  --calendar-empresa-text-primary: var(--foreground);
+  
+  /* Color de texto secundario (días normales) */
+  --calendar-empresa-text-secondary: var(--foreground-secondary);
+  
+  /* Color de texto terciario (encabezados) */
+  --calendar-empresa-text-tertiary: var(--foreground-tertiary);
+  
+  /* Color de texto deshabilitado */
+  --calendar-empresa-text-disabled: var(--foreground-disabled);
+  
+  /* ===== COLORES DE ESTADOS ===== */
+  /* Fondo del día seleccionado */
+  --calendar-empresa-selected-bg: var(--accent-blue-primary);
+  
+  /* Fondo del día seleccionado al hacer hover */
+  --calendar-empresa-selected-hover: var(--accent-blue-hover);
+  
+  /* Color del borde del día de hoy */
+  --calendar-empresa-today-border: var(--accent-blue-primary);
+  
+  /* Color del texto del día de hoy */
+  --calendar-empresa-today-text-color: inherit;
+  
+  /* Fondo al hacer hover sobre un día */
+  --calendar-empresa-hover-bg: rgba(67, 83, 255, 0.2);
+  
+  /* ===== BORDES Y RADIOS ===== */
+  /* Radio de borde del contenedor */
+  --calendar-empresa-border-radius: var(--radius-md);
+  
+  /* Radio de borde de los días */
+  --calendar-empresa-day-border-radius: var(--radius-md);
+  
+  /* ===== BOTONES DE NAVEGACIÓN ===== */
+  /* Tamaño de los botones de navegación (anterior/siguiente) */
+  --calendar-empresa-nav-button-size: 36px;
+  
+  /* Opacidad de los botones de navegación */
+  --calendar-empresa-nav-button-opacity: 0.7;
+}
+
+/* Contenedor principal del calendario */
+.calendar-empresa-container {
+  background-color: var(--calendar-empresa-bg);
+  border: 1px solid var(--calendar-empresa-border);
+  border-radius: var(--calendar-empresa-border-radius);
+  padding: var(--calendar-empresa-padding);
+  width: 100%;
+}
+
+/* Contenedor de meses */
+.calendar-empresa-months {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Mes individual */
+.calendar-empresa-month {
+  display: flex;
+  flex-direction: column;
+  gap: var(--calendar-empresa-month-internal-gap);
+  width: 100%;
+}
+
+/* Encabezado del mes (título) */
+.calendar-empresa-caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--calendar-empresa-month-internal-gap);
+  position: relative;
+  padding: 0 48px; /* Espacio para botones de navegación más grandes */
+}
+
+.calendar-empresa-caption-label {
+  font-size: var(--calendar-empresa-caption-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--calendar-empresa-text-primary);
+  text-align: center;
+  flex: 1;
+}
+
+/* Botones de navegación */
+.calendar-empresa-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.calendar-empresa-nav-button {
+  width: var(--calendar-empresa-nav-button-size);
+  height: var(--calendar-empresa-nav-button-size);
+  background-color: transparent;
+  border: 1px solid var(--calendar-empresa-border);
+  border-radius: var(--calendar-empresa-day-border-radius);
+  padding: 0;
+  color: var(--calendar-empresa-text-secondary);
+  opacity: var(--calendar-empresa-nav-button-opacity);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-empresa-nav-button:hover {
+  background-color: var(--calendar-empresa-hover-bg);
+  color: var(--calendar-empresa-text-primary);
+  opacity: 1;
+}
+
+.calendar-empresa-nav-button-previous {
+  position: absolute;
+  left: 0;
+}
+
+.calendar-empresa-nav-button-next {
+  position: absolute;
+  right: 0;
+}
+
+/* Tabla del calendario */
+.calendar-empresa-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Fila de encabezado (días de la semana) */
+.calendar-empresa-head-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--calendar-empresa-grid-border);
+}
+
+.calendar-empresa-head-cell {
+  flex: 1;
+  font-size: var(--calendar-empresa-header-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--calendar-empresa-text-tertiary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 0;
+  border-right: 1px solid var(--calendar-empresa-grid-border);
+}
+
+.calendar-empresa-head-cell:last-child {
+  border-right: none;
+}
+
+/* Fila de días */
+.calendar-empresa-row {
+  display: flex;
+  width: 100%;
+  margin-top: 0;
+  justify-content: space-between;
+  gap: 0;
+  border-top: 1px solid var(--calendar-empresa-grid-border);
+}
+
+.calendar-empresa-row:first-of-type {
+  border-top: none;
+}
+
+/* Celda del día */
+.calendar-empresa-cell {
+  position: relative;
+  padding: 0;
+  text-align: left;
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: var(--calendar-empresa-day-size, 4rem);
+  border-right: 1px solid var(--calendar-empresa-grid-border);
+  border-bottom: 1px solid var(--calendar-empresa-grid-border);
+}
+
+.calendar-empresa-cell:last-child {
+  border-right: none;
+}
+
+.calendar-empresa-cell:has([aria-selected]) {
+  background-color: transparent;
+  border-radius: var(--calendar-empresa-day-border-radius);
+}
+
+/* Día individual */
+.calendar-empresa-day {
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: var(--cell-size, var(--calendar-empresa-day-size));
+  padding: 8px;
+  font-size: var(--calendar-empresa-day-font-size);
+  font-weight: var(--font-weight-normal);
+  border-radius: 0;
+  margin: 0;
+  color: var(--calendar-empresa-text-secondary);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 2;
+}
+
+.calendar-empresa-day:hover {
+  background-color: var(--calendar-empresa-hover-bg);
+  color: var(--calendar-empresa-text-primary);
+}
+
+/* Día seleccionado (click) - Azul - Detrás de las tareas */
+.calendar-empresa-day[aria-selected="true"],
+.calendar-empresa-day.day-selected {
+  background-color: var(--calendar-empresa-selected-bg) !important;
+  color: var(--calendar-empresa-text-primary) !important;
+  z-index: 0 !important; /* Detrás de las TaskBars que tienen z-index: 1 */
+}
+
+.calendar-empresa-day[aria-selected="true"]:hover,
+.calendar-empresa-day.day-selected:hover {
+  background-color: var(--calendar-empresa-selected-hover) !important;
+  color: var(--calendar-empresa-text-primary) !important;
+}
+
+/* Día de hoy (día actual) - Círculo alrededor del número */
+.calendar-empresa-container button.calendar-empresa-day[aria-current="date"],
+.calendar-empresa-container button.calendar-empresa-day.day-today,
+.calendar-empresa-container .calendar-empresa-day[aria-current="date"],
+.calendar-empresa-container .calendar-empresa-day.day-today,
+button.calendar-empresa-day[aria-current="date"],
+button.calendar-empresa-day.day-today,
+.calendar-empresa-day[aria-current="date"],
+.calendar-empresa-day.day-today {
+  background-color: transparent !important;
+  color: var(--calendar-empresa-today-text-color) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: none !important;
+}
+
+/* Barra superior para el día actual - de lado a lado */
+.calendar-empresa-day[aria-current="date"]::before,
+.calendar-empresa-day.day-today::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: var(--calendar-empresa-today-border);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Si el día de hoy está seleccionado, mantener el fondo azul pero la barra superior */
+.calendar-empresa-day[aria-current="date"][aria-selected="true"],
+.calendar-empresa-day.day-today.day-selected {
+  background-color: var(--calendar-empresa-selected-bg) !important;
+  color: var(--calendar-empresa-text-primary) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: none !important;
+}
+
+/* Barra superior cuando el día actual está seleccionado */
+.calendar-empresa-day[aria-current="date"][aria-selected="true"]::before,
+.calendar-empresa-day.day-today.day-selected::before {
+  background-color: var(--calendar-empresa-text-primary);
+}
+
+/* Día fuera del rango */
+.calendar-empresa-day.day-outside,
+.calendar-empresa-day[class*="day-outside"] {
+  color: var(--calendar-empresa-text-disabled) !important;
+  opacity: 0.5 !important;
+}
+
+/* Día deshabilitado */
+.calendar-empresa-day:disabled,
+.calendar-empresa-day[aria-disabled="true"],
+.calendar-empresa-day.day-disabled {
+  color: var(--calendar-empresa-text-disabled) !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Rangos de días */
+.calendar-empresa-day.day-range-start[aria-selected="true"],
+.calendar-empresa-day.day-range-end[aria-selected="true"] {
+  background-color: var(--calendar-empresa-selected-bg) !important;
+  color: var(--calendar-empresa-text-primary) !important;
+}
+
+.calendar-empresa-day.day-range-middle[aria-selected="true"] {
+  background-color: rgba(67, 83, 255, 0.2) !important;
+  color: var(--calendar-empresa-text-primary) !important;
+}
+
+/* Día oculto */
+.calendar-empresa-day-hidden {
+  visibility: hidden;
+}
+
+/* Responsive: Ajustar tamaños en pantallas más pequeñas */
+@media (max-width: 768px) {
+  .calendar-empresa-container {
+    --calendar-empresa-padding: 16px;
+    --calendar-empresa-day-size: 2.75rem;
+    --calendar-empresa-day-font-size: 14px;
+    --calendar-empresa-header-font-size: 12px;
+    --calendar-empresa-caption-font-size: 18px;
+    --calendar-empresa-nav-button-size: 32px;
+  }
+  
+  .calendar-empresa-caption {
+    padding: 0 40px;
+  }
+}
+

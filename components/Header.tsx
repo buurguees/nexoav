@@ -38,10 +38,15 @@ export function Header({
       transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
       className="flex items-center justify-center relative"
       style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
         height: 'var(--header-height)',
         backgroundColor: 'var(--background-header)',
         borderBottom: '1px solid var(--border-soft)',
         padding: '0 var(--spacing-2xl)',
+        zIndex: 1000,
       }}
     >
       {/* Navigation Sections - Centered */}
