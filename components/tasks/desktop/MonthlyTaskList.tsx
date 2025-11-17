@@ -146,13 +146,6 @@ export function MonthlyTaskList({
         }}>
           {format(month, "MMMM yyyy", { locale: es }).charAt(0).toUpperCase() + format(month, "MMMM yyyy", { locale: es }).slice(1)}
         </h2>
-        <p style={{ 
-          fontSize: "14px", 
-          color: "var(--foreground-secondary)",
-          marginTop: "var(--spacing-xs)"
-        }}>
-          {monthTasks.length} {monthTasks.length === 1 ? "tarea" : "tareas"}
-        </p>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-lg)" }}>
