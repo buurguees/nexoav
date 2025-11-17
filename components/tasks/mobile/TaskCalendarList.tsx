@@ -175,12 +175,6 @@ export function TaskCalendarList({
         <h2 style={{ fontSize: "16px", margin: 0 }}>
           {format(currentMonth, "MMMM yyyy", { locale: es }).charAt(0).toUpperCase() + format(currentMonth, "MMMM yyyy", { locale: es }).slice(1)}
         </h2>
-        <p style={{ 
-          marginTop: "var(--spacing-xs)",
-          fontSize: "11px"
-        }}>
-          {monthTasks.length} {monthTasks.length === 1 ? "tarea" : "tareas"}
-        </p>
       </div>
 
       {/* 1 columna, todas las categorías apiladas */}
