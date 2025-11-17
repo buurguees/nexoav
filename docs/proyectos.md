@@ -280,17 +280,36 @@ export const PHASE_STATUS_CONFIG: Record<PhaseStatus, {
 };
 ```
 
-### 5. Interfaz: ProjectTask
+### 5. Interfaz: ProjectTask (Tabla Normalizada)
+
+**⚠️ IMPORTANTE**: En la base de datos, `tasks` es una tabla independiente. Cuando se crea una tarea para un proyecto, se inserta en la tabla `tasks` con `project_id` y opcionalmente `phase_id`.
+
+**Flujo de creación de tarea:**
+1. Usuario crea una tarea desde el módulo de Proyectos
+2. Se inserta en la tabla `tasks` con:
+   - `project_id`: ID del proyecto (obligatorio)
+   - `phase_id`: ID de la fase (opcional, puede ser null si no pertenece a una fase)
+3. La tarea aparece automáticamente en:
+   - El proyecto correspondiente (mediante JOIN)
+   - El calendario (si tiene fechas)
+   - La fase correspondiente (si tiene phase_id)
 
 ```typescript
 /**
  * Tarea dentro de una fase de proyecto
  * Extiende la interfaz Task base con información específica del proyecto
+ * 
+ * ⚠️ ESTRUCTURA NORMALIZADA: Esta es una tabla independiente en la BD
+ * Relaciones: tasks.project_id → projects.id
+ *             tasks.phase_id → phases.id (nullable)
  */
 export interface ProjectTask extends Task {
   // Relación con proyecto y fase
-  project_id: string;            // ID del proyecto - FK a Project (obligatorio)
-  phase_id: string;              // ID de la fase - FK a ProjectPhase (obligatorio)
+  project_id: string;            // ⚠️ FK a Project.id (obligatorio si es tarea de proyecto)
+                                // Relación: tasks.project_id → projects.id
+  phase_id?: string | null;     // ⚠️ FK a ProjectPhase.id (opcional/nullable)
+                                // Relación: tasks.phase_id → phases.id
+                                // Puede ser null si la tarea no pertenece a una fase específica
   
   // Orden dentro de la fase
   order: number;                 // Orden de la tarea en la fase (1, 2, 3...)
