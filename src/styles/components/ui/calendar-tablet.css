@@ -1,0 +1,293 @@
+/* ============================================
+   CALENDAR STYLES - TABLET VERSION
+   ============================================
+   
+   Versión optimizada para tablets con espacios reducidos
+   ============================================ */
+
+/* ============================================
+   VARIABLES DEL CALENDARIO TABLET
+   ============================================ */
+.calendar-container-tablet {
+  /* ===== ESPACIADOS REDUCIDOS ===== */
+  /* Espacio entre meses (horizontal en tablet) - 5px entre meses */
+  --calendar-tablet-month-gap: 5px;
+  
+  /* Padding interno de cada mes - MÁS REDUCIDO */
+  --calendar-tablet-month-padding: 6px;
+  
+  /* Espacio interno entre elementos del mes - MÁS REDUCIDO */
+  --calendar-tablet-month-internal-gap: 0px;
+  
+  /* Espacio entre filas de días del calendario - MÁS REDUCIDO */
+  --calendar-tablet-row-gap: 0px;
+  
+  /* Espacio horizontal entre columnas/días del calendario - MÁS REDUCIDO */
+  --calendar-tablet-column-gap: 0px;
+  
+  /* ===== TAMAÑOS REDUCIDOS ===== */
+  /* Tamaño de cada día (ancho y alto) - MÁS REDUCIDO para tablet */
+  --calendar-tablet-day-size: 22px;
+  
+  /* Tamaño de fuente de los días - MÁS REDUCIDO */
+  --calendar-tablet-day-font-size: 11px;
+  
+  /* Tamaño de fuente de los encabezados (Lun, Mar, Mié...) - REDUCIDO */
+  --calendar-tablet-header-font-size: 10px;
+  
+  /* Tamaño de fuente del título del mes - REDUCIDO */
+  --calendar-tablet-caption-font-size: 13px;
+  
+  /* ===== COLORES ===== */
+  /* Fondo del contenedor del calendario */
+  --calendar-tablet-bg: var(--background-secondary);
+  
+  /* Color del borde del contenedor */
+  --calendar-tablet-border: var(--border-medium);
+  
+  /* Color de texto principal */
+  --calendar-tablet-text-primary: var(--foreground);
+  
+  /* Color de texto secundario (días normales) */
+  --calendar-tablet-text-secondary: var(--foreground-secondary);
+  
+  /* Color de texto terciario (encabezados) */
+  --calendar-tablet-text-tertiary: var(--foreground-tertiary);
+  
+  /* Color de texto deshabilitado */
+  --calendar-tablet-text-disabled: var(--foreground-disabled);
+  
+  /* ===== COLORES DE ESTADOS ===== */
+  /* Fondo del día seleccionado */
+  --calendar-tablet-selected-bg: var(--accent-blue-primary);
+  
+  /* Fondo del día seleccionado al hacer hover */
+  --calendar-tablet-selected-hover: var(--accent-blue-hover);
+  
+  /* Color del borde del día de hoy */
+  --calendar-tablet-today-border: var(--accent-blue-primary);
+  
+  /* Color del texto del día de hoy */
+  --calendar-tablet-today-text-color: inherit;
+  
+  /* Fondo al hacer hover sobre un día */
+  --calendar-tablet-hover-bg: rgba(67, 83, 255, 0.2);
+  
+  /* ===== BORDES Y RADIOS ===== */
+  /* Radio de borde del contenedor */
+  --calendar-tablet-border-radius: var(--radius-md);
+  
+  /* Radio de borde de los días */
+  --calendar-tablet-day-border-radius: var(--radius-sm);
+  
+  /* ===== BOTONES DE NAVEGACIÓN ===== */
+  /* Tamaño de los botones de navegación (anterior/siguiente) - REDUCIDO */
+  --calendar-tablet-nav-button-size: 28px;
+  
+  /* Opacidad de los botones de navegación */
+  --calendar-tablet-nav-button-opacity: 0.7;
+}
+
+/* Contenedor principal del calendario */
+.calendar-container-tablet {
+  background-color: var(--calendar-tablet-bg);
+  border: 1px solid var(--calendar-tablet-border);
+  border-radius: var(--calendar-tablet-border-radius);
+  padding: var(--spacing-md);
+  width: 100%;
+}
+
+/* Contenedor de meses - MÁS COMPRIMIDO */
+.calendar-months-tablet {
+  display: flex;
+  flex-direction: row;
+  gap: var(--calendar-tablet-month-gap);
+  justify-content: center;
+  width: 100%;
+}
+
+/* Mes individual - MÁS COMPRIMIDO */
+.calendar-month-tablet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--calendar-tablet-month-internal-gap);
+  flex: 1;
+  min-width: 0;
+  padding: var(--calendar-tablet-month-padding);
+  margin: 0;
+}
+
+/* Encabezado del mes (título) */
+.calendar-caption-tablet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--calendar-tablet-month-internal-gap);
+  position: relative;
+  padding: 0 28px; /* Espacio para botones de navegación - REDUCIDO */
+}
+
+.calendar-caption-label-tablet {
+  font-size: var(--calendar-tablet-caption-font-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--calendar-tablet-text-primary);
+  text-align: center;
+  flex: 1;
+}
+
+/* Botones de navegación */
+.calendar-nav-tablet {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.calendar-nav-button-tablet {
+  pointer-events: auto;
+  width: var(--calendar-tablet-nav-button-size);
+  height: var(--calendar-tablet-nav-button-size);
+  opacity: var(--calendar-tablet-nav-button-opacity);
+  transition: opacity var(--transition-default);
+}
+
+.calendar-nav-button-tablet:hover {
+  opacity: 1;
+}
+
+/* Tabla del calendario */
+.calendar-table-tablet {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Fila de encabezados (Lun, Mar, Mié...) */
+.calendar-head-row-tablet {
+  display: flex;
+  width: 100%;
+}
+
+.calendar-head-cell-tablet {
+  flex: 1;
+  text-align: center;
+  font-size: var(--calendar-tablet-header-font-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--calendar-tablet-text-tertiary);
+  padding: var(--spacing-xs) 0;
+  line-height: 1.2; /* Alinear con los números de los días */
+}
+
+/* Filas de días */
+.calendar-row-tablet {
+  display: flex;
+  width: 100%;
+  gap: var(--calendar-tablet-row-gap);
+}
+
+/* Celdas de días - MÁS COMPRIMIDAS */
+.calendar-cell-tablet {
+  flex: 1;
+  position: relative;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Días individuales */
+.calendar-day-tablet {
+  width: 100%;
+  height: 100%;
+  min-width: var(--calendar-tablet-day-size);
+  min-height: var(--calendar-tablet-day-size);
+  display: flex;
+  align-items: center; /* Centrado vertical */
+  justify-content: center; /* Centrado horizontal */
+  padding: 0; /* Sin padding para centrado perfecto */
+  font-size: var(--calendar-tablet-day-font-size);
+  font-weight: var(--font-weight-normal);
+  color: var(--calendar-tablet-text-secondary);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--calendar-tablet-day-border-radius);
+  cursor: pointer;
+  transition: all var(--transition-default);
+  position: relative;
+  text-align: center; /* Centrado del texto */
+  line-height: 1; /* Line-height normalizado */
+}
+
+/* Asegurar que el contenido del botón (número) esté centrado */
+.calendar-day-tablet > * {
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.calendar-day-tablet:hover {
+  background-color: var(--calendar-tablet-hover-bg);
+}
+
+/* Día de hoy */
+.calendar-day-tablet.day-today-tablet {
+  color: var(--calendar-tablet-today-text-color);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Día fuera del mes */
+.calendar-day-tablet.day-outside-tablet {
+  color: var(--calendar-tablet-text-disabled);
+  opacity: 0.4;
+}
+
+/* Día seleccionado */
+.calendar-day-tablet[aria-selected="true"] {
+  background-color: var(--calendar-tablet-selected-bg);
+  color: white;
+}
+
+.calendar-day-tablet[aria-selected="true"]:hover {
+  background-color: var(--calendar-tablet-selected-hover);
+}
+
+/* Día deshabilitado */
+.calendar-day-tablet[aria-disabled="true"] {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Día oculto */
+.calendar-day-hidden-tablet {
+  visibility: hidden;
+}
+
+/* ============================================
+   ESTILOS PARA PUNTOS DE CATEGORÍAS DE TAREAS - TABLET
+   ============================================ */
+
+/* Contenedor de puntos de tareas */
+.task-dot-container-tablet {
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Punto individual de categoría de tarea */
+.task-category-dot-tablet {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+

@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { LucideIcon } from 'lucide-react';
+import { IconWrapper } from '../icons/IconWrapper';
 
 interface SidebarNavItemProps {
   label: string;
@@ -8,7 +9,7 @@ interface SidebarNavItemProps {
   onClick?: () => void;
 }
 
-export function SidebarNavItem({ label, icon: Icon, isActive = false, onClick }: SidebarNavItemProps) {
+export function SidebarNavItem({ label, icon, isActive = false, onClick }: SidebarNavItemProps) {
   return (
     <motion.button
       onClick={onClick}
@@ -36,7 +37,12 @@ export function SidebarNavItem({ label, icon: Icon, isActive = false, onClick }:
       whileHover={{ x: 2 }}
       whileTap={{ scale: 0.98 }}
     >
-      <Icon className="w-4 h-4 flex-shrink-0" style={{ color: isActive ? 'var(--foreground)' : 'var(--foreground-tertiary)' }} />
+      <IconWrapper 
+        icon={icon} 
+        size={16} 
+        isActive={isActive}
+        className="flex-shrink-0"
+      />
       <span className="text-xs font-medium" style={{ fontSize: '13px', fontWeight: 'var(--font-weight-medium)' }}>{label}</span>
     </motion.button>
   );

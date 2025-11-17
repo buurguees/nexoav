@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { Task } from "../components/calendar";
+import { Task } from "../lib/types/task";
 import { fetchTasksForMonth } from "../lib/mocks/taskMocks";
 import { startOfMonth } from "date-fns";
 

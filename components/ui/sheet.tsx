@@ -39,6 +39,11 @@ function SheetOverlay({
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
         className,
       )}
+      style={{
+        // El overlay no debe bloquear elementos con z-index mayor (como el navbar inferior con z-1002)
+        // Los clicks pasarán a través del overlay a elementos con z-index mayor
+        zIndex: 50, // Mantener z-50 pero asegurar que elementos con z-index mayor sean clickeables
+      }}
       {...props}
     />
   );
@@ -69,10 +74,20 @@ function SheetContent({
             "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t",
           className,
         )}
+        style={{
+          // Asegurar que el Sheet no bloquee el navbar inferior
+          // El z-index se puede sobrescribir en componentes específicos
+          ...(props.style || {}),
+        }}
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
+        <SheetPrimitive.Close 
+          className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
+          style={{
+            zIndex: 1003, // Asegurar que el botón X siempre sea clickeable
+          }}
+        >
           <XIcon className="size-4" />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>

@@ -3,9 +3,9 @@
 import * as React from "react";
 import { format, isSameDay, startOfMonth, endOfMonth, isWithinInterval, startOfDay } from "date-fns";
 import { es } from "date-fns/locale";
-import { cn } from "../ui/utils";
-import { Task } from "../calendar/Calendar18";
-import { getTaskCategory } from "../../lib/taskCategories";
+import { cn } from "../../ui/utils";
+import { Task } from "../../../lib/types/task";
+import { getTaskCategory } from "../../../lib/taskCategories";
 
 export interface MonthlyTaskListProps {
   /** Mes que se está visualizando (ej: 2025-11-01) */

@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "../ui/utils";
-import { TaskType, getTaskColor } from "../../lib/taskCategories";
+import { cn } from "../../ui/utils";
+import { TaskType, getTaskColor } from "../../../lib/taskCategories";
 
 export interface TaskCategoryDotProps {
   type: TaskType;

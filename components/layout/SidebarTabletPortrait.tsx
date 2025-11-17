@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { Logo } from '../Logo';
 import { SidebarNavItem } from '../sidebar/SidebarNavItem';
 import { 
   LayoutDashboard, 
@@ -329,6 +330,15 @@ export function SidebarTabletPortrait({
       className={`sidebar-tablet-portrait ${className}`}
     >
       <div className="sidebar-tablet-portrait-content">
+        {/* Logo Header */}
+        <div className="px-4 py-3 flex items-center justify-center gap-2" style={{ borderBottom: '1px solid var(--border-soft)', marginBottom: 'var(--spacing-sm)', color: 'var(--foreground)' }}>
+          <Logo variant="icon" animated={false} className="w-5 h-5" />
+          <div className="flex items-baseline gap-[0.15em]">
+            <span className="text-xs tracking-[0.15em] font-light" style={{ color: 'var(--foreground)' }}>NEXO</span>
+            <span className="text-xs tracking-[0.15em] font-extralight" style={{ color: 'var(--foreground-tertiary)' }}>AV</span>
+          </div>
+        </div>
+
         {/* Navigation */}
         <motion.div
           key={currentSection}

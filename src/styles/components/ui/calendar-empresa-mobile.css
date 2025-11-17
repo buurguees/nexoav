@@ -1,0 +1,366 @@
+/* ============================================
+   CALENDAR EMPRESA STYLES - MOBILE VERSION
+   ============================================
+   
+   Versión optimizada para móviles con altura muy reducida
+   para que los días sean más cuadrados
+   ============================================ */
+
+/* ============================================
+   VARIABLES DEL CALENDARIO EMPRESA MOBILE
+   ============================================ */
+.calendar-empresa-container-mobile {
+  /* ===== ESPACIADOS MUY REDUCIDOS ===== */
+  /* Padding interno del contenedor - MUY REDUCIDO */
+  --calendar-empresa-mobile-padding: 8px;
+  
+  /* Espacio interno entre elementos del mes - MUY REDUCIDO */
+  --calendar-empresa-mobile-month-internal-gap: 6px;
+  
+  /* Espacio entre filas de días del calendario */
+  --calendar-empresa-mobile-row-gap: 0px;
+  
+  /* Espacio horizontal entre columnas/días del calendario */
+  --calendar-empresa-mobile-column-gap: 0px;
+  
+  /* Color del borde de la cuadrícula - más sutil */
+  --calendar-empresa-mobile-grid-border: rgba(255, 255, 255, 0.05);
+  
+  /* ===== TAMAÑOS MUY REDUCIDOS ===== */
+  /* Tamaño de cada día (ancho y alto) - MUY REDUCIDO para hacer más cuadrados */
+  --calendar-empresa-mobile-day-size: 2rem; /* 32px - más cuadrado */
+  
+  /* Tamaño de fuente de los días - MUY REDUCIDO */
+  --calendar-empresa-mobile-day-font-size: 11px;
+  
+  /* Tamaño de fuente de los encabezados (Lun, Mar, Mié...) - MUY REDUCIDO */
+  --calendar-empresa-mobile-header-font-size: 10px;
+  
+  /* Tamaño de fuente del título del mes - MUY REDUCIDO */
+  --calendar-empresa-mobile-caption-font-size: 14px;
+  
+  /* ===== COLORES ===== */
+  /* Fondo del contenedor del calendario */
+  --calendar-empresa-mobile-bg: var(--background-secondary);
+  
+  /* Color del borde del contenedor */
+  --calendar-empresa-mobile-border: var(--border-medium);
+  
+  /* Color de texto principal */
+  --calendar-empresa-mobile-text-primary: var(--foreground);
+  
+  /* Color de texto secundario (días normales) */
+  --calendar-empresa-mobile-text-secondary: var(--foreground-secondary);
+  
+  /* Color de texto terciario (encabezados) */
+  --calendar-empresa-mobile-text-tertiary: var(--foreground-tertiary);
+  
+  /* Color de texto deshabilitado */
+  --calendar-empresa-mobile-text-disabled: var(--foreground-disabled);
+  
+  /* ===== COLORES DE ESTADOS ===== */
+  /* Fondo del día seleccionado */
+  --calendar-empresa-mobile-selected-bg: var(--accent-blue-primary);
+  
+  /* Fondo del día seleccionado al hacer hover */
+  --calendar-empresa-mobile-selected-hover: var(--accent-blue-hover);
+  
+  /* Color del borde del día de hoy */
+  --calendar-empresa-mobile-today-border: var(--accent-blue-primary);
+  
+  /* Color del texto del día de hoy */
+  --calendar-empresa-mobile-today-text-color: inherit;
+  
+  /* Fondo al hacer hover sobre un día */
+  --calendar-empresa-mobile-hover-bg: rgba(67, 83, 255, 0.2);
+  
+  /* ===== BORDES Y RADIOS ===== */
+  /* Radio de borde del contenedor */
+  --calendar-empresa-mobile-border-radius: var(--radius-md);
+  
+  /* Radio de borde de los días */
+  --calendar-empresa-mobile-day-border-radius: var(--radius-sm);
+  
+  /* ===== BOTONES DE NAVEGACIÓN ===== */
+  /* Tamaño de los botones de navegación (anterior/siguiente) - MUY REDUCIDO */
+  --calendar-empresa-mobile-nav-button-size: 24px;
+  
+  /* Opacidad de los botones de navegación */
+  --calendar-empresa-mobile-nav-button-opacity: 0.7;
+}
+
+/* Contenedor principal del calendario */
+.calendar-empresa-container-mobile {
+  background-color: var(--calendar-empresa-mobile-bg);
+  border: 1px solid var(--calendar-empresa-mobile-border);
+  border-radius: var(--calendar-empresa-mobile-border-radius);
+  padding: var(--calendar-empresa-mobile-padding);
+  width: 100%;
+}
+
+/* Contenedor de meses */
+.calendar-empresa-months-mobile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Mes individual */
+.calendar-empresa-month-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--calendar-empresa-mobile-month-internal-gap);
+  width: 100%;
+}
+
+/* Encabezado del mes (título) */
+.calendar-empresa-caption-mobile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--calendar-empresa-mobile-month-internal-gap);
+  position: relative;
+  padding: 0 32px; /* Espacio para botones de navegación - MUY REDUCIDO */
+}
+
+.calendar-empresa-caption-label-mobile {
+  font-size: var(--calendar-empresa-mobile-caption-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--calendar-empresa-mobile-text-primary);
+  text-align: center;
+  flex: 1;
+}
+
+/* Botones de navegación */
+.calendar-empresa-nav-mobile {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.calendar-empresa-nav-button-mobile {
+  width: var(--calendar-empresa-mobile-nav-button-size);
+  height: var(--calendar-empresa-mobile-nav-button-size);
+  background-color: transparent;
+  border: 1px solid var(--calendar-empresa-mobile-border);
+  border-radius: var(--calendar-empresa-mobile-day-border-radius);
+  padding: 0;
+  color: var(--calendar-empresa-mobile-text-secondary);
+  opacity: var(--calendar-empresa-mobile-nav-button-opacity);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-empresa-nav-button-mobile:hover {
+  background-color: var(--calendar-empresa-mobile-hover-bg);
+  color: var(--calendar-empresa-mobile-text-primary);
+  opacity: 1;
+}
+
+.calendar-empresa-nav-button-previous-mobile {
+  position: absolute;
+  left: 0;
+}
+
+.calendar-empresa-nav-button-next-mobile {
+  position: absolute;
+  right: 0;
+}
+
+/* Tabla del calendario */
+.calendar-empresa-table-mobile {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Fila de encabezado (días de la semana) */
+.calendar-empresa-head-row-mobile {
+  display: flex;
+  justify-content: space-between;
+  gap: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--calendar-empresa-mobile-grid-border);
+}
+
+.calendar-empresa-head-cell-mobile {
+  flex: 1;
+  font-size: var(--calendar-empresa-mobile-header-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--calendar-empresa-mobile-text-tertiary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 0; /* MOBILE: padding muy reducido */
+  border-right: 1px solid var(--calendar-empresa-mobile-grid-border);
+}
+
+.calendar-empresa-head-cell-mobile:last-child {
+  border-right: none;
+}
+
+/* Fila de días */
+.calendar-empresa-row-mobile {
+  display: flex;
+  width: 100%;
+  margin-top: 0;
+  justify-content: space-between;
+  gap: 0;
+  border-top: 1px solid var(--calendar-empresa-mobile-grid-border);
+}
+
+.calendar-empresa-row-mobile:first-of-type {
+  border-top: none;
+}
+
+/* Celda del día */
+.calendar-empresa-cell-mobile {
+  position: relative;
+  padding: 0;
+  text-align: left;
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: var(--calendar-empresa-mobile-day-size);
+  aspect-ratio: 1; /* MOBILE: forzar aspecto cuadrado */
+  border-right: 1px solid var(--calendar-empresa-mobile-grid-border);
+  border-bottom: 1px solid var(--calendar-empresa-mobile-grid-border);
+}
+
+.calendar-empresa-cell-mobile:last-child {
+  border-right: none;
+}
+
+.calendar-empresa-cell-mobile:has([aria-selected]) {
+  background-color: transparent;
+  border-radius: var(--calendar-empresa-mobile-day-border-radius);
+}
+
+/* Día individual */
+.calendar-empresa-day-mobile {
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: var(--calendar-empresa-mobile-day-size);
+  padding: 4px; /* MOBILE: padding muy reducido */
+  font-size: var(--calendar-empresa-mobile-day-font-size);
+  font-weight: var(--font-weight-normal);
+  border-radius: 0;
+  margin: 0;
+  color: var(--calendar-empresa-mobile-text-secondary);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 2;
+  aspect-ratio: 1; /* MOBILE: forzar aspecto cuadrado */
+}
+
+.calendar-empresa-day-mobile:hover {
+  background-color: var(--calendar-empresa-mobile-hover-bg);
+  color: var(--calendar-empresa-mobile-text-primary);
+}
+
+/* Día seleccionado (click) - Azul - Detrás de las tareas */
+.calendar-empresa-day-mobile[aria-selected="true"],
+.calendar-empresa-day-mobile.day-selected {
+  background-color: var(--calendar-empresa-mobile-selected-bg) !important;
+  color: var(--calendar-empresa-mobile-text-primary) !important;
+  z-index: 0 !important; /* Detrás de las TaskBars que tienen z-index: 1 */
+}
+
+.calendar-empresa-day-mobile[aria-selected="true"]:hover,
+.calendar-empresa-day-mobile.day-selected:hover {
+  background-color: var(--calendar-empresa-mobile-selected-hover) !important;
+  color: var(--calendar-empresa-mobile-text-primary) !important;
+}
+
+/* Día de hoy (día actual) - Barra superior */
+.calendar-empresa-container-mobile button.calendar-empresa-day-mobile[aria-current="date"],
+.calendar-empresa-container-mobile button.calendar-empresa-day-mobile.day-today-mobile,
+.calendar-empresa-container-mobile .calendar-empresa-day-mobile[aria-current="date"],
+.calendar-empresa-container-mobile .calendar-empresa-day-mobile.day-today-mobile,
+button.calendar-empresa-day-mobile[aria-current="date"],
+button.calendar-empresa-day-mobile.day-today-mobile,
+.calendar-empresa-day-mobile[aria-current="date"],
+.calendar-empresa-day-mobile.day-today-mobile {
+  background-color: transparent !important;
+  color: var(--calendar-empresa-mobile-today-text-color) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: none !important;
+}
+
+/* Barra superior para el día actual - de lado a lado */
+.calendar-empresa-day-mobile[aria-current="date"]::before,
+.calendar-empresa-day-mobile.day-today-mobile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px; /* MOBILE: altura muy reducida */
+  background-color: var(--calendar-empresa-mobile-today-border);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Si el día de hoy está seleccionado, mantener el fondo azul pero la barra superior */
+.calendar-empresa-day-mobile[aria-current="date"][aria-selected="true"],
+.calendar-empresa-day-mobile.day-today-mobile.day-selected {
+  background-color: var(--calendar-empresa-mobile-selected-bg) !important;
+  color: var(--calendar-empresa-mobile-text-primary) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: none !important;
+}
+
+/* Barra superior cuando el día actual está seleccionado */
+.calendar-empresa-day-mobile[aria-current="date"][aria-selected="true"]::before,
+.calendar-empresa-day-mobile.day-today-mobile.day-selected::before {
+  background-color: var(--calendar-empresa-mobile-text-primary);
+}
+
+/* Día fuera del rango */
+.calendar-empresa-day-mobile.day-outside-mobile,
+.calendar-empresa-day-mobile[class*="day-outside"] {
+  color: var(--calendar-empresa-mobile-text-disabled) !important;
+  opacity: 0.5 !important;
+}
+
+/* Día deshabilitado */
+.calendar-empresa-day-mobile:disabled,
+.calendar-empresa-day-mobile[aria-disabled="true"],
+.calendar-empresa-day-mobile.day-disabled {
+  color: var(--calendar-empresa-mobile-text-disabled) !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Rangos de días */
+.calendar-empresa-day-mobile.day-range-start-mobile[aria-selected="true"],
+.calendar-empresa-day-mobile.day-range-end-mobile[aria-selected="true"] {
+  background-color: var(--calendar-empresa-mobile-selected-bg) !important;
+  color: var(--calendar-empresa-mobile-text-primary) !important;
+}
+
+.calendar-empresa-day-mobile.day-range-middle[aria-selected="true"] {
+  background-color: rgba(67, 83, 255, 0.2) !important;
+  color: var(--calendar-empresa-mobile-text-primary) !important;
+}
+
+/* Día oculto */
+.calendar-empresa-day-hidden-mobile {
+  visibility: hidden;
+}
+

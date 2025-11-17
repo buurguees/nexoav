@@ -231,6 +231,7 @@
   justify-content: flex-start;
   align-items: flex-start;
   min-height: var(--calendar-empresa-day-size, 4rem);
+  aspect-ratio: 1; /* Forzar aspecto cuadrado */
   border-right: 1px solid var(--calendar-empresa-grid-border);
   border-bottom: 1px solid var(--calendar-empresa-grid-border);
 }
@@ -265,6 +266,7 @@
   justify-content: flex-start;
   position: relative;
   z-index: 2;
+  aspect-ratio: 1; /* Forzar aspecto cuadrado */
 }
 
 .calendar-empresa-day:hover {

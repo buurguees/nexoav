@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { Logo } from '../Logo';
 import { SidebarNavItem } from '../sidebar/SidebarNavItem';
 import { 
   LayoutDashboard, 
@@ -9,35 +10,34 @@ import {
   Star,
 } from 'lucide-react';
 import { HeaderSection } from '../Header';
-import { Sheet, SheetContent } from '../ui/sheet';
 
 interface SidebarTabletProps {
   className?: string;
   currentPath?: string;
   currentSection?: HeaderSection;
   onNavigate?: (path: string) => void;
+  onCollapseChange?: (isCollapsed: boolean) => void;
   isOpen?: boolean;
   onClose?: () => void;
 }
 
 /**
- * Versión Tablet del Sidebar
- * Usa un Sheet/Drawer que se abre desde el lado izquierdo
+ * Versión Tablet Horizontal del Sidebar
+ * Sidebar fijo siempre visible, similar a desktop pero con ancho reducido
+ * NO usa Sheet/Drawer - está siempre visible como desktop
  */
 export function SidebarTablet({ 
   className = '', 
   currentPath = '/', 
   currentSection = 'inicio',
   onNavigate,
-  isOpen = false,
-  onClose
+  onCollapseChange,
+  isOpen: _isOpen, // No se usa en tablet horizontal (siempre visible)
+  onClose: _onClose // No se usa en tablet horizontal (siempre visible)
 }: SidebarTabletProps) {
   const handleNavClick = (path: string) => {
     if (onNavigate) {
       onNavigate(path);
-    }
-    if (onClose) {
-      onClose();
     }
   };
 
@@ -89,30 +89,37 @@ export function SidebarTablet({
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent 
-        side="left" 
-        className="w-[280px] p-0"
-        style={{
-          backgroundColor: 'var(--background-sidebar)',
-          borderRight: '1px solid var(--border-soft)',
-        }}
-      >
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--border-soft)' }}>
-            <span style={{ color: 'var(--foreground)', fontWeight: 'var(--font-weight-semibold)' }}>
-              Menú
-            </span>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex-1 overflow-y-auto px-2.5 py-3">
-            {renderSidebarContent()}
-          </div>
+    <motion.aside
+      initial={{ x: -200 }}
+      animate={{ x: 0 }}
+      transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
+      className={`flex flex-col ${className}`}
+      style={{
+        position: 'fixed',
+        top: 'var(--header-height)',
+        left: 0,
+        bottom: 0,
+        width: 'var(--sidebar-width-tablet-horizontal)', // 200px según tablet-horizontal.css
+        height: 'calc(100vh - var(--header-height))',
+        backgroundColor: 'var(--background-sidebar)',
+        borderRight: '1px solid var(--border-soft)',
+        zIndex: 999,
+      }}
+    >
+      {/* Logo Header */}
+      <div className="px-4 py-3 flex items-center justify-center gap-2" style={{ borderBottom: '1px solid var(--border-soft)', color: 'var(--foreground)' }}>
+        <Logo variant="icon" animated={false} className="w-6 h-6" />
+        <div className="flex items-baseline gap-[0.15em]">
+          <span className="text-sm tracking-[0.15em] font-light" style={{ color: 'var(--foreground)' }}>NEXO</span>
+          <span className="text-sm tracking-[0.15em] font-extralight" style={{ color: 'var(--foreground-tertiary)' }}>AV</span>
         </div>
-      </SheetContent>
-    </Sheet>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex-1 overflow-y-auto px-2.5 py-3">
+        {renderSidebarContent()}
+      </div>
+    </motion.aside>
   );
 }
 

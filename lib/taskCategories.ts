@@ -68,28 +68,28 @@ export const TASK_CATEGORIES: Record<TaskType, TaskCategory> = {
   installation: {
     type: "installation",
     label: "Instalación",
-    color: "#f97316", // 🟠 Naranja
+    color: "#fb923c", // 🟠 Naranja medio (entre pastel y vibrante)
     description: "Montajes, puestas en marcha, días de obra",
     module: "inicio",
   },
   site_visit: {
     type: "site_visit",
     label: "Visita de Obra",
-    color: "#facc15", // 🟡 Amarillo
+    color: "#fde047", // 🟡 Amarillo medio (entre pastel y vibrante)
     description: "Medidas, revisiones, supervisión previa",
     module: "inicio",
   },
   meeting: {
     type: "meeting",
     label: "Reunión",
-    color: "#a855f7", // 🟣 Morado
+    color: "#c084fc", // 🟣 Morado medio (entre pastel y vibrante)
     description: "Reuniones internas o con cliente",
     module: "inicio",
   },
   incident: {
     type: "incident",
     label: "Incidencia",
-    color: "#ef4444", // 🔴 Rojo
+    color: "#f87171", // 🔴 Rojo medio (entre pastel y vibrante)
     description: "Problemas, urgencias, revisiones de error",
     module: "inicio",
   },
@@ -98,35 +98,35 @@ export const TASK_CATEGORIES: Record<TaskType, TaskCategory> = {
   invoice_issued: {
     type: "invoice_issued",
     label: "Emisión de Factura",
-    color: "#60a5fa", // 🟦 Azul claro
+    color: "#7dd3fc", // 🟦 Azul claro medio (entre pastel y vibrante)
     description: "Momento en que se genera la factura",
     module: "facturacion",
   },
   invoice_review: {
     type: "invoice_review",
     label: "Revisión de Factura",
-    color: "#3b82f6", // 🔵 Azul oscuro
+    color: "#60a5fa", // 🔵 Azul medio (entre pastel y vibrante)
     description: "Correcciones, verificación, validación",
     module: "facturacion",
   },
   proforma_pending: {
     type: "proforma_pending",
     label: "Proforma Pendiente",
-    color: "#d97706", // 🟫 Marrón claro
+    color: "#fdba74", // 🟫 Marrón claro medio (entre pastel y vibrante)
     description: "Proformas que deben transformarse en factura",
     module: "facturacion",
   },
   payment_reminder: {
     type: "payment_reminder",
     label: "Recordatorio de Pago",
-    color: "#86efac", // 🟩 Verde suave
+    color: "#86efac", // 🟩 Verde suave medio (entre pastel y vibrante)
     description: "Seguimiento a clientes",
     module: "facturacion",
   },
   payment_confirmed: {
     type: "payment_confirmed",
     label: "Cobro Confirmado",
-    color: "#22c55e", // 🟩 Verde intenso
+    color: "#4ade80", // 🟩 Verde medio (entre pastel y vibrante)
     description: "Pagos recibidos, cierre de ciclo",
     module: "facturacion",
   },
@@ -135,42 +135,42 @@ export const TASK_CATEGORIES: Record<TaskType, TaskCategory> = {
   new_lead: {
     type: "new_lead",
     label: "Lead Nuevo",
-    color: "#7dd3fc", // 🟦 Celeste
+    color: "#7dd3fc", // 🟦 Celeste medio (entre pastel y vibrante)
     description: "Entrada de un cliente potencial",
     module: "comercial",
   },
   commercial_visit: {
     type: "commercial_visit",
     label: "Visita Comercial",
-    color: "#d4a574", // 🟫 Arena
+    color: "#facc15", // 🟫 Arena medio (entre pastel y vibrante)
     description: "Visita presencial / videollamada comercial",
     module: "comercial",
   },
   quote_sent: {
     type: "quote_sent",
     label: "Envío de Presupuesto",
-    color: "#c4b5fd", // 🟪 Lavanda
+    color: "#c4b5fd", // 🟪 Lavanda medio (entre pastel y vibrante)
     description: "Presupuesto enviado, pendiente de respuesta",
     module: "comercial",
   },
   follow_up: {
     type: "follow_up",
     label: "Seguimiento",
-    color: "#bef264", // 🟩 Verde lima
+    color: "#bef264", // 🟩 Verde lima medio (entre pastel y vibrante)
     description: "Follow-up a un cliente",
     module: "comercial",
   },
   deal_closed: {
     type: "deal_closed",
     label: "Cierre de Venta",
-    color: "#fb923c", // 🟧 Naranja suave
+    color: "#fb923c", // 🟧 Naranja suave medio (entre pastel y vibrante)
     description: "Proyecto confirmado, pasa a Producción",
     module: "comercial",
   },
   deal_lost: {
     type: "deal_lost",
     label: "Pérdida de Oportunidad",
-    color: "#6b7280", // ⚫ Gris
+    color: "#9ca3af", // ⚫ Gris medio (entre pastel y vibrante)
     description: "No aceptado, cancelado",
     module: "comercial",
   },
@@ -179,42 +179,42 @@ export const TASK_CATEGORIES: Record<TaskType, TaskCategory> = {
   interview: {
     type: "interview",
     label: "Entrevista de Candidato",
-    color: "#0e7490", // 🟦 Azul petróleo
+    color: "#22d3ee", // 🟦 Azul petróleo medio (entre pastel y vibrante)
     description: "Reclutamiento",
     module: "rrhh",
   },
   training: {
     type: "training",
     label: "Formación Interna",
-    color: "#84cc16", // 🟩 Verde oliva
+    color: "#84cc16", // 🟩 Verde oliva medio (entre pastel y vibrante)
     description: "Cursos, capacitaciones",
     module: "rrhh",
   },
   vacation: {
     type: "vacation",
     label: "Vacaciones",
-    color: "#f5deb3", // 🟫 Beige
+    color: "#fde68a", // 🟫 Beige medio (entre pastel y vibrante)
     description: "Días de descanso programados",
     module: "rrhh",
   },
   sick_leave: {
     type: "sick_leave",
     label: "Baja Temporal",
-    color: "#f87171", // 🟥 Rojo suave
+    color: "#f87171", // 🟥 Rojo suave medio (entre pastel y vibrante)
     description: "Enfermedad, accidente, médico",
     module: "rrhh",
   },
   onboarding: {
     type: "onboarding",
     label: "Onboarding",
-    color: "#d8b4fe", // 🟪 Morado pastel
+    color: "#c084fc", // 🟪 Morado medio (entre pastel y vibrante)
     description: "Primer día de un nuevo trabajador",
     module: "rrhh",
   },
   performance_review: {
     type: "performance_review",
     label: "Evaluación de Desempeño",
-    color: "#fb7a1c", // 🟧 Mandarina
+    color: "#fb923c", // 🟧 Mandarina medio (entre pastel y vibrante)
     description: "Revisión trimestral o anual",
     module: "rrhh",
   },
@@ -223,49 +223,49 @@ export const TASK_CATEGORIES: Record<TaskType, TaskCategory> = {
   material_ordered: {
     type: "material_ordered",
     label: "Pedido de Material",
-    color: "#3b82f6", // 🟦 Azul medio
+    color: "#60a5fa", // 🟦 Azul medio (entre pastel y vibrante)
     description: "Se ha hecho un pedido",
     module: "proyectos",
   },
   material_received: {
     type: "material_received",
     label: "Recepción de Material",
-    color: "#22c55e", // 🟩 Verde
+    color: "#4ade80", // 🟩 Verde medio (entre pastel y vibrante)
     description: "Material llega al almacén",
     module: "proyectos",
   },
   tech_assigned: {
     type: "tech_assigned",
     label: "Programación de Técnicos",
-    color: "#fb923c", // 🟧 Naranja suave
+    color: "#fb923c", // 🟧 Naranja suave medio (entre pastel y vibrante)
     description: "Asignación de equipo",
     module: "proyectos",
   },
   internal_production: {
     type: "internal_production",
     label: "Producción Interna",
-    color: "#92400e", // 🟫 Marrón
+    color: "#facc15", // 🟫 Marrón medio (entre pastel y vibrante)
     description: "Preparación de cables, test de pantallas",
     module: "proyectos",
   },
   config_testing: {
     type: "config_testing",
     label: "Configuración / Testing",
-    color: "#7c3aed", // 🟪 Morado oscuro
+    color: "#a855f7", // 🟪 Morado oscuro medio (entre pastel y vibrante)
     description: "Procesado, players, blending, configs",
     module: "proyectos",
   },
   project_delivery: {
     type: "project_delivery",
     label: "Entrega del Proyecto",
-    color: "#16a34a", // 🟩 Verde intenso
+    color: "#22c55e", // 🟩 Verde intenso medio (entre pastel y vibrante)
     description: "Fin de obra / entrega final",
     module: "proyectos",
   },
   post_install_check: {
     type: "post_install_check",
     label: "Revisión Post-Instalación",
-    color: "#374151", // ⚫ Gris oscuro
+    color: "#9ca3af", // ⚫ Gris oscuro medio (entre pastel y vibrante)
     description: "Check final o soporte postinstalación",
     module: "proyectos",
   },

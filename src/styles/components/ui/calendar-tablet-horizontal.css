@@ -1,0 +1,352 @@
+/* ============================================
+   CALENDAR STYLES - TABLET HORIZONTAL VERSION
+   ============================================
+   
+   Versión optimizada para tablets en horizontal
+   Similar a desktop pero con tamaños ajustados para ser 100% responsive
+   ============================================ */
+
+/* ============================================
+   VARIABLES DEL CALENDARIO TABLET HORIZONTAL
+   ============================================ */
+.calendar-container-tablet-horizontal {
+  /* ===== ESPACIADOS ===== */
+  /* Espacio entre meses (horizontal en tablet horizontal) - Igual que tablet */
+  --calendar-tablet-horizontal-month-gap: 5px;
+  
+  /* Padding interno de cada mes - Igual que tablet */
+  --calendar-tablet-horizontal-month-padding: 6px;
+  
+  /* Espacio interno entre elementos del mes - Igual que tablet */
+  --calendar-tablet-horizontal-month-internal-gap: 0px;
+  
+  /* Espacio entre filas de días del calendario - Igual que tablet */
+  --calendar-tablet-horizontal-row-gap: 0px;
+  
+  /* Espacio horizontal entre columnas/días del calendario - Igual que tablet */
+  --calendar-tablet-horizontal-column-gap: 0px;
+  
+  /* ===== TAMAÑOS ===== */
+  /* Tamaño de cada día (ancho y alto) - Igual que tablet */
+  --calendar-tablet-horizontal-day-size: 22px;
+  
+  /* Tamaño de fuente de los días - Igual que tablet */
+  --calendar-tablet-horizontal-day-font-size: 11px;
+  
+  /* Tamaño de fuente de los encabezados (Lun, Mar, Mié...) - Igual que tablet */
+  --calendar-tablet-horizontal-header-font-size: 10px;
+  
+  /* Tamaño de fuente del título del mes - Igual que tablet */
+  --calendar-tablet-horizontal-caption-font-size: 13px;
+  
+  /* ===== COLORES ===== */
+  /* Fondo del contenedor del calendario */
+  --calendar-tablet-horizontal-bg: var(--background-secondary);
+  
+  /* Color del borde del contenedor */
+  --calendar-tablet-horizontal-border: var(--border-medium);
+  
+  /* Color de texto principal */
+  --calendar-tablet-horizontal-text-primary: var(--foreground);
+  
+  /* Color de texto secundario (días normales) */
+  --calendar-tablet-horizontal-text-secondary: var(--foreground-secondary);
+  
+  /* Color de texto terciario (encabezados) */
+  --calendar-tablet-horizontal-text-tertiary: var(--foreground-tertiary);
+  
+  /* Color de texto deshabilitado */
+  --calendar-tablet-horizontal-text-disabled: var(--foreground-disabled);
+  
+  /* ===== COLORES DE ESTADOS ===== */
+  /* Fondo del día seleccionado */
+  --calendar-tablet-horizontal-selected-bg: var(--accent-blue-primary);
+  
+  /* Fondo del día seleccionado al hacer hover */
+  --calendar-tablet-horizontal-selected-hover: var(--accent-blue-hover);
+  
+  /* Color del borde del día de hoy */
+  --calendar-tablet-horizontal-today-border: var(--accent-blue-primary);
+  
+  /* Color del texto del día de hoy */
+  --calendar-tablet-horizontal-today-text-color: inherit;
+  
+  /* Fondo al hacer hover sobre un día */
+  --calendar-tablet-horizontal-hover-bg: rgba(67, 83, 255, 0.2);
+  
+  /* ===== BORDES Y RADIOS ===== */
+  /* Radio de borde del contenedor */
+  --calendar-tablet-horizontal-border-radius: var(--radius-md);
+  
+  /* Radio de borde de los días */
+  --calendar-tablet-horizontal-day-border-radius: var(--radius-md);
+  
+  /* ===== BOTONES DE NAVEGACIÓN ===== */
+  /* Tamaño de los botones de navegación (anterior/siguiente) - Igual que tablet */
+  --calendar-tablet-horizontal-nav-button-size: 28px;
+  
+  /* Opacidad de los botones de navegación */
+  --calendar-tablet-horizontal-nav-button-opacity: 0.7;
+}
+
+/* Contenedor principal del calendario */
+.calendar-container-tablet-horizontal {
+  background-color: var(--calendar-tablet-horizontal-bg);
+  border: 1px solid var(--calendar-tablet-horizontal-border);
+  border-radius: var(--calendar-tablet-horizontal-border-radius);
+  padding: var(--spacing-md);
+  width: 100%;
+  max-width: 500px; /* Igual que desktop - reducido casi a la mitad */
+}
+
+/* Contenedor de meses - HORIZONTAL (igual que tablet portrait - 2 meses) */
+.calendar-months-tablet-horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: var(--calendar-tablet-horizontal-month-gap);
+  justify-content: center;
+  width: 100%;
+}
+
+/* Mes individual */
+.calendar-month-tablet-horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--calendar-tablet-horizontal-month-internal-gap);
+  flex: 1;
+  min-width: 0;
+  padding: var(--calendar-tablet-horizontal-month-padding);
+  margin: 0;
+}
+
+/* Encabezado del mes (título) */
+.calendar-caption-tablet-horizontal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--calendar-tablet-horizontal-month-internal-gap);
+  position: relative;
+  padding: 0 28px; /* Espacio para botones de navegación - Igual que tablet */
+}
+
+.calendar-caption-label-tablet-horizontal {
+  font-size: var(--calendar-tablet-horizontal-caption-font-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--calendar-tablet-horizontal-text-primary);
+  text-align: center;
+  flex: 1;
+}
+
+/* Botones de navegación */
+.calendar-nav-tablet-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.calendar-nav-button-tablet-horizontal {
+  pointer-events: auto;
+  width: var(--calendar-tablet-horizontal-nav-button-size);
+  height: var(--calendar-tablet-horizontal-nav-button-size);
+  background-color: transparent;
+  border: 1px solid var(--calendar-tablet-horizontal-border);
+  border-radius: var(--calendar-tablet-horizontal-day-border-radius);
+  padding: 0;
+  color: var(--calendar-tablet-horizontal-text-secondary);
+  opacity: var(--calendar-tablet-horizontal-nav-button-opacity);
+  cursor: pointer;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-nav-button-tablet-horizontal:hover {
+  background-color: var(--calendar-tablet-horizontal-hover-bg);
+  color: var(--calendar-tablet-horizontal-text-primary);
+  opacity: 1;
+}
+
+.calendar-nav-button-previous-tablet-horizontal {
+  position: absolute;
+  left: 0;
+}
+
+.calendar-nav-button-next-tablet-horizontal {
+  position: absolute;
+  right: 0;
+}
+
+/* Tabla del calendario */
+.calendar-table-tablet-horizontal {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Fila de encabezados (Lun, Mar, Mié...) */
+.calendar-head-row-tablet-horizontal {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--calendar-tablet-horizontal-column-gap);
+  width: 100%;
+}
+
+.calendar-head-cell-tablet-horizontal {
+  width: calc(100% / 7);
+  font-size: var(--calendar-tablet-horizontal-header-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--calendar-tablet-horizontal-text-tertiary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+}
+
+/* Filas de días */
+.calendar-row-tablet-horizontal {
+  display: flex;
+  width: 100%;
+  margin-top: var(--calendar-tablet-horizontal-row-gap);
+  justify-content: space-between;
+  gap: var(--calendar-tablet-horizontal-column-gap);
+}
+
+/* Celdas de días */
+.calendar-cell-tablet-horizontal {
+  position: relative;
+  padding: 0;
+  text-align: center;
+  width: calc(100% / 7);
+  display: flex;
+  justify-content: center;
+}
+
+.calendar-cell-tablet-horizontal:has([aria-selected]) {
+  background-color: transparent;
+  border-radius: var(--calendar-tablet-horizontal-day-border-radius);
+}
+
+/* Días individuales */
+.calendar-day-tablet-horizontal {
+  width: var(--calendar-tablet-horizontal-day-size);
+  height: var(--calendar-tablet-horizontal-day-size);
+  padding: 0;
+  font-size: var(--calendar-tablet-horizontal-day-font-size);
+  font-weight: var(--font-weight-normal);
+  border-radius: var(--calendar-tablet-horizontal-day-border-radius);
+  margin: 0 auto;
+  color: var(--calendar-tablet-horizontal-text-secondary);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day-tablet-horizontal:hover {
+  background-color: var(--calendar-tablet-horizontal-hover-bg);
+  color: var(--calendar-tablet-horizontal-text-primary);
+}
+
+/* Día seleccionado (click) - Azul */
+.calendar-day-tablet-horizontal[aria-selected="true"],
+.calendar-day-tablet-horizontal.day-selected {
+  background-color: var(--calendar-tablet-horizontal-selected-bg) !important;
+  color: var(--calendar-tablet-horizontal-text-primary) !important;
+}
+
+.calendar-day-tablet-horizontal[aria-selected="true"]:hover,
+.calendar-day-tablet-horizontal.day-selected:hover {
+  background-color: var(--calendar-tablet-horizontal-selected-hover) !important;
+  color: var(--calendar-tablet-horizontal-text-primary) !important;
+}
+
+/* Día de hoy (día actual) */
+.calendar-container-tablet-horizontal button.calendar-day-tablet-horizontal[aria-current="date"],
+.calendar-container-tablet-horizontal button.calendar-day-tablet-horizontal.day-today-tablet-horizontal,
+.calendar-container-tablet-horizontal .calendar-day-tablet-horizontal[aria-current="date"],
+.calendar-container-tablet-horizontal .calendar-day-tablet-horizontal.day-today-tablet-horizontal,
+button.calendar-day-tablet-horizontal[aria-current="date"],
+button.calendar-day-tablet-horizontal.day-today-tablet-horizontal,
+.calendar-day-tablet-horizontal[aria-current="date"],
+.calendar-day-tablet-horizontal.day-today-tablet-horizontal {
+  background-color: transparent !important;
+  color: var(--calendar-tablet-horizontal-today-text-color) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: 2px solid var(--calendar-tablet-horizontal-today-border) !important;
+}
+
+/* Si el día de hoy está seleccionado, mantener el fondo azul pero el texto */
+.calendar-day-tablet-horizontal[aria-current="date"][aria-selected="true"],
+.calendar-day-tablet-horizontal.day-today-tablet-horizontal.day-selected {
+  background-color: var(--calendar-tablet-horizontal-selected-bg) !important;
+  color: var(--calendar-tablet-horizontal-today-text-color) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: 1px solid var(--calendar-tablet-horizontal-selected-bg) !important;
+}
+
+/* Día fuera del rango */
+.calendar-day-tablet-horizontal.day-outside-tablet-horizontal,
+.calendar-day-tablet-horizontal[class*="day-outside"] {
+  color: var(--calendar-tablet-horizontal-text-disabled) !important;
+  opacity: 0.5 !important;
+}
+
+/* Día deshabilitado */
+.calendar-day-tablet-horizontal:disabled,
+.calendar-day-tablet-horizontal[aria-disabled="true"],
+.calendar-day-tablet-horizontal.day-disabled {
+  color: var(--calendar-tablet-horizontal-text-disabled) !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Rangos de días */
+.calendar-day-tablet-horizontal.day-range-start-tablet-horizontal[aria-selected="true"],
+.calendar-day-tablet-horizontal.day-range-end-tablet-horizontal[aria-selected="true"] {
+  background-color: var(--calendar-tablet-horizontal-selected-bg) !important;
+  color: var(--calendar-tablet-horizontal-text-primary) !important;
+}
+
+.calendar-day-tablet-horizontal.day-range-middle[aria-selected="true"] {
+  background-color: rgba(67, 83, 255, 0.2) !important;
+  color: var(--calendar-tablet-horizontal-text-primary) !important;
+}
+
+/* Día oculto */
+.calendar-day-hidden-tablet-horizontal {
+  visibility: hidden;
+}
+
+/* ============================================
+   ESTILOS PARA PUNTOS DE CATEGORÍAS DE TAREAS - TABLET HORIZONTAL
+   ============================================ */
+
+/* Contenedor de puntos de tareas */
+.task-dot-container-tablet-horizontal {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2.5px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Punto individual de categoría de tarea */
+.task-category-dot-tablet-horizontal {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+

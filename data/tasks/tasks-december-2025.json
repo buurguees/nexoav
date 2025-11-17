@@ -14,7 +14,11 @@
     "project_id": "project-007",
     "project_name": "Proyecto Valencia",
     "client_id": "client-valencia",
-    "client_name": "Cliente Valencia"
+    "client_name": "Cliente Valencia",
+    "address": "Avenida del Puerto, 45",
+    "city": "Valencia",
+    "postal_code": "46023",
+    "country": "España"
   },
   {
     "id": "task-008",
@@ -31,7 +35,11 @@
     "project_id": "project-008",
     "project_name": "Supervisión Final Obra",
     "client_id": "client-obra-final",
-    "client_name": "Cliente Obra Final"
+    "client_name": "Cliente Obra Final",
+    "address": "Calle de la Construcción, 22",
+    "city": "Bilbao",
+    "postal_code": "48001",
+    "country": "España"
   },
   {
     "id": "task-009",
@@ -49,7 +57,11 @@
     "project_id": "project-009",
     "project_name": "Instalación LED Centro Comercial",
     "client_id": "client-cc",
-    "client_name": "Centro Comercial"
+    "client_name": "Centro Comercial",
+    "address": "Avenida del Comercio, 100",
+    "city": "Málaga",
+    "postal_code": "29001",
+    "country": "España"
   },
   {
     "id": "task-010",
@@ -65,7 +77,11 @@
     "project_id": "project-010",
     "project_name": "Soporte Técnico",
     "client_id": "client-support",
-    "client_name": "Soporte"
+    "client_name": "Soporte",
+    "address": "Calle del Soporte, 33",
+    "city": "Zaragoza",
+    "postal_code": "50001",
+    "country": "España"
   }
 ]
 

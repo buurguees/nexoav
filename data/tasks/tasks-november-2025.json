@@ -15,7 +15,11 @@
     "project_id": "project-001",
     "project_name": "Instalación LED Zara Diagonal",
     "client_id": "client-zara",
-    "client_name": "Zara España"
+    "client_name": "Zara España",
+    "address": "Avinguda Diagonal, 123",
+    "city": "Barcelona",
+    "postal_code": "08008",
+    "country": "España"
   },
   {
     "id": "task-002",
@@ -31,7 +35,11 @@
     "project_id": "project-002",
     "project_name": "Revisión Documentación",
     "client_id": "client-internal",
-    "client_name": "Interno"
+    "client_name": "Interno",
+    "address": "Calle Principal, 45",
+    "city": "Madrid",
+    "postal_code": "28001",
+    "country": "España"
   },
   {
     "id": "task-003",
@@ -48,7 +56,11 @@
     "project_id": "project-003",
     "project_name": "Proyecto Barcelona",
     "client_id": "client-barcelona",
-    "client_name": "Cliente Barcelona"
+    "client_name": "Cliente Barcelona",
+    "address": "Passeig de Gràcia, 92",
+    "city": "Barcelona",
+    "postal_code": "08008",
+    "country": "España"
   },
   {
     "id": "task-004",
@@ -65,7 +77,11 @@
     "project_id": "project-004",
     "project_name": "Supervisión Obra",
     "client_id": "client-obra",
-    "client_name": "Cliente Obra"
+    "client_name": "Cliente Obra",
+    "address": "Calle de la Obra, 15",
+    "city": "Valencia",
+    "postal_code": "46001",
+    "country": "España"
   },
   {
     "id": "task-005",
@@ -83,7 +99,11 @@
     "project_id": "project-005",
     "project_name": "Instalación Oficinas Madrid",
     "client_id": "client-madrid",
-    "client_name": "Oficinas Madrid"
+    "client_name": "Oficinas Madrid",
+    "address": "Calle Gran Vía, 28",
+    "city": "Madrid",
+    "postal_code": "28013",
+    "country": "España"
   },
   {
     "id": "task-006",
@@ -99,7 +119,11 @@
     "project_id": "project-006",
     "project_name": "Soporte Técnico",
     "client_id": "client-support",
-    "client_name": "Soporte"
+    "client_name": "Soporte",
+    "address": "Avenida de la Tecnología, 7",
+    "city": "Sevilla",
+    "postal_code": "41001",
+    "country": "España"
   }
 ]
 

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { HeaderSection } from '../Header';
+import { IconWrapper } from '../icons/IconWrapper';
 
 interface SidebarDesktopProps {
   className?: string;
@@ -132,8 +133,13 @@ export function SidebarDesktop({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            className="flex items-center gap-2"
           >
-            <Logo variant="default" animated={false} style={{ color: 'var(--foreground)' }} />
+            <Logo variant="icon" animated={false} className="w-6 h-6" />
+            <div className="flex items-baseline gap-[0.15em]">
+              <span className="text-sm tracking-[0.15em] font-light" style={{ color: 'var(--foreground)' }}>NEXO</span>
+              <span className="text-sm tracking-[0.15em] font-extralight" style={{ color: 'var(--foreground-tertiary)' }}>AV</span>
+            </div>
           </motion.div>
         )}
         
@@ -155,7 +161,7 @@ export function SidebarDesktop({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
         >
-          {isCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
+          {isCollapsed ? <IconWrapper icon={Menu} size={16} /> : <IconWrapper icon={X} size={16} />}
         </motion.button>
       </div>
 

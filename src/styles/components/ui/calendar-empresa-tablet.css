@@ -1,0 +1,366 @@
+/* ============================================
+   CALENDAR EMPRESA STYLES - TABLET VERSION
+   ============================================
+   
+   Versión optimizada para tablets con altura reducida
+   para que los días sean más cuadrados
+   ============================================ */
+
+/* ============================================
+   VARIABLES DEL CALENDARIO EMPRESA TABLET
+   ============================================ */
+.calendar-empresa-container-tablet {
+  /* ===== ESPACIADOS REDUCIDOS ===== */
+  /* Padding interno del contenedor - REDUCIDO */
+  --calendar-empresa-tablet-padding: 12px;
+  
+  /* Espacio interno entre elementos del mes - REDUCIDO */
+  --calendar-empresa-tablet-month-internal-gap: 8px;
+  
+  /* Espacio entre filas de días del calendario */
+  --calendar-empresa-tablet-row-gap: 0px;
+  
+  /* Espacio horizontal entre columnas/días del calendario */
+  --calendar-empresa-tablet-column-gap: 0px;
+  
+  /* Color del borde de la cuadrícula - más sutil */
+  --calendar-empresa-tablet-grid-border: rgba(255, 255, 255, 0.05);
+  
+  /* ===== TAMAÑOS REDUCIDOS ===== */
+  /* Tamaño de cada día (ancho y alto) - REDUCIDO para hacer más cuadrados */
+  --calendar-empresa-tablet-day-size: 2.5rem; /* 40px - más cuadrado */
+  
+  /* Tamaño de fuente de los días - REDUCIDO */
+  --calendar-empresa-tablet-day-font-size: 12px;
+  
+  /* Tamaño de fuente de los encabezados (Lun, Mar, Mié...) - REDUCIDO */
+  --calendar-empresa-tablet-header-font-size: 11px;
+  
+  /* Tamaño de fuente del título del mes - REDUCIDO */
+  --calendar-empresa-tablet-caption-font-size: 16px;
+  
+  /* ===== COLORES ===== */
+  /* Fondo del contenedor del calendario */
+  --calendar-empresa-tablet-bg: var(--background-secondary);
+  
+  /* Color del borde del contenedor */
+  --calendar-empresa-tablet-border: var(--border-medium);
+  
+  /* Color de texto principal */
+  --calendar-empresa-tablet-text-primary: var(--foreground);
+  
+  /* Color de texto secundario (días normales) */
+  --calendar-empresa-tablet-text-secondary: var(--foreground-secondary);
+  
+  /* Color de texto terciario (encabezados) */
+  --calendar-empresa-tablet-text-tertiary: var(--foreground-tertiary);
+  
+  /* Color de texto deshabilitado */
+  --calendar-empresa-tablet-text-disabled: var(--foreground-disabled);
+  
+  /* ===== COLORES DE ESTADOS ===== */
+  /* Fondo del día seleccionado */
+  --calendar-empresa-tablet-selected-bg: var(--accent-blue-primary);
+  
+  /* Fondo del día seleccionado al hacer hover */
+  --calendar-empresa-tablet-selected-hover: var(--accent-blue-hover);
+  
+  /* Color del borde del día de hoy */
+  --calendar-empresa-tablet-today-border: var(--accent-blue-primary);
+  
+  /* Color del texto del día de hoy */
+  --calendar-empresa-tablet-today-text-color: inherit;
+  
+  /* Fondo al hacer hover sobre un día */
+  --calendar-empresa-tablet-hover-bg: rgba(67, 83, 255, 0.2);
+  
+  /* ===== BORDES Y RADIOS ===== */
+  /* Radio de borde del contenedor */
+  --calendar-empresa-tablet-border-radius: var(--radius-md);
+  
+  /* Radio de borde de los días */
+  --calendar-empresa-tablet-day-border-radius: var(--radius-sm);
+  
+  /* ===== BOTONES DE NAVEGACIÓN ===== */
+  /* Tamaño de los botones de navegación (anterior/siguiente) - REDUCIDO */
+  --calendar-empresa-tablet-nav-button-size: 28px;
+  
+  /* Opacidad de los botones de navegación */
+  --calendar-empresa-tablet-nav-button-opacity: 0.7;
+}
+
+/* Contenedor principal del calendario */
+.calendar-empresa-container-tablet {
+  background-color: var(--calendar-empresa-tablet-bg);
+  border: 1px solid var(--calendar-empresa-tablet-border);
+  border-radius: var(--calendar-empresa-tablet-border-radius);
+  padding: var(--calendar-empresa-tablet-padding);
+  width: 100%;
+}
+
+/* Contenedor de meses */
+.calendar-empresa-months-tablet {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Mes individual */
+.calendar-empresa-month-tablet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--calendar-empresa-tablet-month-internal-gap);
+  width: 100%;
+}
+
+/* Encabezado del mes (título) */
+.calendar-empresa-caption-tablet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--calendar-empresa-tablet-month-internal-gap);
+  position: relative;
+  padding: 0 36px; /* Espacio para botones de navegación - REDUCIDO */
+}
+
+.calendar-empresa-caption-label-tablet {
+  font-size: var(--calendar-empresa-tablet-caption-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--calendar-empresa-tablet-text-primary);
+  text-align: center;
+  flex: 1;
+}
+
+/* Botones de navegación */
+.calendar-empresa-nav-tablet {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.calendar-empresa-nav-button-tablet {
+  width: var(--calendar-empresa-tablet-nav-button-size);
+  height: var(--calendar-empresa-tablet-nav-button-size);
+  background-color: transparent;
+  border: 1px solid var(--calendar-empresa-tablet-border);
+  border-radius: var(--calendar-empresa-tablet-day-border-radius);
+  padding: 0;
+  color: var(--calendar-empresa-tablet-text-secondary);
+  opacity: var(--calendar-empresa-tablet-nav-button-opacity);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-empresa-nav-button-tablet:hover {
+  background-color: var(--calendar-empresa-tablet-hover-bg);
+  color: var(--calendar-empresa-tablet-text-primary);
+  opacity: 1;
+}
+
+.calendar-empresa-nav-button-previous-tablet {
+  position: absolute;
+  left: 0;
+}
+
+.calendar-empresa-nav-button-next-tablet {
+  position: absolute;
+  right: 0;
+}
+
+/* Tabla del calendario */
+.calendar-empresa-table-tablet {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Fila de encabezado (días de la semana) */
+.calendar-empresa-head-row-tablet {
+  display: flex;
+  justify-content: space-between;
+  gap: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--calendar-empresa-tablet-grid-border);
+}
+
+.calendar-empresa-head-cell-tablet {
+  flex: 1;
+  font-size: var(--calendar-empresa-tablet-header-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--calendar-empresa-tablet-text-tertiary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 0; /* TABLET: padding reducido */
+  border-right: 1px solid var(--calendar-empresa-tablet-grid-border);
+}
+
+.calendar-empresa-head-cell-tablet:last-child {
+  border-right: none;
+}
+
+/* Fila de días */
+.calendar-empresa-row-tablet {
+  display: flex;
+  width: 100%;
+  margin-top: 0;
+  justify-content: space-between;
+  gap: 0;
+  border-top: 1px solid var(--calendar-empresa-tablet-grid-border);
+}
+
+.calendar-empresa-row-tablet:first-of-type {
+  border-top: none;
+}
+
+/* Celda del día */
+.calendar-empresa-cell-tablet {
+  position: relative;
+  padding: 0;
+  text-align: left;
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: var(--calendar-empresa-tablet-day-size);
+  aspect-ratio: 1; /* TABLET: forzar aspecto cuadrado */
+  border-right: 1px solid var(--calendar-empresa-tablet-grid-border);
+  border-bottom: 1px solid var(--calendar-empresa-tablet-grid-border);
+}
+
+.calendar-empresa-cell-tablet:last-child {
+  border-right: none;
+}
+
+.calendar-empresa-cell-tablet:has([aria-selected]) {
+  background-color: transparent;
+  border-radius: var(--calendar-empresa-tablet-day-border-radius);
+}
+
+/* Día individual */
+.calendar-empresa-day-tablet {
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: var(--calendar-empresa-tablet-day-size);
+  padding: 6px; /* TABLET: padding reducido */
+  font-size: var(--calendar-empresa-tablet-day-font-size);
+  font-weight: var(--font-weight-normal);
+  border-radius: 0;
+  margin: 0;
+  color: var(--calendar-empresa-tablet-text-secondary);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 2;
+  aspect-ratio: 1; /* TABLET: forzar aspecto cuadrado */
+}
+
+.calendar-empresa-day-tablet:hover {
+  background-color: var(--calendar-empresa-tablet-hover-bg);
+  color: var(--calendar-empresa-tablet-text-primary);
+}
+
+/* Día seleccionado (click) - Azul - Detrás de las tareas */
+.calendar-empresa-day-tablet[aria-selected="true"],
+.calendar-empresa-day-tablet.day-selected {
+  background-color: var(--calendar-empresa-tablet-selected-bg) !important;
+  color: var(--calendar-empresa-tablet-text-primary) !important;
+  z-index: 0 !important; /* Detrás de las TaskBars que tienen z-index: 1 */
+}
+
+.calendar-empresa-day-tablet[aria-selected="true"]:hover,
+.calendar-empresa-day-tablet.day-selected:hover {
+  background-color: var(--calendar-empresa-tablet-selected-hover) !important;
+  color: var(--calendar-empresa-tablet-text-primary) !important;
+}
+
+/* Día de hoy (día actual) - Barra superior */
+.calendar-empresa-container-tablet button.calendar-empresa-day-tablet[aria-current="date"],
+.calendar-empresa-container-tablet button.calendar-empresa-day-tablet.day-today-tablet,
+.calendar-empresa-container-tablet .calendar-empresa-day-tablet[aria-current="date"],
+.calendar-empresa-container-tablet .calendar-empresa-day-tablet.day-today-tablet,
+button.calendar-empresa-day-tablet[aria-current="date"],
+button.calendar-empresa-day-tablet.day-today-tablet,
+.calendar-empresa-day-tablet[aria-current="date"],
+.calendar-empresa-day-tablet.day-today-tablet {
+  background-color: transparent !important;
+  color: var(--calendar-empresa-tablet-today-text-color) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: none !important;
+}
+
+/* Barra superior para el día actual - de lado a lado */
+.calendar-empresa-day-tablet[aria-current="date"]::before,
+.calendar-empresa-day-tablet.day-today-tablet::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px; /* TABLET: altura reducida */
+  background-color: var(--calendar-empresa-tablet-today-border);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Si el día de hoy está seleccionado, mantener el fondo azul pero la barra superior */
+.calendar-empresa-day-tablet[aria-current="date"][aria-selected="true"],
+.calendar-empresa-day-tablet.day-today-tablet.day-selected {
+  background-color: var(--calendar-empresa-tablet-selected-bg) !important;
+  color: var(--calendar-empresa-tablet-text-primary) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  border: none !important;
+}
+
+/* Barra superior cuando el día actual está seleccionado */
+.calendar-empresa-day-tablet[aria-current="date"][aria-selected="true"]::before,
+.calendar-empresa-day-tablet.day-today-tablet.day-selected::before {
+  background-color: var(--calendar-empresa-tablet-text-primary);
+}
+
+/* Día fuera del rango */
+.calendar-empresa-day-tablet.day-outside-tablet,
+.calendar-empresa-day-tablet[class*="day-outside"] {
+  color: var(--calendar-empresa-tablet-text-disabled) !important;
+  opacity: 0.5 !important;
+}
+
+/* Día deshabilitado */
+.calendar-empresa-day-tablet:disabled,
+.calendar-empresa-day-tablet[aria-disabled="true"],
+.calendar-empresa-day-tablet.day-disabled {
+  color: var(--calendar-empresa-tablet-text-disabled) !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Rangos de días */
+.calendar-empresa-day-tablet.day-range-start-tablet[aria-selected="true"],
+.calendar-empresa-day-tablet.day-range-end-tablet[aria-selected="true"] {
+  background-color: var(--calendar-empresa-tablet-selected-bg) !important;
+  color: var(--calendar-empresa-tablet-text-primary) !important;
+}
+
+.calendar-empresa-day-tablet.day-range-middle[aria-selected="true"] {
+  background-color: rgba(67, 83, 255, 0.2) !important;
+  color: var(--calendar-empresa-tablet-text-primary) !important;
+}
+
+/* Día oculto */
+.calendar-empresa-day-hidden-tablet {
+  visibility: hidden;
+}
+

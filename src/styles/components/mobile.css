@@ -1,0 +1,30 @@
+/**
+ * Estilos específicos para Mobile
+ * Usa variables CSS de globals.css para mantener consistencia
+ */
+
+:root {
+  /* Ancho del sidebar en mobile (calculado dinámicamente: texto más largo + 3px) */
+  /* Se calcula en el componente SidebarMobile basado en el texto más largo */
+  --sidebar-width-mobile: auto;
+}
+
+/* Sidebar Mobile */
+.sidebar-mobile {
+  width: var(--sidebar-width-mobile);
+  background-color: var(--background-sidebar);
+  border-right: 1px solid var(--border-soft);
+}
+
+/* Items de navegación en mobile - Texto más pequeño */
+.sidebar-mobile-nav-item {
+  font-size: 12px !important;
+  padding: var(--spacing-xs) var(--spacing-sm) !important;
+}
+
+/* Header Navigation Items en mobile - Texto más pequeño */
+.header-mobile-nav-item {
+  font-size: 11px !important;
+  padding: var(--spacing-xs) var(--spacing-sm) !important;
+}
+

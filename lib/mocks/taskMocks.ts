@@ -7,7 +7,7 @@
  * TODO: Reemplazar con llamadas reales al backend
  */
 
-import { Task } from "../../components/calendar";
+import { Task } from "../types/task";
 import { TaskType } from "../taskCategories";
 import { startOfMonth, endOfMonth } from "date-fns";
 
@@ -72,6 +72,11 @@ export async function fetchTasksForMonth(viewDate: Date): Promise<Task[]> {
     project_name: taskData.project_name,
     client_id: taskData.client_id,
     client_name: taskData.client_name,
+    // Campos de ubicación
+    address: taskData.address,
+    city: taskData.city,
+    postal_code: taskData.postal_code,
+    country: taskData.country,
   }));
 
   // Filtrar solo las tareas que se solapan con el mes consultado

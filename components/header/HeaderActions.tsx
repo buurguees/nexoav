@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { Bell, Settings } from 'lucide-react';
+import { IconWrapper } from '../icons/IconWrapper';
 
 interface HeaderActionsProps {
   notificationCount?: number;
@@ -21,7 +22,7 @@ export function HeaderActions({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <Bell className="w-4 h-4" />
+        <IconWrapper icon={Bell} size={16} />
         {notificationCount > 0 && (
           <motion.div
             initial={{ scale: 0 }}
@@ -43,7 +44,7 @@ export function HeaderActions({
         whileTap={{ scale: 0.95 }}
         transition={{ duration: 0.3 }}
       >
-        <Settings className="w-4 h-4" />
+        <IconWrapper icon={Settings} size={16} />
       </motion.button>
     </div>
   );

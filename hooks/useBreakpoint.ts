@@ -23,11 +23,18 @@ export function useBreakpoint(): Breakpoint {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const isPortrait = height > width;
+    const aspectRatio = width / height;
     
     if (width < BREAKPOINTS.mobile) return 'mobile';
     if (width < BREAKPOINTS.tablet) {
       // Si es tablet y está en vertical, es tablet-portrait
       return isPortrait ? 'tablet-portrait' : 'tablet';
+    }
+    // Para pantallas más grandes, verificar si es tablet horizontal (aspect ratio típico de tablet)
+    // Tablets horizontales suelen tener aspect ratio entre 1.3 y 1.8
+    // Ampliamos el rango hasta 1600px para cubrir tablets horizontales grandes
+    if (width >= BREAKPOINTS.tablet && width <= 1600 && aspectRatio >= 1.3 && aspectRatio <= 1.8 && !isPortrait) {
+      return 'tablet';
     }
     return 'desktop';
   });
@@ -37,11 +44,16 @@ export function useBreakpoint(): Breakpoint {
       const width = window.innerWidth;
       const height = window.innerHeight;
       const isPortrait = height > width;
+      const aspectRatio = width / height;
       
       if (width < BREAKPOINTS.mobile) {
         setBreakpoint('mobile');
       } else if (width < BREAKPOINTS.tablet) {
         setBreakpoint(isPortrait ? 'tablet-portrait' : 'tablet');
+      } else if (width >= BREAKPOINTS.tablet && width <= 1600 && aspectRatio >= 1.3 && aspectRatio <= 1.8 && !isPortrait) {
+        // Tablets horizontales grandes (hasta 1600px de ancho con aspect ratio típico)
+        // Usa componentes de tablet, no de desktop
+        setBreakpoint('tablet');
       } else {
         setBreakpoint('desktop');
       }

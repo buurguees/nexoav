@@ -17,41 +17,41 @@
    ============================================ */
 .calendar-container {
   /* ===== ESPACIADOS ===== */
-  /* Espacio entre meses (horizontal en desktop, vertical en mobile) */
-  --calendar-month-gap: 2px;
+  /* Espacio entre meses (horizontal en desktop) - Igual que tablet */
+  --calendar-month-gap: 5px;
   
-  /* Padding interno de cada mes */
-  --calendar-month-padding: 12px;
+  /* Padding interno de cada mes - Igual que tablet */
+  --calendar-month-padding: 6px;
   
-  /* Espacio interno entre elementos del mes (título, tabla, etc.) */
-  --calendar-month-internal-gap: 2px;
+  /* Espacio interno entre elementos del mes (título, tabla, etc.) - Igual que tablet */
+  --calendar-month-internal-gap: 0px;
   
-  /* Espacio entre filas de días del calendario */
-  --calendar-row-gap: 1px;
+  /* Espacio entre filas de días del calendario - Igual que tablet */
+  --calendar-row-gap: 0px;
   
-  /* Espacio horizontal entre columnas/días del calendario */
+  /* Espacio horizontal entre columnas/días del calendario - Igual que tablet */
   --calendar-column-gap: 0px;
   
   /* ===== TAMAÑOS ===== */
   /* Tamaño del contenedor del calendario (opcional - dejar en 'auto' para tamaño automático) */
   --calendar-width: auto;
   --calendar-height: auto;
-  --calendar-max-width: 1000px;
+  --calendar-max-width: 500px;
   --calendar-max-height: 500px;
   --calendar-min-width: 0;
   --calendar-min-height: 0;
   
-  /* Tamaño de cada día (ancho y alto) */
-  --calendar-day-size: 28px;
+  /* Tamaño de cada día (ancho y alto) - Igual que tablet */
+  --calendar-day-size: 22px;
   
-  /* Tamaño de fuente de los días */
-  --calendar-day-font-size: 13px;
+  /* Tamaño de fuente de los días - Igual que tablet */
+  --calendar-day-font-size: 11px;
   
-  /* Tamaño de fuente de los encabezados (Lun, Mar, Mié...) */
-  --calendar-header-font-size: 11px;
+  /* Tamaño de fuente de los encabezados (Lun, Mar, Mié...) - Igual que tablet */
+  --calendar-header-font-size: 10px;
   
-  /* Tamaño de fuente del título del mes */
-  --calendar-caption-font-size: 15px;
+  /* Tamaño de fuente del título del mes - Igual que tablet */
+  --calendar-caption-font-size: 13px;
   
   /* ===== COLORES ===== */
   /* Fondo del contenedor del calendario */
@@ -108,7 +108,7 @@
   background-color: var(--calendar-bg);
   border: 1px solid var(--calendar-border);
   border-radius: var(--calendar-border-radius);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   
   /* Tamaños del contenedor */
   width: var(--calendar-width);
@@ -155,7 +155,7 @@
   width: 100%;
   margin-bottom: var(--calendar-month-internal-gap);
   position: relative;
-  padding: 0 32px; /* Espacio para botones de navegación */
+  padding: 0 28px; /* Espacio para botones de navegación - Igual que tablet */
 }
 
 .calendar-caption-label {

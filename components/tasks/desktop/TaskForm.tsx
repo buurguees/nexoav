@@ -4,10 +4,10 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { cn } from "../ui/utils";
-import { Task } from "../calendar/Calendar18";
-import { TaskType, getCategoriesForModule, getTaskCategory } from "../../lib/taskCategories";
-import { getTaskStatusConfig, type TaskStatus } from "../../lib/taskStatus";
+import { cn } from "../../ui/utils";
+import { Task } from "../../../lib/types/task";
+import { TaskType, getCategoriesForModule, getTaskCategory } from "../../../lib/taskCategories";
+import { getTaskStatusConfig, type TaskStatus } from "../../../lib/taskStatus";
 import {
   Form,
   FormControl,
@@ -16,17 +16,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
+} from "../../ui/form";
+import { Input } from "../../ui/input";
+import { Textarea } from "../../ui/textarea";
+import { Button } from "../../ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../../ui/select";
 import {
   Dialog,
   DialogContent,
@@ -34,7 +34,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
+} from "../../ui/dialog";
 
 export interface TaskFormData {
   title: string;

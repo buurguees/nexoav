@@ -1,8 +1,10 @@
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { HeaderNavItem } from '../header/HeaderNavItem';
 import { HeaderSearch } from '../header/HeaderSearch';
 import { HeaderSection } from '../Header';
-import { Menu, Bell } from 'lucide-react';
+import { Menu, Bell, Search, X } from 'lucide-react';
+import { IconWrapper } from '../icons/IconWrapper';
+import { useState } from 'react';
 
 interface HeaderTabletPortraitProps {
   currentSection?: HeaderSection;
@@ -23,6 +25,8 @@ export function HeaderTabletPortrait({
   notificationCount = 0,
   onMenuClick
 }: HeaderTabletPortraitProps) {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
   const sections: Array<{ id: HeaderSection; label: string }> = [
     { id: 'inicio', label: 'Inicio' },
     { id: 'facturacion', label: 'Facturación' },
@@ -75,16 +79,72 @@ export function HeaderTabletPortrait({
             e.currentTarget.style.color = 'var(--foreground-tertiary)';
           }}
         >
-          <Menu className="w-5 h-5" />
+          <IconWrapper icon={Menu} size={20} />
         </button>
 
-        {/* Center: Search */}
-        <div className="flex-1 flex justify-center px-4">
-          <HeaderSearch placeholder="Buscar en NEXO AV..." />
-        </div>
+        {/* Center: Empty space */}
+        <div className="flex-1" />
 
-        {/* Right: Notifications and User Avatar */}
-        <div className="flex items-center gap-3">
+        {/* Right: Search Toggle, Notifications and User Avatar */}
+        <div className="flex items-center gap-2">
+          {/* Search Toggle or Search Input */}
+          <AnimatePresence mode="wait">
+            {isSearchOpen ? (
+              <motion.div
+                key="search-input"
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 'auto', opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center gap-2"
+              >
+                <HeaderSearch placeholder="Buscar en NEXO AV..." size="mobile" />
+                <button
+                  onClick={() => setIsSearchOpen(false)}
+                  className="p-1.5 rounded-lg transition-colors flex-shrink-0"
+                  style={{
+                    color: 'var(--foreground-tertiary)',
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
+                    e.currentTarget.style.color = 'var(--foreground)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'var(--foreground-tertiary)';
+                  }}
+                >
+                  <IconWrapper icon={X} size={16} />
+                </button>
+              </motion.div>
+            ) : (
+              <motion.button
+                key="search-icon"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 rounded-lg transition-colors"
+                style={{
+                  color: 'var(--foreground-tertiary)',
+                  borderRadius: 'var(--radius-md)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
+                  e.currentTarget.style.color = 'var(--foreground)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'var(--foreground-tertiary)';
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <IconWrapper icon={Search} size={20} />
+              </motion.button>
+            )}
+          </AnimatePresence>
           {/* Notifications */}
           <motion.button
             onClick={() => console.log('Notifications')}
@@ -104,7 +164,7 @@ export function HeaderTabletPortrait({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Bell className="w-5 h-5" />
+            <IconWrapper icon={Bell} size={20} />
             {notificationCount > 0 && (
               <motion.div
                 initial={{ scale: 0 }}

@@ -11,8 +11,10 @@ export default function App() {
   const [currentSection, setCurrentSection] = useState<HeaderSection>('inicio');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const breakpoint = useBreakpoint();
-  const isTabletPortrait = breakpoint === 'tablet-portrait';
+      const breakpoint = useBreakpoint();
+      const isTabletPortrait = breakpoint === 'tablet-portrait';
+      const isMobile = breakpoint === 'mobile';
+      const isTablet = breakpoint === 'tablet';
 
   const handleNavigate = (path: string) => {
     setCurrentPath(path);
@@ -22,6 +24,10 @@ export default function App() {
     setCurrentSection(section);
     // Reset path when changing sections
     setCurrentPath(`/${section === 'inicio' ? '' : section}`);
+    // Cerrar el sidebar en mobile cuando se cambia de sección desde el navbar inferior
+    if (breakpoint === 'mobile') {
+      setIsSidebarOpen(false);
+    }
   };
 
   const renderContent = () => {
@@ -84,13 +90,17 @@ export default function App() {
           backgroundColor: 'var(--background)', 
           padding: 'var(--content-padding)',
           marginTop: 'var(--header-height)',
-          marginBottom: isTabletPortrait ? 'var(--header-height)' : '0', // Para tablet-portrait que tiene header inferior
+          marginBottom: (isTabletPortrait || isMobile) ? 'var(--header-height)' : '0', // Para tablet-portrait y mobile que tienen header inferior
           marginLeft: isTabletPortrait 
             ? '160px' // Ancho fijo del sidebar en tablet-portrait
-            : (isSidebarCollapsed ? '80px' : 'var(--sidebar-width)'),
-          height: isTabletPortrait 
+            : isMobile
+            ? '0' // Mobile no tiene sidebar fijo
+            : isTablet
+            ? 'var(--sidebar-width-tablet-horizontal)' // Tablet horizontal: 200px
+            : (isSidebarCollapsed ? '80px' : 'var(--sidebar-width)'), // Desktop
+          height: (isTabletPortrait || isMobile)
             ? 'calc(100vh - var(--header-height) * 2)' 
-            : 'calc(100vh - var(--header-height))', // Para tablet-portrait necesita espacio para ambos headers
+            : 'calc(100vh - var(--header-height))', // Para tablet-portrait y mobile necesita espacio para ambos headers
           transition: isTabletPortrait ? 'none' : 'margin-left 0.6s cubic-bezier(0.19, 1, 0.22, 1)',
           overflow: 'hidden',
         }}

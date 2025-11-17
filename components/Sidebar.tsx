@@ -62,6 +62,7 @@ export function Sidebar({
         currentPath={currentPath}
         currentSection={currentSection}
         onNavigate={onNavigate}
+        onCollapseChange={onCollapseChange}
         isOpen={isOpen}
         onClose={onClose}
       />
