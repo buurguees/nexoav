@@ -1,0 +1,88 @@
+/**
+ * Estilos específicos para Tablet Portrait
+ * Usa variables CSS de globals.css para mantener consistencia
+ */
+
+:root {
+  /* Ancho del sidebar en tablet-portrait (más estrecho que desktop) */
+  --sidebar-width-tablet-portrait: 160px;
+}
+
+/* Sidebar Tablet Portrait */
+.sidebar-tablet-portrait {
+  width: var(--sidebar-width-tablet-portrait);
+  background-color: var(--background-sidebar);
+  border-right: 1px solid var(--border-soft);
+  position: fixed;
+  top: var(--header-height);
+  bottom: var(--header-height);
+  left: 0;
+  height: calc(100vh - var(--header-height) * 2);
+  z-index: 999;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Ocultar scrollbar en sidebar tablet-portrait */
+.sidebar-tablet-portrait {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar-tablet-portrait::-webkit-scrollbar {
+  display: none;
+}
+
+/* Contenido del sidebar */
+.sidebar-tablet-portrait-content {
+  padding: var(--spacing-md) var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Header del sidebar (si es necesario) */
+.sidebar-tablet-portrait-header {
+  padding: var(--spacing-md) var(--spacing-sm);
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Navegación del sidebar */
+.sidebar-tablet-portrait-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-sm) 0;
+}
+
+/* Items de navegación en tablet-portrait */
+.sidebar-tablet-portrait-nav-item {
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-xs);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  color: var(--foreground-tertiary);
+  transition: var(--transition-default);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.sidebar-tablet-portrait-nav-item:hover {
+  background-color: var(--background-secondary);
+  color: var(--foreground);
+}
+
+.sidebar-tablet-portrait-nav-item.active {
+  background-color: var(--background-secondary);
+  color: var(--foreground);
+}
+
+/* Footer del sidebar (perfil de usuario) */
+.sidebar-tablet-portrait-footer {
+  padding: var(--spacing-md) var(--spacing-sm);
+  border-top: 1px solid var(--border-soft);
+  margin-top: var(--spacing-sm);
+}
+

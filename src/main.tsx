@@ -5,6 +5,7 @@ import './styles/globals.css'
 import './styles/components/ui/calendar.css'
 import './styles/components/ui/calendar-empresa.css'
 import './styles/components/ui/task-bar.css'
+import './styles/components/tablet-portrait.css'
 
 // Aplicar tema dark por defecto
 document.documentElement.classList.add('dark')

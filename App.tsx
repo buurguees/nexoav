@@ -4,11 +4,15 @@ import { InicioResumen } from './components/InicioResumen';
 import { InicioCalendario } from './components/InicioCalendario';
 import { motion } from 'motion/react';
 import { useState } from 'react';
+import { useBreakpoint } from './hooks/useBreakpoint';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState('/');
   const [currentSection, setCurrentSection] = useState<HeaderSection>('inicio');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const breakpoint = useBreakpoint();
+  const isTabletPortrait = breakpoint === 'tablet-portrait';
 
   const handleNavigate = (path: string) => {
     setCurrentPath(path);
@@ -61,6 +65,7 @@ export default function App() {
         currentSection={currentSection} 
         onSectionChange={handleSectionChange}
         notificationCount={5}
+        onMenuClick={() => setIsSidebarOpen(true)}
       />
 
       {/* Sidebar - Fixed */}
@@ -69,6 +74,8 @@ export default function App() {
         currentSection={currentSection}
         onNavigate={handleNavigate}
         onCollapseChange={setIsSidebarCollapsed}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       {/* Main Content Area - With padding to compensate for fixed header and sidebar */}
@@ -77,9 +84,14 @@ export default function App() {
           backgroundColor: 'var(--background)', 
           padding: 'var(--content-padding)',
           marginTop: 'var(--header-height)',
-          marginLeft: isSidebarCollapsed ? '80px' : 'var(--sidebar-width)',
-          height: 'calc(100vh - var(--header-height))',
-          transition: 'margin-left 0.6s cubic-bezier(0.19, 1, 0.22, 1)',
+          marginBottom: isTabletPortrait ? 'var(--header-height)' : '0', // Para tablet-portrait que tiene header inferior
+          marginLeft: isTabletPortrait 
+            ? '160px' // Ancho fijo del sidebar en tablet-portrait
+            : (isSidebarCollapsed ? '80px' : 'var(--sidebar-width)'),
+          height: isTabletPortrait 
+            ? 'calc(100vh - var(--header-height) * 2)' 
+            : 'calc(100vh - var(--header-height))', // Para tablet-portrait necesita espacio para ambos headers
+          transition: isTabletPortrait ? 'none' : 'margin-left 0.6s cubic-bezier(0.19, 1, 0.22, 1)',
           overflow: 'hidden',
         }}
       >
