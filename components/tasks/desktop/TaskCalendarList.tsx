@@ -297,6 +297,14 @@ export function TaskCalendarList({
                               ? format(task.startDate, "d MMM", { locale: es })
                               : `${format(task.startDate, "d MMM", { locale: es })} - ${format(task.endDate, "d MMM", { locale: es })}`;
 
+                            // Formatear ubicación completa: "Dirección, población, código postal, País"
+                            const locationParts: string[] = [];
+                            if (task.address) locationParts.push(task.address);
+                            if (task.city) locationParts.push(task.city);
+                            if (task.postal_code) locationParts.push(task.postal_code);
+                            if (task.country) locationParts.push(task.country);
+                            const fullLocation = locationParts.length > 0 ? locationParts.join(", ") : null;
+
                             return (
                               <div
                                 key={task.id}
@@ -323,34 +331,70 @@ export function TaskCalendarList({
                                   }
                                 }}
                               >
-                                {/* Título */}
-                                <h5 style={{
+                                {/* Primera línea: Título y fechas */}
+                                <div style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  gap: "var(--spacing-xs)",
                                   marginBottom: "2px",
-                                  textDecoration: task.status === "completed" || task.completed ? "line-through" : "none",
-                                  margin: 0,
-                                  fontSize: "13px",
                                 }}>
-                                  {task.title}
-                                </h5>
+                                  <h5 style={{
+                                    textDecoration: task.status === "completed" || task.completed ? "line-through" : "none",
+                                    margin: 0,
+                                    fontSize: "13px",
+                                    flex: "1 1 auto",
+                                    minWidth: 0,
+                                  }}>
+                                    {task.title}
+                                  </h5>
+                                  {/* Fechas a la derecha del título */}
+                                  <span style={{
+                                    fontSize: "10px",
+                                    color: "var(--foreground-secondary)",
+                                    whiteSpace: "nowrap",
+                                    flexShrink: 0,
+                                  }}>
+                                    {dateRange}
+                                  </span>
+                                </div>
 
-                                {/* Fechas y horario */}
+                                {/* Segunda línea: Ubicación completa y horario */}
                                 <div style={{
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "space-between",
                                   gap: "var(--spacing-xs)",
                                 }}>
-                                  <span style={{
-                                    fontSize: "11px",
-                                  }}>
-                                    {dateRange}
-                                  </span>
-                                  {/* Estado y horario en la parte inferior derecha */}
+                                  {/* Ubicación completa a la izquierda */}
+                                  {fullLocation ? (
+                                    <span style={{
+                                      fontSize: "11px",
+                                      color: "var(--foreground-secondary)",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      whiteSpace: "nowrap",
+                                      flex: "1 1 auto",
+                                      minWidth: 0, // Permite que se corte si se solapa con horarios
+                                    }}>
+                                      {fullLocation}
+                                    </span>
+                                  ) : (
+                                    <span style={{
+                                      fontSize: "11px",
+                                      color: "var(--foreground-disabled)",
+                                      fontStyle: "italic",
+                                    }}>
+                                      Sin ubicación
+                                    </span>
+                                  )}
+                                  {/* Estado y horario en la parte derecha */}
                                   <div style={{
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "var(--spacing-xs)",
                                     marginLeft: "auto",
+                                    flexShrink: 0,
                                   }}>
                                     {/* Indicador de estado */}
                                     <span style={{
@@ -364,6 +408,7 @@ export function TaskCalendarList({
                                       <span style={{
                                         fontSize: "11px",
                                         fontWeight: "var(--font-weight-medium)",
+                                        whiteSpace: "nowrap",
                                       }}>
                                         {task.startTime && task.endTime 
                                           ? `${task.startTime} - ${task.endTime}`

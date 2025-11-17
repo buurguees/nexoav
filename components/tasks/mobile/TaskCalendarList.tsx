@@ -296,7 +296,7 @@ export function TaskCalendarList({
                                 key={task.id}
                                 onClick={() => handleTaskClick(task)}
                                 style={{
-                                  padding: "var(--spacing-xs)",
+                                  padding: "6px var(--spacing-xs)", // MOBILE: padding reducido verticalmente
                                   borderRadius: "var(--radius-sm)",
                                   border: `1px solid var(--border-medium)`,
                                   backgroundColor: "var(--background)",
@@ -317,38 +317,32 @@ export function TaskCalendarList({
                                   }
                                 }}
                               >
-                                {/* Título */}
-                                <h5 style={{
-                                  marginBottom: "2px",
-                                  textDecoration: task.status === "completed" || task.completed ? "line-through" : "none",
-                                  margin: 0,
-                                  fontSize: "11px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}>
-                                  {task.title}
-                                </h5>
-
-                                {/* Fechas y horario */}
+                                {/* Título y fechas en la misma línea */}
                                 <div style={{
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "space-between",
                                   gap: "var(--spacing-xs)",
-                                  flexWrap: "wrap",
                                 }}>
-                                  <span style={{
-                                    fontSize: "9px",
+                                  {/* Título con truncado si se solapa con fechas */}
+                                  <h5 style={{
+                                    margin: 0,
+                                    fontSize: "11px",
+                                    textDecoration: task.status === "completed" || task.completed ? "line-through" : "none",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                    flex: "1 1 auto",
+                                    minWidth: 0, // Permite que el flex shrink funcione
                                   }}>
-                                    {dateRange}
-                                  </span>
-                                  {/* Estado y horario en la parte inferior derecha */}
+                                    {task.title}
+                                  </h5>
+                                  {/* Fechas en la parte derecha */}
                                   <div style={{
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "var(--spacing-xs)",
-                                    marginLeft: "auto",
+                                    flexShrink: 0,
                                   }}>
                                     {/* Indicador de estado */}
                                     <span style={{
@@ -357,17 +351,13 @@ export function TaskCalendarList({
                                     }}>
                                       {statusConfig.icon}
                                     </span>
-                                    {/* Horario */}
-                                    {(task.startTime || task.endTime) && (
-                                      <span style={{
-                                        fontSize: "9px",
-                                        fontWeight: "var(--font-weight-medium)",
-                                      }}>
-                                        {task.startTime && task.endTime 
-                                          ? `${task.startTime} - ${task.endTime}`
-                                          : task.startTime || task.endTime}
-                                      </span>
-                                    )}
+                                    {/* Fechas */}
+                                    <span style={{
+                                      fontSize: "9px",
+                                      whiteSpace: "nowrap",
+                                    }}>
+                                      {dateRange}
+                                    </span>
                                   </div>
                                 </div>
                               </div>

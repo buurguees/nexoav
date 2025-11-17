@@ -10,7 +10,7 @@ Los componentes de tareas están ubicados en `components/tasks/` y proporcionan 
 - `TaskBar.tsx` - Franja visual de tarea para calendarios ✅ **Implementado**
 - `TaskCategoryDot.tsx` - Punto de color que representa una categoría ✅ **Implementado**
 - `InicioResumenTaskWidget.tsx` - Widget de resumen para Inicio > Resumen ⏳ **A crear**
-- `InicioCalendarioTaskList.tsx` - Listado de tareas para Inicio > Calendario ⏳ **A crear**
+- `TaskCalendarList.tsx` - Listado de tareas para Inicio > Calendario ✅ **Implementado**
 - `TaskForm.tsx` - Formulario de creación/edición de tareas ⏳ **A crear**
 - `index.ts` - Exportaciones centralizadas ✅ **Implementado**
 
@@ -59,6 +59,11 @@ export interface Task {
   // ... otros campos
   startTime?: string; // Formato: "HH:mm" (ej: "09:00", "14:30")
   endTime?: string; // Formato: "HH:mm" (ej: "17:00", "18:30")
+  // Campos de ubicación
+  address?: string; // Dirección completa
+  city?: string; // Población/ciudad ✨ **NUEVO**
+  postal_code?: string; // Código postal
+  country?: string; // País
 }
 ```
 
@@ -793,9 +798,15 @@ function InicioResumen() {
 
 ---
 
-### 4. InicioCalendarioTaskList
+### 4. TaskCalendarList
 
-**Archivo**: `components/tasks/InicioCalendarioTaskList.tsx` (a crear)
+**Archivo**: `components/tasks/desktop/TaskCalendarList.tsx` ✅ **Implementado**
+
+**Versiones disponibles**:
+- `components/tasks/desktop/TaskCalendarList.tsx` - Versión desktop
+- `components/tasks/mobile/TaskCalendarList.tsx` - Versión mobile
+- `components/tasks/tablet/TaskCalendarList.tsx` - Versión tablet portrait
+- `components/tasks/tablet-horizontal/TaskCalendarList.tsx` - Versión tablet horizontal
 
 #### Descripción
 
@@ -812,21 +823,24 @@ Componente de listado mensual de tareas asociado a la vista de `Calendar18`. Mue
 #### Props
 
 ```typescript
-export interface InicioCalendarioTaskListProps {
-  /** Array de tareas del mes */
+export interface TaskCalendarListProps {
+  /** Tareas ya filtradas por el módulo que lo usa */
   tasks: Task[];
   
   /** Mes a mostrar (por defecto: mes actual) */
   month?: Date;
   
-  /** Clase CSS adicional */
-  className?: string;
+  /** Módulo que está usando el componente (para determinar las categorías) */
+  module?: "inicio" | "facturacion" | "comercial" | "rrhh" | "proyectos";
   
-  /** Callback al hacer clic en una tarea */
+  /** Acción al hacer clic en una tarea */
   onTaskClick?: (task: Task) => void;
   
   /** Callback al hacer clic en un día */
   onDayClick?: (date: Date) => void;
+  
+  /** Estilos adicionales */
+  className?: string;
 }
 ```
 
@@ -865,48 +879,62 @@ const groupTasksByDay = (tasks: Task[]): Map<string, Task[]> => {
 
 Para cada tarea se muestra:
 
+**Desktop y Tablet-Horizontal**:
+
 ```typescript
 // Estructura de cada tarea en el listado
 <div className="task-list-item">
-  {/* Indicador de categoría */}
-  <div 
-    className="task-category-indicator"
-    style={{ backgroundColor: getTaskColor(task.type) }}
-  />
-  
-  {/* Información principal */}
-  <div className="task-info">
-    <h4 className="task-title">{task.title}</h4>
-    
-    {/* Fechas */}
-    <div className="task-dates">
-      <span>{format(task.startDate, "d MMM", { locale: es })}</span>
-      {!isSameDay(task.startDate, task.endDate) && (
-        <>
-          <span> - </span>
-          <span>{format(task.endDate, "d MMM", { locale: es })}</span>
-        </>
-      )}
-    </div>
-    
-    {/* Horario (si existe) */}
-    {task.startTime && task.endTime && (
-      <div className="task-schedule">
-        {task.startTime} - {task.endTime}
-      </div>
+  {/* Primera línea: Título y población */}
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <h5>{task.title}</h5>
+    {/* Población a la derecha del título */}
+    {task.city && (
+      <span style={{ fontSize: "10px", color: "var(--foreground-secondary)" }}>
+        {task.city}
+      </span>
     )}
+  </div>
+  
+  {/* Segunda línea: Fechas, estado y horario */}
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    {/* Fechas */}
+    <span>{dateRange}</span>
     
-    {/* Categoría */}
-    <div className="task-category">
-      {getTaskCategory(task.type).label}
+    {/* Estado, población y horario en columna */}
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+      {/* Primera línea: Estado y población */}
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--spacing-xs)" }}>
+        {/* Indicador de estado */}
+        <span style={{ color: statusConfig.color }}>
+          {statusConfig.icon}
+        </span>
+        {/* Población (si no se mostró arriba) */}
+        {task.city && (
+          <span style={{ fontSize: "10px", color: "var(--foreground-secondary)" }}>
+            {task.city}
+          </span>
+        )}
+      </div>
+      {/* Segunda línea: Horario */}
+      {(task.startTime || task.endTime) && (
+        <span style={{ fontSize: "10px" }}>
+          {task.startTime} - {task.endTime}
+        </span>
+      )}
     </div>
   </div>
 </div>
 ```
 
+**Mobile y Tablet Portrait**:
+
+Layout similar pero adaptado a pantallas más pequeñas, con información más compacta.
+
 **Información incluida**:
 - ✅ Título de la tarea
+- ✅ **Población/ciudad** (`task.city`) ✨ **NUEVO**
 - ✅ Fechas de inicio y fin (formateadas)
+- ✅ **Estado de la tarea** (icono y color) ✨ **NUEVO**
 - ✅ Horario asociado (si existe)
 - ✅ Categoría visualmente identificable
 - ✅ Día de la tarea (agrupación)
@@ -916,6 +944,8 @@ Para cada tarea se muestra:
 - ❌ Todos los campos extendidos
 - ❌ Toda la metadata disponible
 - ❌ Funcionalidades de gestión avanzada
+
+**Nota**: El contador de tareas ("X tareas") debajo del mes ha sido eliminado. Solo se muestra el título del mes.
 
 ##### 3. Organización Temporal
 
@@ -983,17 +1013,18 @@ return (
 #### Ejemplo de Uso
 
 ```typescript
-import { InicioCalendarioTaskList } from "@/components/tasks";
-import { Task } from "@/components/calendar";
+import { TaskCalendarList } from "@/components/tasks";
+import { Task } from "@/lib/types/task";
 
 function InicioCalendario() {
   const [month, setMonth] = useState(new Date());
   const tasks: Task[] = [/* ... */];
   
   return (
-    <InicioCalendarioTaskList
+    <TaskCalendarList
       tasks={tasks}
       month={month}
+      module="inicio"
       onTaskClick={(task) => {
         // Abrir modal de detalle o navegar
       }}
