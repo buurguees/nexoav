@@ -795,15 +795,55 @@ const exampleProject: Project = {
 
 ---
 
-## Próximos Pasos
+## Resumen de Mejoras Aplicadas
 
-1. **Implementar interfaces TypeScript**: Crear archivos en `lib/types/` para `Project`, `ProjectPhase`, `ProjectTask`
-2. **Crear componentes de visualización**: Implementar el diagrama de Gantt en `Inicio > Tareas`
-3. **Integración con backend**: Preparar los endpoints y modelos de datos en el backend
-4. **Formularios**: Crear formularios para crear/editar proyectos, fases y tareas
-5. **Relaciones**: Implementar las relaciones con otros módulos (clientes, facturación, etc.)
+### ✅ Cambios Implementados
+
+1. **Eliminados arrays de IDs**: 
+   - ❌ `invoice_ids`, `purchase_order_ids`, `supplier_invoice_ids`, `expense_ids`
+   - ✅ Relaciones mediante FK inversa (mejora RLS y consistencia)
+
+2. **Unificado presupuesto/facturación**:
+   - ❌ `budget_id` separado
+   - ✅ Solo `quote_id` (quote.type indica el tipo)
+
+3. **Campos añadidos**:
+   - ✅ `assigned_to[]` en ProjectTask (técnicos asignados)
+   - ✅ `priority` en ProjectTask (low, medium, high)
+   - ✅ `estimated_hours` / `actual_hours` en Project y ProjectTask
+   - ✅ `location_coordinates` en Project (GPS)
+   - ✅ `required_for_next_phase` en ProjectPhase (control de flujo)
+
+4. **Estados actualizados**:
+   - ✅ `"cancelled"` añadido a TaskStatus
+
+5. **Campos automáticos documentados**:
+   - ✅ `code`: Generado automáticamente (PROJ-YYYY-####)
+   - ✅ `progress`: Calculado automáticamente por el backend
+   - ✅ `client_name` / `client_code`: Cache automático del backend
+
+6. **Calendarización**:
+   - ✅ `startDate`, `endDate`, `startTime`, `endTime` documentados como críticos para tareas calendarizables
+
+### ⚠️ Consideraciones para Backend
+
+- **RLS (Row Level Security)**: La estructura con FK inversa mejora la seguridad en Supabase
+- **Cálculos automáticos**: `progress` debe calcularse en triggers o funciones del backend
+- **Cache de clientes**: `client_name` y `client_code` deben actualizarse automáticamente
+- **Generación de códigos**: `code` debe generarse en el backend con formato PROJ-YYYY-####
 
 ---
 
-*Última actualización: Estructura inicial de datos de proyectos documentada*
+## Próximos Pasos
+
+1. **Implementar interfaces TypeScript**: Crear archivos en `lib/types/` para `Project`, `ProjectPhase`, `ProjectTask`
+2. **Actualizar Task base**: Añadir `"cancelled"` a TaskStatus y campos faltantes
+3. **Crear componentes de visualización**: Implementar el diagrama de Gantt en `Inicio > Tareas`
+4. **Integración con backend**: Preparar los endpoints y modelos de datos en el backend (Supabase)
+5. **Formularios**: Crear formularios para crear/editar proyectos, fases y tareas
+6. **Relaciones**: Implementar las relaciones con otros módulos usando FK inversa
+
+---
+
+*Última actualización: Modelo de proyectos auditado y optimizado para producción*
 
