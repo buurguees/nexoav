@@ -213,8 +213,8 @@ export function Calendar18({
         // Usar la fila asignada a esta tarea (siempre la misma para la misma tarea)
         const taskRow = taskRows.get(task.id) || 0;
         // MOBILE: posición inicial después del número + espacio (muy reducido)
-        // MOBILE: altura del TaskBar muy reducida + espacio entre TaskBars
-        const topPosition = 22 + taskRow * 16; // MOBILE: valores muy reducidos
+        // MOBILE: altura del TaskBar muy reducida, sin espacio entre TaskBars (se tocan)
+        const topPosition = 20 + taskRow * 10; // MOBILE: sin espacio entre tareas (10px = altura de TaskBar)
         
         const taskBar = document.createElement('div');
         const classNames = ['task-bar'];
@@ -234,7 +234,7 @@ export function Calendar18({
           left: 0;
           right: 0;
           top: ${topPosition}px;
-          height: 12px; /* MOBILE: altura muy reducida */
+          height: 10px; /* MOBILE: altura optimizada para 2+ tareas por día */
           background-color: ${barColor};
           opacity: ${opacity};
           display: flex;

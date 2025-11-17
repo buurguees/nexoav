@@ -218,9 +218,9 @@ export function Calendar18({
         const isEnd = isTaskEndLocal(dayDate, task);
         // Usar la fila asignada a esta tarea (siempre la misma para la misma tarea)
         const taskRow = taskRows.get(task.id) || 0;
-        // 30px = posición inicial después del número + espacio (reducido)
-        // 22px = 18px (altura del TaskBar reducida) + 3px de espacio entre TaskBars + 1px adicional
-        const topPosition = 30 + taskRow * 22;
+        // 28px = posición inicial después del número + espacio (reducido)
+        // 20px = 16px (altura del TaskBar reducida) + 3px de espacio entre TaskBars + 1px adicional
+        const topPosition = 28 + taskRow * 20;
         
         const taskBar = document.createElement('div');
         const classNames = ['task-bar'];
@@ -240,7 +240,7 @@ export function Calendar18({
           left: 0;
           right: 0;
           top: ${topPosition}px;
-          height: 18px; /* DESKTOP: altura reducida para días más cuadrados */
+          height: 16px; /* DESKTOP: altura optimizada */
           background-color: ${barColor};
           opacity: ${opacity};
           display: flex;

@@ -214,7 +214,7 @@ export function Calendar18({
         const taskRow = taskRows.get(task.id) || 0;
         // TABLET: posición inicial después del número + espacio (reducido)
         // TABLET: altura del TaskBar reducida + espacio entre TaskBars
-        const topPosition = 28 + taskRow * 20; // TABLET: valores reducidos
+        const topPosition = 26 + taskRow * 18; // TABLET: valores optimizados para 3+ tareas
         
         const taskBar = document.createElement('div');
         const classNames = ['task-bar'];
@@ -234,7 +234,7 @@ export function Calendar18({
           left: 0;
           right: 0;
           top: ${topPosition}px;
-          height: 16px; /* TABLET: altura reducida */
+          height: 14px; /* TABLET: altura optimizada para 3+ tareas por día */
           background-color: ${barColor};
           opacity: ${opacity};
           display: flex;

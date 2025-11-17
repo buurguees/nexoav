@@ -19,6 +19,8 @@ export interface TaskCalendarListProps {
   onTaskClick?: (task: Task) => void;
   /** Callback al hacer clic en un día */
   onDayClick?: (date: Date) => void;
+  /** Callback para crear una nueva tarea */
+  onCreateTask?: () => void;
   /** Estilos adicionales */
   className?: string;
 }
@@ -34,6 +36,7 @@ export function TaskCalendarList({
   module = "inicio",
   onTaskClick,
   onDayClick,
+  onCreateTask,
   className,
 }: TaskCalendarListProps) {
   const currentMonth = month || new Date();
@@ -169,11 +172,34 @@ export function TaskCalendarList({
       <div style={{ 
         marginBottom: "var(--spacing-md)",
         paddingBottom: "var(--spacing-sm)",
-        borderBottom: "1px solid var(--border-medium)"
+        borderBottom: "1px solid var(--border-medium)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
       }}>
-        <h2 style={{ fontSize: "18px" }}>
+        <h2 style={{ fontSize: "18px", margin: 0 }}>
           {format(currentMonth, "MMMM yyyy", { locale: es }).charAt(0).toUpperCase() + format(currentMonth, "MMMM yyyy", { locale: es }).slice(1)}
         </h2>
+        {/* Botón Nueva Tarea */}
+        {onCreateTask && (
+          <button
+            onClick={onCreateTask}
+            style={{
+              padding: "var(--spacing-xs) var(--spacing-sm)",
+              backgroundColor: "var(--accent-blue-primary)",
+              color: "white",
+              border: "none",
+              borderRadius: "var(--radius-md)",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "var(--font-weight-medium)",
+              fontFamily: "inherit",
+              whiteSpace: "nowrap",
+            }}
+          >
+            + Nueva tarea
+          </button>
+        )}
       </div>
 
       {/* 2 columnas, 2 categorías por fila */}
@@ -324,6 +350,10 @@ export function TaskCalendarList({
                                   textDecoration: task.status === "completed" || task.completed ? "line-through" : "none",
                                   margin: 0,
                                   fontSize: "12px",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  maxWidth: "100%",
                                 }}>
                                   {task.title}
                                 </h5>

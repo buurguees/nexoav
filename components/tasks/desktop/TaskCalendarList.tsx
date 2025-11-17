@@ -19,6 +19,8 @@ export interface TaskCalendarListProps {
   onTaskClick?: (task: Task) => void;
   /** Callback al hacer clic en un día */
   onDayClick?: (date: Date) => void;
+  /** Callback para crear una nueva tarea */
+  onCreateTask?: () => void;
   /** Estilos adicionales */
   className?: string;
 }
@@ -40,6 +42,7 @@ export function TaskCalendarList({
   module = "inicio",
   onTaskClick,
   onDayClick,
+  onCreateTask,
   className,
 }: TaskCalendarListProps) {
   const currentMonth = month || new Date();
@@ -175,11 +178,41 @@ export function TaskCalendarList({
       <div style={{ 
         marginBottom: "var(--spacing-lg)",
         paddingBottom: "var(--spacing-md)",
-        borderBottom: "1px solid var(--border-medium)"
+        borderBottom: "1px solid var(--border-medium)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
       }}>
-        <h2>
-          {format(currentMonth, "MMMM yyyy", { locale: es }).charAt(0).toUpperCase() + format(currentMonth, "MMMM yyyy", { locale: es }).slice(1)}
-        </h2>
+        <div>
+          <h2>
+            {format(currentMonth, "MMMM yyyy", { locale: es }).charAt(0).toUpperCase() + format(currentMonth, "MMMM yyyy", { locale: es }).slice(1)}
+          </h2>
+          <p style={{ 
+            marginTop: "var(--spacing-xs)"
+          }}>
+            {monthTasks.length} {monthTasks.length === 1 ? "tarea" : "tareas"}
+          </p>
+        </div>
+        {/* Botón Nueva Tarea */}
+        {onCreateTask && (
+          <button
+            onClick={onCreateTask}
+            style={{
+              padding: "var(--spacing-sm) var(--spacing-md)",
+              backgroundColor: "var(--accent-blue-primary)",
+              color: "white",
+              border: "none",
+              borderRadius: "var(--radius-md)",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "var(--font-weight-medium)",
+              fontFamily: "inherit",
+              whiteSpace: "nowrap",
+            }}
+          >
+            + Nueva tarea
+          </button>
+        )}
       </div>
 
       {/* 4 columnas, una por categoría */}
@@ -343,8 +376,12 @@ export function TaskCalendarList({
                                     textDecoration: task.status === "completed" || task.completed ? "line-through" : "none",
                                     margin: 0,
                                     fontSize: "13px",
-                                    flex: "1 1 auto",
+                                    flex: "1 1 0",
                                     minWidth: 0,
+                                    maxWidth: "70%",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
                                   }}>
                                     {task.title}
                                   </h5>

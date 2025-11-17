@@ -17,7 +17,34 @@ En **Inicio > Tareas** se mostrará un diagrama de Gantt simplificado que visual
 
 ## Estructura de Datos
 
-### 1. Interfaz Principal: Project
+### ⚠️ IMPORTANTE: Estructura Normalizada en Base de Datos
+
+**En la base de datos real (Supabase/PostgreSQL), las tablas están normalizadas:**
+
+- **Tabla `projects`**: Solo contiene datos del proyecto (sin fases ni tareas anidadas)
+- **Tabla `phases`**: Tabla independiente con `project_id` como FK
+- **Tabla `tasks`**: Tabla independiente con `project_id` y `phase_id` como FK
+
+**Relaciones:**
+```
+projects (1) ──< (N) phases
+projects (1) ──< (N) tasks
+phases   (1) ──< (N) tasks
+```
+
+**Cuando se crea una tarea para un proyecto:**
+- Se inserta en la tabla `tasks` con `project_id` y `phase_id` asociados
+- No se modifica la tabla `projects`
+- La relación se resuelve mediante JOINs en las queries
+
+**Nota para Frontend:**
+- Los datos mock en JSON pueden tener estructura anidada para facilitar el desarrollo
+- En producción, el frontend recibirá datos normalizados y los agrupará según necesidad
+- Los hooks/funciones del frontend deben hacer los JOINs necesarios
+
+---
+
+### 1. Interfaz Principal: Project (Tabla Normalizada)
 
 ```typescript
 /**
@@ -63,8 +90,10 @@ export interface Project {
                                 // ⚠️ UNIFICADO: quote.type indica si es "quote" o "proforma"
                                 // No usar budget_id separado
   
-  // Fases del proyecto
-  phases: ProjectPhase[];        // Array de fases del proyecto (obligatorio)
+  // ⚠️ NO incluir fases ni tareas aquí (estructura normalizada)
+  // Las fases se obtienen: SELECT * FROM phases WHERE project_id = 'proj-001'
+  // Las tareas se obtienen: SELECT * FROM tasks WHERE project_id = 'proj-001'
+  // En frontend/mock puede haber estructura anidada, pero en BD es normalizada
   
   // Ubicación
   address?: string;             // Dirección completa del proyecto
@@ -162,7 +191,9 @@ export const PROJECT_STATUS_CONFIG: Record<ProjectStatus, {
 };
 ```
 
-### 3. Interfaz: ProjectPhase
+### 3. Interfaz: ProjectPhase (Tabla Normalizada)
+
+**⚠️ IMPORTANTE**: En la base de datos, `phases` es una tabla independiente, NO está anidada en `projects`.
 
 ```typescript
 /**
@@ -171,7 +202,8 @@ export const PROJECT_STATUS_CONFIG: Record<ProjectStatus, {
  */
 export interface ProjectPhase {
   id: string;                    // ID único de la fase (UUID)
-  project_id: string;            // ID del proyecto al que pertenece - FK a Project
+  project_id: string;            // ⚠️ FK a Project.id (obligatorio)
+                                // Relación: phases.project_id → projects.id
   name: string;                  // Nombre de la fase (obligatorio)
   description?: string;          // Descripción de la fase
   order: number;                 // Orden de la fase en el proyecto (1, 2, 3...)
@@ -181,6 +213,7 @@ export interface ProjectPhase {
   progress: number;              // Progreso de la fase (0-100)
                                 // ⚠️ CALCULADO AUTOMÁTICAMENTE por el backend
                                 // Basado en el progreso de las tareas de la fase
+                                // Query: SELECT AVG(progress) FROM tasks WHERE phase_id = 'phase-001'
   
   // Control de flujo
   required_for_next_phase?: boolean; // ⚠️ CRÍTICO: Si es true, la fase debe completarse
@@ -188,8 +221,9 @@ export interface ProjectPhase {
                                      // Ejemplo: No puedes pasar a "Instalación" si
                                      // "Recepción de Material" no está completada
   
-  // Tareas de la fase
-  tasks: ProjectTask[];          // Array de tareas de la fase
+  // ⚠️ NO incluir tareas aquí (estructura normalizada)
+  // Las tareas se obtienen: SELECT * FROM tasks WHERE phase_id = 'phase-001'
+  // En frontend/mock puede haber estructura anidada, pero en BD es normalizada
   
   // Fechas (opcionales, para futuras expansiones)
   estimated_start_date?: Date;   // Fecha estimada de inicio
@@ -664,134 +698,56 @@ Todas las categorías están definidas en `docs/categorias-tareas.md` y comparte
 
 ---
 
-## Ejemplo de Estructura Completa
+## Ejemplo de Estructura en Base de Datos
 
-```typescript
-const exampleProject: Project = {
-  id: "proj-001",
-  code: "PROJ-2025-001",
-  name: "Instalación LED - Tienda Zara Diagonal",
-  description: "Instalación completa de sistema LED en tienda Zara",
-  status: "in_progress",
-  progress: 45,
-  
-  client_id: "client-123",
-  client_name: "Zara España",  // Cache automático del backend
-  client_code: "ZARA-ES",        // Cache automático del backend
-  
-  start_date: new Date("2025-11-01"),
-  estimated_end_date: new Date("2025-12-15"),
-  estimated_hours: 240,
-  actual_hours: 108,
-  
-  quote_id: "quote-456",  // Unificado: quote.type indica si es "quote" o "proforma"
-  // ⚠️ NO hay invoice_ids, purchase_order_ids, supplier_invoice_ids, expense_ids
-  // Se obtienen mediante FK inversa: SELECT * FROM invoices WHERE project_id = 'proj-001'
-  
-  phases: [
-    {
-      id: "phase-001",
-      project_id: "proj-001",
-      name: "Planificación",
-      order: 1,
-      status: "completed",
-      progress: 100,  // Calculado automáticamente por el backend
-      required_for_next_phase: true,  // Debe completarse antes de pasar a la siguiente fase
-      tasks: [
-        {
-          id: "task-001",
-          project_id: "proj-001",
-          phase_id: "phase-001",
-          title: "Definición de requisitos",
-          status: "completed",
-          type: "meeting",
-          order: 1,
-          assigned_to: ["user-001", "user-002"],  // Técnicos asignados
-          priority: "high",
-          estimated_hours: 4,
-          actual_hours: 3.5,
-          startDate: new Date("2025-11-01"),
-          endDate: new Date("2025-11-01"),
-          startTime: "09:00",
-          endTime: "13:00",
-          // ... otros campos de Task
-        }
-      ]
-    },
-    {
-      id: "phase-002",
-      project_id: "proj-001",
-      name: "Pedido de Material",
-      order: 2,
-      status: "completed",
-      progress: 100,
-      tasks: [
-        {
-          id: "task-002",
-          project_id: "proj-001",
-          phase_id: "phase-002",
-          title: "Solicitud de pantallas LED",
-          status: "completed",
-          type: "material_ordered",
-          order: 1,
-        }
-      ]
-    },
-    {
-      id: "phase-003",
-      project_id: "proj-001",
-      name: "Instalación",
-      order: 3,
-      status: "in_progress",
-      progress: 50,
-      tasks: [
-        {
-          id: "task-003",
-          project_id: "proj-001",
-          phase_id: "phase-003",
-          title: "Montaje de estructura",
-          status: "in_progress",
-          type: "installation",
-          order: 1,
-        },
-        {
-          id: "task-004",
-          project_id: "proj-001",
-          phase_id: "phase-003",
-          title: "Conexión eléctrica",
-          status: "pending",
-          type: "installation",
-          order: 2,
-        }
-      ]
-    }
-  ],
-  
-  address: "Avinguda Diagonal, 123",
-  city: "Barcelona",
-  postal_code: "08008",
-  country: "España",
-  location_coordinates: {
-    lat: 41.3851,
-    lng: 2.1734
-  },
-  
-  assigned_technicians: ["user-001", "user-002"],
-  project_manager_id: "user-003",
-  
-  // ⚠️ NO hay purchase_order_ids, supplier_invoice_ids, expense_ids
-  // Se obtienen mediante FK inversa:
-  // - SELECT * FROM purchase_orders WHERE project_id = 'proj-001'
-  // - SELECT * FROM supplier_invoices WHERE project_id = 'proj-001'
-  // - SELECT * FROM expenses WHERE project_id = 'proj-001'
-  
-  created_at: new Date("2025-10-15"),
-  updated_at: new Date("2025-11-18"),
-  created_by: "user-003",
-  
-  notes: "Proyecto prioritario para apertura de tienda"
-};
+### ⚠️ IMPORTANTE: Estructura Normalizada
+
+En la base de datos real, las tablas están separadas. Aquí se muestra cómo se relacionan:
+
+**1. Tabla `projects` (solo proyecto):**
+```sql
+SELECT * FROM projects WHERE id = 'proj-001';
+-- Resultado:
+-- id: proj-001
+-- code: PROJ-2025-001
+-- name: Instalación LED - Tienda Zara Diagonal
+-- client_id: client-123
+-- status: in_progress
+-- progress: 45
+-- ... (sin fases ni tareas)
 ```
+
+**2. Tabla `phases` (fases del proyecto):**
+```sql
+SELECT * FROM phases WHERE project_id = 'proj-001' ORDER BY order;
+-- Resultado:
+-- id: phase-001, project_id: proj-001, name: Planificación, order: 1, status: completed
+-- id: phase-002, project_id: proj-001, name: Pedido de Material, order: 2, status: completed
+-- id: phase-003, project_id: proj-001, name: Instalación, order: 3, status: in_progress
+```
+
+**3. Tabla `tasks` (tareas del proyecto):**
+```sql
+SELECT * FROM tasks WHERE project_id = 'proj-001' ORDER BY phase_id, order;
+-- Resultado:
+-- id: task-001, project_id: proj-001, phase_id: phase-001, title: Definición de requisitos, ...
+-- id: task-002, project_id: proj-001, phase_id: phase-002, title: Solicitud de pantallas LED, ...
+-- id: task-003, project_id: proj-001, phase_id: phase-003, title: Montaje de estructura, ...
+```
+
+**Cuando se crea una nueva tarea:**
+```sql
+-- Se inserta directamente en la tabla tasks
+INSERT INTO tasks (project_id, phase_id, title, type, status, ...)
+VALUES ('proj-001', 'phase-003', 'Nueva tarea', 'installation', 'pending', ...);
+-- La tarea aparece automáticamente en el proyecto mediante JOIN
+```
+
+### Estructura Anidada (Solo para Mock/Frontend)
+
+**Nota**: El archivo `data/projects/projects-2025.json` tiene estructura anidada **únicamente para facilitar el desarrollo del frontend**. En producción, los datos vendrán normalizados desde la API.
+
+Para más detalles sobre la estructura normalizada, consulta: `docs/proyectos-estructura-bd.md`
 
 ---
 

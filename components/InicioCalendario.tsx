@@ -80,27 +80,6 @@ export function InicioCalendario({ className }: InicioCalendarioProps) {
           gap: "var(--spacing-lg)",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ fontSize: "20px", fontWeight: "var(--font-weight-semibold)" }}>
-            Calendario
-          </h2>
-          <button
-            onClick={() => setIsFormOpen(true)}
-            style={{
-              padding: "var(--spacing-sm) var(--spacing-md)",
-              backgroundColor: "var(--accent-blue-primary)",
-              color: "white",
-              border: "none",
-              borderRadius: "var(--radius-md)",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "var(--font-weight-medium)",
-            }}
-          >
-            + Nueva tarea
-          </button>
-        </div>
-        
         <Calendar18
           selectedDate={selectedDate}
           onDateSelect={handleDateSelect}
@@ -119,6 +98,7 @@ export function InicioCalendario({ className }: InicioCalendarioProps) {
             // TODO: Abrir modal de detalle o navegar
           }}
           onDayClick={handleDayClick}
+          onCreateTask={() => setIsFormOpen(true)}
         />
       </div>
 

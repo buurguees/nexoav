@@ -19,6 +19,8 @@ export interface TaskCalendarListProps {
   onTaskClick?: (task: Task) => void;
   /** Callback al hacer clic en un día */
   onDayClick?: (date: Date) => void;
+  /** Callback para crear una nueva tarea */
+  onCreateTask?: () => void;
   /** Estilos adicionales */
   className?: string;
 }
@@ -34,6 +36,7 @@ export function TaskCalendarList({
   module = "inicio",
   onTaskClick,
   onDayClick,
+  onCreateTask,
   className,
 }: TaskCalendarListProps) {
   const currentMonth = month || new Date();
@@ -170,11 +173,36 @@ export function TaskCalendarList({
       <div style={{ 
         marginBottom: "var(--spacing-md)",
         paddingBottom: "var(--spacing-sm)",
-        borderBottom: "1px solid var(--border-medium)"
+        borderBottom: "1px solid var(--border-medium)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: "var(--spacing-xs)",
       }}>
-        <h2 style={{ fontSize: "16px", margin: 0 }}>
+        <h2 style={{ fontSize: "16px", margin: 0, flex: "1 1 auto", minWidth: 0 }}>
           {format(currentMonth, "MMMM yyyy", { locale: es }).charAt(0).toUpperCase() + format(currentMonth, "MMMM yyyy", { locale: es }).slice(1)}
         </h2>
+        {/* Botón Nueva Tarea */}
+        {onCreateTask && (
+          <button
+            onClick={onCreateTask}
+            style={{
+              padding: "6px var(--spacing-xs)",
+              backgroundColor: "var(--accent-blue-primary)",
+              color: "white",
+              border: "none",
+              borderRadius: "var(--radius-md)",
+              cursor: "pointer",
+              fontSize: "11px",
+              fontWeight: "var(--font-weight-medium)",
+              fontFamily: "inherit",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            + Nueva tarea
+          </button>
+        )}
       </div>
 
       {/* 1 columna, todas las categorías apiladas */}
@@ -329,11 +357,12 @@ export function TaskCalendarList({
                                     margin: 0,
                                     fontSize: "11px",
                                     textDecoration: task.status === "completed" || task.completed ? "line-through" : "none",
+                                    whiteSpace: "nowrap",
                                     overflow: "hidden",
                                     textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                    flex: "1 1 auto",
-                                    minWidth: 0, // Permite que el flex shrink funcione
+                                    flex: "1 1 0",
+                                    minWidth: 0,
+                                    maxWidth: "65%", // MOBILE: más restrictivo para dejar espacio a fechas
                                   }}>
                                     {task.title}
                                   </h5>
