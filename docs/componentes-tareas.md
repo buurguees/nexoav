@@ -64,6 +64,8 @@ export interface Task {
   city?: string; // Población/ciudad ✨ **NUEVO**
   postal_code?: string; // Código postal
   country?: string; // País
+  // Notas adicionales
+  notes?: string; // Notas o comentarios adicionales sobre la tarea ✨ **NUEVO**
 }
 ```
 
@@ -1090,6 +1092,9 @@ export interface TaskFormData {
   /** Descripción de la tarea (obligatorio) */
   description: string;
   
+  /** Notas o comentarios adicionales (opcional) */
+  notes?: string;  // ✨ **NUEVO**
+  
   /** Fecha de inicio (obligatorio) */
   startDate: Date;
   
@@ -1129,24 +1134,30 @@ export interface TaskFormData {
    - Validación: Mínimo 10 caracteres, máximo 500
    - Descripción: Texto más amplio con los detalles necesarios
 
-3. **Horario**
+3. **Notas** ✨ **NUEVO**
+   - Tipo: `string`
+   - Obligatorio: ❌ No (opcional)
+   - Validación: Máximo 1000 caracteres
+   - Descripción: Comentarios, observaciones o notas adicionales sobre la tarea
+
+4. **Horario**
    - Tipo: `{ startTime?: string, endTime?: string }`
    - Obligatorio: ❌ No
    - Formato: "HH:mm" (ej: "09:00", "17:30")
    - Descripción: Información temporal dentro del día (franja horaria)
 
-4. **Fechas de inicio y fin**
+5. **Fechas de inicio y fin**
    - Tipo: `{ startDate: Date, endDate: Date }`
    - Obligatorio: ✅ Sí
    - Validación: `endDate >= startDate`
    - Descripción: Rango de fechas en el que la tarea está activa
 
-5. **Categoría**
+6. **Categoría**
    - Tipo: `TaskType`
    - Obligatorio: ✅ Sí
    - Opciones: Solo las categorías permitidas del módulo (Inicio: 4 CORE)
 
-6. **Estado**
+7. **Estado**
    - Tipo: `TaskStatus`
    - Obligatorio: ✅ Sí
    - Opciones: `"pending"` (Pendiente), `"in_progress"` (En proceso), `"completed"` (Completado)

@@ -33,6 +33,8 @@ export interface Task {
   city?: string;         // Población/ciudad ✨ NUEVO
   postal_code?: string; // Código postal
   country?: string;      // País
+  // Notas adicionales
+  notes?: string;        // Notas o comentarios adicionales sobre la tarea ✨ NUEVO
 }
 ```
 
@@ -127,14 +129,55 @@ La versión mobile no muestra población en el mismo lugar (layout diferente).
 
 ---
 
+### 3. Añadido Campo de Notas a las Tareas
+
+**Cambio**: Se añadió el campo `notes` (notas) a la interfaz `Task` y al formulario `TaskForm` para permitir comentarios adicionales sobre las tareas.
+
+**Interfaz Task actualizada** (`lib/types/task.ts`):
+
+```typescript
+export interface Task {
+  // ... campos existentes
+  // Notas adicionales
+  notes?: string; // Notas o comentarios adicionales sobre la tarea ✨ NUEVO
+}
+```
+
+**TaskFormData actualizada** (`components/tasks/desktop/TaskForm.tsx`):
+
+```typescript
+export interface TaskFormData {
+  title: string;
+  description: string;
+  notes?: string; // Notas o comentarios adicionales (opcional) ✨ NUEVO
+  // ... otros campos
+}
+```
+
+**Implementación en TaskForm**:
+
+- Campo de texto largo (`Textarea`) con 3 filas
+- Opcional (no obligatorio)
+- Validación: máximo 1000 caracteres
+- Ubicado después del campo de descripción
+- Placeholder: "Notas o comentarios adicionales sobre la tarea..."
+
+**Características**:
+- ✅ Campo opcional
+- ✅ Validación de longitud máxima (1000 caracteres)
+- ✅ Integrado en el formulario de creación/edición
+- ✅ Se guarda y carga correctamente en modo edición
+
+---
+
 ## Próximos Pasos
 
-1. **Actualizar mocks**: Añadir campo `city` a los datos de prueba
-2. **Backend**: Preparar el campo `city` en el modelo de datos del backend
-3. **Formulario**: Añadir campo de ciudad en `TaskForm` para crear/editar tareas
+1. **Actualizar mocks**: Añadir campos `city` y `notes` a los datos de prueba
+2. **Backend**: Preparar los campos `city` y `notes` en el modelo de datos del backend
+3. **Visualización**: Considerar mostrar las notas en componentes de detalle (DayPopup, modales de tarea)
 4. **Validación**: Considerar validación de ciudades si es necesario
 
 ---
 
-*Última actualización: Cambios recientes documentados*
+*Última actualización: Añadido campo de notas a las tareas*
 

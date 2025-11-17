@@ -31,5 +31,7 @@ export interface Task {
   city?: string; // Población/ciudad
   postal_code?: string; // Código postal
   country?: string; // País
+  // Notas adicionales
+  notes?: string; // Notas o comentarios adicionales sobre la tarea
 }
 

@@ -39,6 +39,7 @@ import {
 export interface TaskFormData {
   title: string;
   description: string;
+  notes?: string; // Notas o comentarios adicionales (opcional)
   startDate: string; // YYYY-MM-DD
   endDate: string; // YYYY-MM-DD
   startTime?: string; // HH:mm (opcional)
@@ -107,6 +108,7 @@ export function TaskForm({
       endTime: "",
       type: task?.type || allowedCategories[0] || "installation",
       status: task?.status || "pending", // Por defecto: pendiente
+      notes: task?.notes || "",
     },
     mode: "onChange",
   });
@@ -125,6 +127,7 @@ export function TaskForm({
           endTime: task.endTime || "",
           type: task.type,
           status: task.status || "pending",
+          notes: task.notes || "",
         });
       } else {
         // Modo creación
@@ -137,6 +140,7 @@ export function TaskForm({
           endTime: "",
           type: allowedCategories[0] || "installation",
           status: "pending", // Por defecto: pendiente
+          notes: "",
         });
       }
     }
@@ -229,6 +233,34 @@ export function TaskForm({
                   </FormControl>
                   <FormDescription>
                     Texto más amplio con los detalles necesarios
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Notas */}
+            <FormField
+              control={form.control}
+              name="notes"
+              rules={{
+                maxLength: {
+                  value: 1000,
+                  message: "Las notas no pueden exceder 1000 caracteres",
+                },
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notas (opcional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Notas o comentarios adicionales sobre la tarea..."
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Comentarios, observaciones o notas adicionales sobre la tarea
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
