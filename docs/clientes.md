@@ -1243,6 +1243,13 @@ SELECT
   -- Facturación (SIN IVA)
   COALESCE(SUM(i.subtotal), 0) AS total_invoiced,
   
+  -- Pendiente de cobrar (SIN IVA)
+  COALESCE(SUM(CASE 
+    WHEN i.status IN ('sent', 'overdue') 
+    THEN i.subtotal 
+    ELSE 0 
+  END), 0) - COALESCE(SUM(pay.amount), 0) AS pending_amount,
+  
   -- Beneficio neto (SIN IVA)
   COALESCE(SUM(i.subtotal), 0) - COALESCE(SUM(po.subtotal), 0) - COALESCE(SUM(e.amount), 0) AS net_profit,
   
