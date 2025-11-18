@@ -25,8 +25,6 @@ export async function fetchTasksForMonth(viewDate: Date): Promise<Task[]> {
   // Simular delay de red
   await new Promise((resolve) => setTimeout(resolve, 300));
 
-  const year = viewDate.getFullYear();
-  const month = viewDate.getMonth();
   const monthStart = startOfMonth(viewDate);
   const monthEnd = endOfMonth(viewDate);
 
