@@ -458,14 +458,14 @@ total_invoiced = SUM(invoices.subtotal WHERE invoices.client_id = client.id AND 
 // Total pagado (histórico)
 total_paid = SUM(payments.amount WHERE payments.client_id = client.id)
 
-// Importe pendiente de pago
-pending_amount = SUM(invoices.total_amount WHERE invoices.client_id = client.id AND invoices.status IN ('sent', 'overdue')) - total_paid
+// ⚠️ IMPORTANTE: Importe pendiente de pago SIN IVA
+pending_amount = SUM(invoices.subtotal WHERE invoices.client_id = client.id AND invoices.status IN ('sent', 'overdue')) - total_paid
 
-// Saldo actual
+// Saldo actual (SIN IVA)
 current_balance = total_invoiced - total_paid
 
-// Importe vencido
-overdue_amount = SUM(invoices.total_amount WHERE invoices.client_id = client.id AND invoices.status = 'overdue')
+// ⚠️ IMPORTANTE: Importe vencido SIN IVA
+overdue_amount = SUM(invoices.subtotal WHERE invoices.client_id = client.id AND invoices.status = 'overdue')
 ```
 
 ### Resumen de Presupuestos y Proformas
@@ -792,16 +792,16 @@ DECLARE
   client_profit DECIMAL(12,2);
   client_margin DECIMAL(5,2);
 BEGIN
-  -- Calcular ingresos (facturado)
-  SELECT COALESCE(SUM(total_amount), 0)
+  -- Calcular ingresos (facturado SIN IVA)
+  SELECT COALESCE(SUM(subtotal), 0)  -- ⚠️ SIN IVA: usar subtotal
   INTO client_revenue
   FROM invoices
   WHERE client_id = NEW.client_id
     AND status != 'cancelled';
   
-  -- Calcular costes (compras + gastos + horas)
+  -- Calcular costes (compras + gastos + horas) SIN IVA
   SELECT 
-    COALESCE(SUM(po.total_amount), 0) +
+    COALESCE(SUM(po.subtotal), 0) +  -- ⚠️ SIN IVA: usar subtotal
     COALESCE(SUM(e.amount), 0) +
     COALESCE(SUM(t.actual_hours * u.hourly_rate), 0)
   INTO client_costs
