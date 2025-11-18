@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 import { fetchTasksForMonth } from "../../lib/mocks/taskMocks";
 import { filterTasksByModule } from "../../lib/taskCategories";
 
-interface InicioResumenProps {
+export interface InicioResumenProps {
   className?: string;
 }
 
