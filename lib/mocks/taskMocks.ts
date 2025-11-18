@@ -14,6 +14,7 @@ import { startOfMonth, endOfMonth } from "date-fns";
 // Importar datos JSON (en producción esto vendría del backend)
 import tasksNovember2025 from "../../data/tasks/tasks-november-2025.json";
 import tasksDecember2025 from "../../data/tasks/tasks-december-2025.json";
+import projectTasks from "../../data/tasks/tasks.json"; // Tareas de proyectos (normalizadas)
 
 /**
  * Simula una llamada al backend para obtener tareas de un mes
@@ -32,26 +33,32 @@ export async function fetchTasksForMonth(viewDate: Date): Promise<Task[]> {
   const monthEnd = endOfMonth(viewDate);
 
   // Determinar qué archivo JSON cargar según el mes
-  // Solo cargamos el archivo del mes consultado
+  // Combinamos tareas de archivos mensuales + tareas de proyectos
   let tasksData: any[] = [];
   
+  // Cargar tareas de archivos mensuales (tareas independientes)
   if (year === 2025 && month === 10) { // Noviembre (0-indexed, noviembre = 10)
-    tasksData = tasksNovember2025 as any[];
+    tasksData = [...tasksData, ...(tasksNovember2025 as any[])];
   } else if (year === 2025 && month === 11) { // Diciembre (0-indexed, diciembre = 11)
-    tasksData = tasksDecember2025 as any[];
+    tasksData = [...tasksData, ...(tasksDecember2025 as any[])];
     // Incluir tareas de noviembre que terminen después del inicio de diciembre
-    // (solo para tareas que cruzan meses, pero se mostrarán solo en su día de inicio)
     const novemberTasks = tasksNovember2025 as any[];
-    // Filtrar solo las que se solapan con diciembre
     const overlappingTasks = novemberTasks.filter((task: any) => {
       const taskEnd = new Date(task.endDate);
       return taskEnd >= monthStart;
     });
-    tasksData = [...overlappingTasks, ...tasksData];
-  } else {
-    // Para otros meses, retornar array vacío
-    return [];
+    tasksData = [...tasksData, ...overlappingTasks];
   }
+  
+  // Cargar tareas de proyectos (normalizadas, con project_id)
+  // Filtrar solo las que se solapan con el mes consultado
+  const projectTasksInMonth = (projectTasks as any[]).filter((task: any) => {
+    if (!task.startDate) return false;
+    const taskStart = new Date(task.startDate);
+    const taskEnd = new Date(task.endDate || task.startDate);
+    return taskStart <= monthEnd && taskEnd >= monthStart;
+  });
+  tasksData = [...tasksData, ...projectTasksInMonth];
 
   // Convertir los datos JSON a objetos Task con fechas Date
   const tasks: Task[] = tasksData.map((taskData) => ({
@@ -69,9 +76,17 @@ export async function fetchTasksForMonth(viewDate: Date): Promise<Task[]> {
     companyId: taskData.companyId,
     assignmentId: taskData.assignmentId,
     project_id: taskData.project_id,
+    phase_id: taskData.phase_id, // Para tareas de proyectos
     project_name: taskData.project_name,
     client_id: taskData.client_id,
     client_name: taskData.client_name,
+    // Campos adicionales de tareas de proyectos
+    assigned_to: taskData.assigned_to,
+    priority: taskData.priority,
+    estimated_hours: taskData.estimated_hours,
+    actual_hours: taskData.actual_hours,
+    order: taskData.order,
+    notes: taskData.notes,
     // Campos de ubicación
     address: taskData.address,
     city: taskData.city,

@@ -5,25 +5,47 @@ import { InicioCalendario } from './components/InicioCalendario';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { useBreakpoint } from './hooks/useBreakpoint';
+import { useRouter } from './hooks/useRouter';
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState('/');
-  const [currentSection, setCurrentSection] = useState<HeaderSection>('inicio');
+  const { section: currentSection, path: currentPath, navigate, changeSection } = useRouter();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-      const breakpoint = useBreakpoint();
-      const isTabletPortrait = breakpoint === 'tablet-portrait';
-      const isMobile = breakpoint === 'mobile';
-      const isTablet = breakpoint === 'tablet';
+  const breakpoint = useBreakpoint();
+  const isTabletPortrait = breakpoint === 'tablet-portrait';
+  const isMobile = breakpoint === 'mobile';
+  const isTablet = breakpoint === 'tablet';
 
   const handleNavigate = (path: string) => {
-    setCurrentPath(path);
+    navigate(path);
   };
 
   const handleSectionChange = (section: HeaderSection) => {
-    setCurrentSection(section);
-    // Reset path when changing sections
-    setCurrentPath(`/${section === 'inicio' ? '' : section}`);
+    // Determinar la ruta por defecto según la sección (primera opción del sidebar)
+    let defaultPath = '/';
+    switch (section) {
+      case 'inicio':
+        defaultPath = '/';
+        break;
+      case 'facturacion':
+        defaultPath = '/facturacion/facturas';
+        break;
+      case 'proyectos':
+        defaultPath = '/proyectos';
+        break;
+      case 'productos':
+        defaultPath = '/productos';
+        break;
+      case 'rrhh':
+        defaultPath = '/rrhh/plantilla';
+        break;
+      case 'empresa':
+        defaultPath = '/empresa/datos';
+        break;
+    }
+    
+    changeSection(section, defaultPath);
+    
     // Cerrar el sidebar en mobile cuando se cambia de sección desde el navbar inferior
     if (breakpoint === 'mobile') {
       setIsSidebarOpen(false);

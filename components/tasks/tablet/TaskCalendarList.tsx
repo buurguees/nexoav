@@ -353,7 +353,7 @@ export function TaskCalendarList({
                                   whiteSpace: "nowrap",
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
-                                  maxWidth: "100%",
+                                  maxWidth: "80%",
                                 }}>
                                   {task.title}
                                 </h5>
