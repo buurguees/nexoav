@@ -192,18 +192,6 @@ export function SidebarMobile({
               onClick={() => handleNavClick('/proyectos')}
             />
             <SidebarNavItemMobile
-              label="Calendario"
-              icon={Calendar}
-              isActive={currentPath === '/proyectos/calendario'}
-              onClick={() => handleNavClick('/proyectos/calendario')}
-            />
-            <SidebarNavItemMobile
-              label="Tareas"
-              icon={CheckSquare}
-              isActive={currentPath === '/proyectos/tareas'}
-              onClick={() => handleNavClick('/proyectos/tareas')}
-            />
-            <SidebarNavItemMobile
               label="Clientes"
               icon={Users}
               isActive={currentPath === '/proyectos/clientes'}
@@ -216,10 +204,16 @@ export function SidebarMobile({
               onClick={() => handleNavClick('/proyectos/listado')}
             />
             <SidebarNavItemMobile
-              label="Proveedores"
-              icon={Briefcase}
-              isActive={currentPath === '/proyectos/proveedores'}
-              onClick={() => handleNavClick('/proyectos/proveedores')}
+              label="Tareas"
+              icon={CheckSquare}
+              isActive={currentPath === '/proyectos/tareas'}
+              onClick={() => handleNavClick('/proyectos/tareas')}
+            />
+            <SidebarNavItemMobile
+              label="Calendario"
+              icon={Calendar}
+              isActive={currentPath === '/proyectos/calendario'}
+              onClick={() => handleNavClick('/proyectos/calendario')}
             />
             <SidebarNavItemMobile
               label="Mapa"

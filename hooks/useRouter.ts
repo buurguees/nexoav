@@ -166,12 +166,9 @@ export function useRouter() {
     };
   }, [parseUrl]);
 
-  // Sincronizar con la URL actual al montar
-  useEffect(() => {
-    const parsed = parseUrl();
-    setSection(parsed.section);
-    setPath(parsed.path);
-  }, [parseUrl]);
+  // Sincronizar con la URL actual al montar (solo una vez)
+  // Nota: No necesitamos este useEffect porque ya inicializamos el estado desde parseUrl()
+  // en el useState inicial. Esto evita problemas de sincronización y renderizado doble.
 
   return {
     section,

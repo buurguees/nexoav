@@ -1,6 +1,7 @@
 import { Sidebar } from './components/Sidebar';
 import { Header, HeaderSection } from './components/Header';
 import { InicioResumen, InicioCalendario } from './pages/inicio';
+import { Clientes } from './pages/proyectos';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { useBreakpoint } from './hooks/useBreakpoint';
@@ -60,6 +61,11 @@ export default function App() {
     // Mostrar InicioCalendario cuando estamos en la sección "inicio" y en la ruta "/calendario"
     if (currentSection === 'inicio' && currentPath === '/calendario') {
       return <InicioCalendario />;
+    }
+
+    // Mostrar Clientes cuando estamos en la sección "proyectos" y en la ruta "/proyectos/clientes"
+    if (currentSection === 'proyectos' && currentPath === '/proyectos/clientes') {
+      return <Clientes />;
     }
 
     // Mostrar contenido por defecto para otras rutas

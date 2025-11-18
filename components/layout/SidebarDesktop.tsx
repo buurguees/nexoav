@@ -11,6 +11,8 @@ import {
   Star,
   Menu,
   X,
+  FolderKanban,
+  Users,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { HeaderSection } from '../Header';
@@ -102,6 +104,50 @@ export function SidebarDesktop({
         </div>
       );
     }
+    
+    if (currentSection === 'proyectos') {
+      return (
+        <div className="space-y-0.5">
+          <SidebarNavItem
+            label="Resumen"
+            icon={LayoutDashboard}
+            isActive={currentPath === '/proyectos'}
+            onClick={() => handleNavClick('/proyectos')}
+          />
+          <SidebarNavItem
+            label="Clientes"
+            icon={Users}
+            isActive={currentPath === '/proyectos/clientes'}
+            onClick={() => handleNavClick('/proyectos/clientes')}
+          />
+          <SidebarNavItem
+            label="Proyectos"
+            icon={FolderKanban}
+            isActive={currentPath === '/proyectos/listado'}
+            onClick={() => handleNavClick('/proyectos/listado')}
+          />
+          <SidebarNavItem
+            label="Tareas"
+            icon={CheckSquare}
+            isActive={currentPath === '/proyectos/tareas'}
+            onClick={() => handleNavClick('/proyectos/tareas')}
+          />
+          <SidebarNavItem
+            label="Calendario"
+            icon={Calendar}
+            isActive={currentPath === '/proyectos/calendario'}
+            onClick={() => handleNavClick('/proyectos/calendario')}
+          />
+          <SidebarNavItem
+            label="Mapa"
+            icon={MapPin}
+            isActive={currentPath === '/proyectos/mapa'}
+            onClick={() => handleNavClick('/proyectos/mapa')}
+          />
+        </div>
+      );
+    }
+    
     // TODO: Agregar otros módulos cuando sea necesario
     return null;
   };
