@@ -993,6 +993,58 @@ const exampleClient: Client = {
 
 ---
 
+## Campos Específicos para Facturación
+
+### `billing_email`
+
+**Propósito**: Email específico para el envío de facturas.
+
+**Motivación**: En empresas medianas/grandes suele haber un email administrativo exclusivo para facturas (ej: `facturacion@empresa.com`). Esto evita errores cuando el contacto principal es comercial o técnico.
+
+**Uso**:
+- Si está definido, se usa para enviar facturas automáticamente
+- Si no está definido, se usa `primary_contact.email` como fallback
+- Validación: Debe ser un email válido
+
+### `billing_reference`
+
+**Propósito**: Referencia interna que solicita el cliente para facturación.
+
+**Motivación**: Muchas empresas (especialmente corporaciones y administración pública) requieren incluir una referencia en las facturas. Puede ser:
+- PO (Purchase Order) - Orden de compra
+- Referencia contable interna
+- Número de expediente
+- Cualquier otra referencia administrativa
+
+**Uso**:
+- Se incluye automáticamente en todas las facturas del cliente
+- Evita devoluciones de facturas por "falta de referencia"
+- Opcional pero altamente recomendado para clientes corporativos
+
+### `project_reference`
+
+**Propósito**: Referencia de proyecto solicitada por el cliente.
+
+**Motivación**: Corporaciones, cadenas comerciales y administración pública suelen solicitar una referencia de proyecto específica en las facturas. Esto permite:
+- Trazabilidad de instalaciones
+- Asociación con proyectos internos del cliente
+- Cumplimiento de requisitos administrativos
+
+**Uso**:
+- Se incluye en facturas relacionadas con proyectos
+- Puede variar por proyecto (se puede sobrescribir a nivel de proyecto)
+- Opcional pero recomendado para clientes corporativos y administración pública
+
+**Ejemplo de uso en factura**:
+```
+Factura #FAC-2025-001
+Cliente: Constructora ABC, S.L.
+Referencia Cliente: PO-2025-001
+Referencia Proyecto: PROJ-ABC-2025
+```
+
+---
+
 ## Funcionalidades Futuras
 
 ### 1. Historial Completo
