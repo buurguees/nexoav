@@ -1,0 +1,1008 @@
+# Sistema de Gestión de Clientes
+
+## Descripción General
+
+Este documento define la estructura completa del sistema de gestión de clientes para NEXOAV. El módulo de clientes es fundamental para la gestión comercial, fiscal y de proyectos, ya que centraliza toda la información necesaria para:
+
+- **Gestión comercial**: Presupuestos, proformas, facturas
+- **Gestión fiscal**: Datos fiscales, retenciones, IVA
+- **Gestión de proyectos**: Asignación de proyectos a clientes
+- **Análisis financiero**: Resumen de facturación, beneficios, historial
+
+---
+
+## Modelo de Datos
+
+### Interfaz Principal: `Client`
+
+```typescript
+/**
+ * Cliente: Entidad principal que representa a un cliente/empresa
+ * 
+ * Un cliente puede tener:
+ * - Múltiples ubicaciones (direcciones de facturación, envío, obra)
+ * - Múltiples cuentas bancarias
+ * - Múltiples proyectos asociados
+ * - Historial de presupuestos, proformas y facturas
+ */
+export interface Client {
+  // ============================================
+  // IDENTIFICACIÓN
+  // ============================================
+  id: string;                    // ID único del cliente (UUID)
+  code: string;                  // Código único del cliente (ej: "CLI-2025-001")
+                                // ⚠️ GENERADO AUTOMÁTICAMENTE por el backend
+                                // Formato: CLI-YYYY-####
+                                // No editable por el usuario
+  
+  // ============================================
+  // INFORMACIÓN BÁSICA
+  // ============================================
+  name: string;                  // Nombre o razón social (obligatorio)
+  commercial_name?: string;      // Nombre comercial (opcional, para mostrar en facturas)
+  description?: string;          // Descripción general del cliente
+  
+  // Tipo de cliente
+  type: ClientType;              // "company" | "individual" | "public_entity"
+  
+  // Estado del cliente
+  status: ClientStatus;          // "active" | "inactive" | "prospect" | "blocked"
+  
+  // ============================================
+  // DATOS FISCALES
+  // ============================================
+  tax_id: string;                // NIF/CIF/NIE (obligatorio)
+                                // Formato validado según tipo de cliente
+  tax_id_type: TaxIdType;       // "nif" | "cif" | "nie" | "passport" | "other"
+  
+  // Retenciones y IVA
+  retention_percentage?: number; // Porcentaje de retención IRPF (ej: 15, 19)
+                                // Solo para profesionales/autónomos
+  vat_exempt?: boolean;          // Cliente exento de IVA
+  vat_type?: VatType;           // "general" | "reduced" | "super_reduced" | "exempt"
+  
+  // Datos fiscales adicionales
+  fiscal_address?: string;      // Dirección fiscal (puede diferir de la principal)
+  fiscal_city?: string;
+  fiscal_postal_code?: string;
+  fiscal_country?: string;      // Por defecto: "España"
+  
+  // ============================================
+  // CONTACTO PRINCIPAL
+  // ============================================
+  primary_contact?: {
+    name: string;                // Nombre del contacto principal
+    email: string;              // Email principal
+    phone?: string;             // Teléfono principal
+    mobile?: string;            // Móvil principal
+    position?: string;          // Cargo (ej: "Director Comercial")
+  };
+  
+  // Contactos adicionales (múltiples)
+  contacts?: ClientContact[];   // Array de contactos adicionales
+  
+  // ============================================
+  // UBICACIONES
+  // ============================================
+  // Dirección principal (puede ser fiscal, comercial o ambas)
+  address?: string;             // Dirección principal
+  city?: string;
+  postal_code?: string;
+  province?: string;            // Provincia/Comunidad Autónoma
+  country?: string;            // Por defecto: "España"
+  
+  // Ubicaciones adicionales (múltiples direcciones)
+  locations?: ClientLocation[]; // Array de ubicaciones adicionales
+                                // Ej: dirección de obra, almacén, oficina secundaria
+  
+  // ============================================
+  // CUENTAS BANCARIAS
+  // ============================================
+  bank_accounts?: ClientBankAccount[]; // Array de cuentas bancarias
+                                       // Puede tener múltiples cuentas
+  
+  // ============================================
+  // INFORMACIÓN COMERCIAL
+  // ============================================
+  // Condiciones comerciales
+  payment_terms?: PaymentTerms; // "immediate" | "7_days" | "15_days" | "30_days" | "60_days" | "custom"
+  payment_terms_days?: number;  // Días personalizados si payment_terms = "custom"
+  discount_percentage?: number; // Descuento general aplicable (0-100)
+  
+  // Límites y crédito
+  credit_limit?: number;        // Límite de crédito (€)
+  current_balance?: number;     // ⚠️ CALCULADO: Saldo actual (facturado - pagado)
+  overdue_amount?: number;      // ⚠️ CALCULADO: Importe vencido
+  
+  // ============================================
+  // RESUMEN FINANCIERO (CALCULADO)
+  // ============================================
+  // ⚠️ Estos campos son CALCULADOS por el backend, no se editan manualmente
+  
+  // Facturación
+  total_invoiced?: number;      // Total facturado (histórico)
+  total_paid?: number;           // Total pagado (histórico)
+  pending_amount?: number;       // Importe pendiente de pago
+  
+  // Presupuestos y proformas
+  total_quotes?: number;         // Total de presupuestos emitidos
+  total_proformas?: number;      // Total de proformas emitidas
+  accepted_quotes?: number;      // Presupuestos aceptados
+  
+  // Beneficios
+  total_revenue?: number;        // Ingresos totales (facturado)
+  total_costs?: number;          // Costes totales (compras, gastos, horas)
+  net_profit?: number;           // Beneficio neto (revenue - costs)
+  profit_margin?: number;        // Margen de beneficio (%)
+  
+  // ============================================
+  // RELACIONES (NO SE ALMACENAN COMO ARRAYS)
+  // ============================================
+  // ⚠️ IMPORTANTE: Las relaciones se resuelven mediante FK inversa
+  // - Project.client_id → Client.id
+  // - Quote.client_id → Client.id
+  // - Invoice.client_id → Client.id
+  // - PurchaseOrder.client_id → Client.id (si aplica)
+  
+  // ============================================
+  // METADATOS
+  // ============================================
+  created_at: Date;             // Fecha de creación
+  updated_at: Date;             // Fecha de última actualización
+  created_by?: string;          // ID del usuario que creó el cliente
+  updated_by?: string;          // ID del usuario que actualizó el cliente
+  
+  // ============================================
+  // NOTAS Y OBSERVACIONES
+  // ============================================
+  notes?: string;               // Notas generales (visibles para el equipo)
+  internal_notes?: string;      // Notas internas (no visibles para el cliente)
+  tags?: string[];              // Etiquetas para categorización y búsqueda
+}
+```
+
+---
+
+## Tipos y Enumeraciones
+
+### `ClientType`
+
+```typescript
+export type ClientType = 
+  | "company"        // Empresa (S.L., S.A., etc.)
+  | "individual"     // Particular/Autónomo
+  | "public_entity"; // Administración pública
+```
+
+### `ClientStatus`
+
+```typescript
+export type ClientStatus = 
+  | "active"         // Cliente activo
+  | "inactive"       // Cliente inactivo (temporalmente)
+  | "prospect"       // Cliente potencial (lead)
+  | "blocked";       // Cliente bloqueado (moroso, etc.)
+```
+
+### `TaxIdType`
+
+```typescript
+export type TaxIdType = 
+  | "nif"           // NIF (Número de Identificación Fiscal) - Personas físicas
+  | "cif"           // CIF (Código de Identificación Fiscal) - Empresas
+  | "nie"           // NIE (Número de Identidad de Extranjero)
+  | "passport"      // Pasaporte (clientes extranjeros)
+  | "other";        // Otro tipo de identificación
+```
+
+### `VatType`
+
+```typescript
+export type VatType = 
+  | "general"       // IVA General (21%)
+  | "reduced"       // IVA Reducido (10%)
+  | "super_reduced" // IVA Superreducido (4%)
+  | "exempt";       // Exento de IVA
+```
+
+### `PaymentTerms`
+
+```typescript
+export type PaymentTerms = 
+  | "immediate"     // Pago inmediato
+  | "7_days"        // 7 días
+  | "15_days"       // 15 días
+  | "30_days"       // 30 días
+  | "60_days"       // 60 días
+  | "90_days"       // 90 días
+  | "custom";       // Personalizado (usar payment_terms_days)
+```
+
+---
+
+## Interfaces Adicionales
+
+### `ClientContact`
+
+```typescript
+/**
+ * Contacto adicional del cliente
+ * Un cliente puede tener múltiples contactos (comercial, técnico, administrativo, etc.)
+ */
+export interface ClientContact {
+  id: string;                   // ID único del contacto
+  name: string;                 // Nombre completo
+  email: string;                // Email
+  phone?: string;               // Teléfono fijo
+  mobile?: string;              // Móvil
+  position?: string;            // Cargo/Posición
+  department?: string;          // Departamento
+  is_primary?: boolean;        // ¿Es contacto principal?
+  notes?: string;              // Notas sobre el contacto
+  
+  // Metadatos
+  created_at: Date;
+  updated_at: Date;
+}
+```
+
+### `ClientLocation`
+
+```typescript
+/**
+ * Ubicación adicional del cliente
+ * Un cliente puede tener múltiples ubicaciones (obra, almacén, oficina, etc.)
+ */
+export interface ClientLocation {
+  id: string;                   // ID único de la ubicación
+  name: string;                 // Nombre de la ubicación (ej: "Obra Principal", "Almacén")
+  type: LocationType;          // Tipo de ubicación
+  
+  // Dirección
+  address: string;              // Dirección completa
+  city: string;
+  postal_code: string;
+  province?: string;
+  country?: string;            // Por defecto: "España"
+  
+  // Coordenadas GPS (opcional, para futura integración con mapas)
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  
+  // Información adicional
+  contact_name?: string;       // Contacto en esta ubicación
+  contact_phone?: string;
+  notes?: string;
+  
+  // Metadatos
+  created_at: Date;
+  updated_at: Date;
+}
+
+export type LocationType = 
+  | "billing"      // Facturación
+  | "shipping"     // Envío
+  | "work_site"    // Obra
+  | "warehouse"   // Almacén
+  | "office"       // Oficina
+  | "other";       // Otra
+```
+
+### `ClientBankAccount`
+
+```typescript
+/**
+ * Cuenta bancaria del cliente
+ * Un cliente puede tener múltiples cuentas bancarias
+ */
+export interface ClientBankAccount {
+  id: string;                   // ID único de la cuenta
+  bank_name: string;            // Nombre del banco
+  account_number: string;      // Número de cuenta (IBAN completo)
+  iban: string;                // IBAN (formato: ESXX XXXX XXXX XXXX XXXX XXXX)
+  swift_bic?: string;          // Código SWIFT/BIC (para transferencias internacionales)
+  
+  // Tipo de cuenta
+  account_type?: "checking" | "savings" | "business";
+  
+  // Información adicional
+  holder_name?: string;        // Titular de la cuenta
+  is_default?: boolean;        // ¿Es la cuenta por defecto para pagos?
+  notes?: string;
+  
+  // Metadatos
+  created_at: Date;
+  updated_at: Date;
+}
+```
+
+---
+
+## Relaciones con Otros Módulos
+
+### 1. Proyectos (Project)
+
+```typescript
+/**
+ * Relación: Client -> Project[]
+ * Un cliente puede tener múltiples proyectos
+ * La relación se resuelve mediante FK inversa: Project.client_id → Client.id
+ */
+interface Project {
+  client_id: string;            // FK a Client.id
+  client_name?: string;         // Cache automático
+  client_code?: string;         // Cache automático
+}
+
+// Para obtener proyectos de un cliente:
+// SELECT * FROM projects WHERE client_id = 'client-123'
+```
+
+### 2. Presupuestos y Cotizaciones (Quote)
+
+```typescript
+/**
+ * Relación: Client -> Quote[]
+ * Un cliente puede tener múltiples presupuestos/proformas
+ * La relación se resuelve mediante FK inversa: Quote.client_id → Client.id
+ */
+interface Quote {
+  id: string;
+  client_id: string;            // FK a Client.id
+  project_id?: string;          // FK a Project.id (opcional)
+  type: "quote" | "proforma";   // Tipo: presupuesto o proforma
+  status: "draft" | "sent" | "accepted" | "rejected";
+  total_amount: number;
+  // ...
+}
+
+// Para obtener presupuestos de un cliente:
+// SELECT * FROM quotes WHERE client_id = 'client-123'
+```
+
+### 3. Facturas (Invoice)
+
+```typescript
+/**
+ * Relación: Client -> Invoice[]
+ * Un cliente puede tener múltiples facturas
+ * La relación se resuelve mediante FK inversa: Invoice.client_id → Client.id
+ */
+interface Invoice {
+  id: string;
+  client_id: string;            // FK a Client.id
+  project_id?: string;          // FK a Project.id (opcional)
+  invoice_number: string;       // Número de factura
+  total_amount: number;
+  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
+  // ...
+}
+
+// Para obtener facturas de un cliente:
+// SELECT * FROM invoices WHERE client_id = 'client-123'
+```
+
+### 4. Pagos (Payment)
+
+```typescript
+/**
+ * Relación: Client -> Payment[]
+ * Un cliente puede tener múltiples pagos
+ * La relación se resuelve mediante FK inversa: Payment.client_id → Client.id
+ */
+interface Payment {
+  id: string;
+  client_id: string;            // FK a Client.id
+  invoice_id: string;           // FK a Invoice.id
+  amount: number;
+  payment_date: Date;
+  payment_method: "transfer" | "cash" | "check" | "card";
+  // ...
+}
+
+// Para obtener pagos de un cliente:
+// SELECT * FROM payments WHERE client_id = 'client-123'
+```
+
+---
+
+## Cálculos Automáticos del Backend
+
+### Resumen de Facturación
+
+Los siguientes campos se calculan automáticamente por el backend:
+
+```typescript
+// Total facturado (histórico)
+total_invoiced = SUM(invoices.total_amount WHERE invoices.client_id = client.id AND invoices.status != 'cancelled')
+
+// Total pagado (histórico)
+total_paid = SUM(payments.amount WHERE payments.client_id = client.id)
+
+// Importe pendiente de pago
+pending_amount = SUM(invoices.total_amount WHERE invoices.client_id = client.id AND invoices.status IN ('sent', 'overdue')) - total_paid
+
+// Saldo actual
+current_balance = total_invoiced - total_paid
+
+// Importe vencido
+overdue_amount = SUM(invoices.total_amount WHERE invoices.client_id = client.id AND invoices.status = 'overdue')
+```
+
+### Resumen de Presupuestos y Proformas
+
+```typescript
+// Total de presupuestos emitidos
+total_quotes = COUNT(quotes WHERE quotes.client_id = client.id AND quotes.type = 'quote')
+
+// Total de proformas emitidas
+total_proformas = COUNT(quotes WHERE quotes.client_id = client.id AND quotes.type = 'proforma')
+
+// Presupuestos aceptados
+accepted_quotes = COUNT(quotes WHERE quotes.client_id = client.id AND quotes.type = 'quote' AND quotes.status = 'accepted')
+```
+
+### Beneficio Neto
+
+```typescript
+// Ingresos totales (facturado)
+total_revenue = total_invoiced
+
+// Costes totales (compras, gastos, horas trabajadas)
+total_costs = 
+  SUM(purchase_orders.total_amount WHERE purchase_orders.client_id = client.id) +
+  SUM(expenses.amount WHERE expenses.client_id = client.id) +
+  SUM(tasks.actual_hours * hourly_rate WHERE tasks.project_id IN (SELECT id FROM projects WHERE client_id = client.id))
+
+// Beneficio neto
+net_profit = total_revenue - total_costs
+
+// Margen de beneficio (%)
+profit_margin = (net_profit / total_revenue) * 100  // Si total_revenue > 0
+```
+
+---
+
+## Estructura de Base de Datos
+
+### Tabla Principal: `clients`
+
+```sql
+CREATE TABLE clients (
+  -- Identificación
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  code VARCHAR(50) UNIQUE NOT NULL,  -- CLI-YYYY-####
+  
+  -- Información básica
+  name VARCHAR(255) NOT NULL,
+  commercial_name VARCHAR(255),
+  description TEXT,
+  type VARCHAR(20) NOT NULL,  -- company, individual, public_entity
+  status VARCHAR(20) NOT NULL DEFAULT 'active',  -- active, inactive, prospect, blocked
+  
+  -- Datos fiscales
+  tax_id VARCHAR(50) NOT NULL,
+  tax_id_type VARCHAR(20) NOT NULL,  -- nif, cif, nie, passport, other
+  retention_percentage DECIMAL(5,2),  -- 0-100
+  vat_exempt BOOLEAN DEFAULT FALSE,
+  vat_type VARCHAR(20),  -- general, reduced, super_reduced, exempt
+  
+  -- Dirección fiscal
+  fiscal_address TEXT,
+  fiscal_city VARCHAR(100),
+  fiscal_postal_code VARCHAR(20),
+  fiscal_country VARCHAR(100) DEFAULT 'España',
+  
+  -- Contacto principal
+  primary_contact_name VARCHAR(255),
+  primary_contact_email VARCHAR(255),
+  primary_contact_phone VARCHAR(50),
+  primary_contact_mobile VARCHAR(50),
+  primary_contact_position VARCHAR(100),
+  
+  -- Dirección principal
+  address TEXT,
+  city VARCHAR(100),
+  postal_code VARCHAR(20),
+  province VARCHAR(100),
+  country VARCHAR(100) DEFAULT 'España',
+  
+  -- Condiciones comerciales
+  payment_terms VARCHAR(20),  -- immediate, 7_days, 15_days, 30_days, 60_days, 90_days, custom
+  payment_terms_days INTEGER,
+  discount_percentage DECIMAL(5,2),  -- 0-100
+  credit_limit DECIMAL(12,2),
+  
+  -- Resumen financiero (calculado, se actualiza con triggers)
+  current_balance DECIMAL(12,2) DEFAULT 0,
+  overdue_amount DECIMAL(12,2) DEFAULT 0,
+  total_invoiced DECIMAL(12,2) DEFAULT 0,
+  total_paid DECIMAL(12,2) DEFAULT 0,
+  pending_amount DECIMAL(12,2) DEFAULT 0,
+  total_quotes INTEGER DEFAULT 0,
+  total_proformas INTEGER DEFAULT 0,
+  accepted_quotes INTEGER DEFAULT 0,
+  total_revenue DECIMAL(12,2) DEFAULT 0,
+  total_costs DECIMAL(12,2) DEFAULT 0,
+  net_profit DECIMAL(12,2) DEFAULT 0,
+  profit_margin DECIMAL(5,2) DEFAULT 0,
+  
+  -- Metadatos
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  created_by UUID REFERENCES users(id),
+  updated_by UUID REFERENCES users(id),
+  
+  -- Notas
+  notes TEXT,
+  internal_notes TEXT,
+  tags TEXT[]  -- Array de etiquetas
+);
+
+-- Índices
+CREATE INDEX idx_clients_code ON clients(code);
+CREATE INDEX idx_clients_tax_id ON clients(tax_id);
+CREATE INDEX idx_clients_status ON clients(status);
+CREATE INDEX idx_clients_type ON clients(type);
+CREATE INDEX idx_clients_name ON clients(name);
+CREATE INDEX idx_clients_tags ON clients USING GIN(tags);  -- Para búsqueda por etiquetas
+```
+
+### Tabla: `client_contacts`
+
+```sql
+CREATE TABLE client_contacts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(50),
+  mobile VARCHAR(50),
+  position VARCHAR(100),
+  department VARCHAR(100),
+  is_primary BOOLEAN DEFAULT FALSE,
+  notes TEXT,
+  
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  
+  CONSTRAINT unique_client_email UNIQUE (client_id, email)
+);
+
+CREATE INDEX idx_client_contacts_client_id ON client_contacts(client_id);
+```
+
+### Tabla: `client_locations`
+
+```sql
+CREATE TABLE client_locations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  
+  name VARCHAR(255) NOT NULL,
+  type VARCHAR(20) NOT NULL,  -- billing, shipping, work_site, warehouse, office, other
+  
+  address TEXT NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  postal_code VARCHAR(20) NOT NULL,
+  province VARCHAR(100),
+  country VARCHAR(100) DEFAULT 'España',
+  
+  -- Coordenadas GPS (PostGIS)
+  coordinates POINT,
+  
+  contact_name VARCHAR(255),
+  contact_phone VARCHAR(50),
+  notes TEXT,
+  
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_client_locations_client_id ON client_locations(client_id);
+CREATE INDEX idx_client_locations_type ON client_locations(type);
+CREATE INDEX idx_client_locations_coordinates ON client_locations USING GIST(coordinates);  -- Para búsquedas geográficas
+```
+
+### Tabla: `client_bank_accounts`
+
+```sql
+CREATE TABLE client_bank_accounts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  
+  bank_name VARCHAR(255) NOT NULL,
+  account_number VARCHAR(100) NOT NULL,
+  iban VARCHAR(34) NOT NULL,  -- IBAN puede tener hasta 34 caracteres
+  swift_bic VARCHAR(11),
+  account_type VARCHAR(20),  -- checking, savings, business
+  holder_name VARCHAR(255),
+  is_default BOOLEAN DEFAULT FALSE,
+  notes TEXT,
+  
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  
+  CONSTRAINT unique_client_iban UNIQUE (client_id, iban)
+);
+
+CREATE INDEX idx_client_bank_accounts_client_id ON client_bank_accounts(client_id);
+```
+
+---
+
+## Triggers y Funciones Automáticas
+
+### 1. Generación Automática de Código
+
+```sql
+-- Función para generar código único de cliente
+CREATE OR REPLACE FUNCTION generate_client_code()
+RETURNS TRIGGER AS $$
+DECLARE
+  year_part VARCHAR(4);
+  sequence_num INTEGER;
+BEGIN
+  year_part := TO_CHAR(NOW(), 'YYYY');
+  
+  -- Obtener el siguiente número de secuencia para el año actual
+  SELECT COALESCE(MAX(CAST(SUBSTRING(code FROM 9) AS INTEGER)), 0) + 1
+  INTO sequence_num
+  FROM clients
+  WHERE code LIKE 'CLI-' || year_part || '-%';
+  
+  -- Generar código: CLI-YYYY-####
+  NEW.code := 'CLI-' || year_part || '-' || LPAD(sequence_num::TEXT, 4, '0');
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para generar código antes de insertar
+CREATE TRIGGER trigger_generate_client_code
+BEFORE INSERT ON clients
+FOR EACH ROW
+WHEN (NEW.code IS NULL OR NEW.code = '')
+EXECUTE FUNCTION generate_client_code();
+```
+
+### 2. Actualización de Resumen Financiero
+
+```sql
+-- Función para actualizar resumen financiero del cliente
+CREATE OR REPLACE FUNCTION update_client_financial_summary()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Actualizar resumen cuando cambie una factura o pago
+  UPDATE clients
+  SET
+    total_invoiced = (
+      SELECT COALESCE(SUM(total_amount), 0)
+      FROM invoices
+      WHERE client_id = NEW.client_id
+        AND status != 'cancelled'
+    ),
+    total_paid = (
+      SELECT COALESCE(SUM(amount), 0)
+      FROM payments
+      WHERE client_id = NEW.client_id
+    ),
+    pending_amount = (
+      SELECT COALESCE(SUM(total_amount), 0)
+      FROM invoices
+      WHERE client_id = NEW.client_id
+        AND status IN ('sent', 'overdue')
+    ) - (
+      SELECT COALESCE(SUM(amount), 0)
+      FROM payments
+      WHERE client_id = NEW.client_id
+    ),
+    current_balance = (
+      SELECT COALESCE(SUM(total_amount), 0)
+      FROM invoices
+      WHERE client_id = NEW.client_id
+        AND status != 'cancelled'
+    ) - (
+      SELECT COALESCE(SUM(amount), 0)
+      FROM payments
+      WHERE client_id = NEW.client_id
+    ),
+    overdue_amount = (
+      SELECT COALESCE(SUM(total_amount), 0)
+      FROM invoices
+      WHERE client_id = NEW.client_id
+        AND status = 'overdue'
+    ),
+    updated_at = NOW()
+  WHERE id = NEW.client_id;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Triggers para actualizar resumen cuando cambien facturas o pagos
+CREATE TRIGGER trigger_update_client_summary_on_invoice
+AFTER INSERT OR UPDATE OR DELETE ON invoices
+FOR EACH ROW
+EXECUTE FUNCTION update_client_financial_summary();
+
+CREATE TRIGGER trigger_update_client_summary_on_payment
+AFTER INSERT OR UPDATE OR DELETE ON payments
+FOR EACH ROW
+EXECUTE FUNCTION update_client_financial_summary();
+```
+
+### 3. Actualización de Beneficio Neto
+
+```sql
+-- Función para calcular y actualizar beneficio neto
+CREATE OR REPLACE FUNCTION update_client_profit()
+RETURNS TRIGGER AS $$
+DECLARE
+  client_revenue DECIMAL(12,2);
+  client_costs DECIMAL(12,2);
+  client_profit DECIMAL(12,2);
+  client_margin DECIMAL(5,2);
+BEGIN
+  -- Calcular ingresos (facturado)
+  SELECT COALESCE(SUM(total_amount), 0)
+  INTO client_revenue
+  FROM invoices
+  WHERE client_id = NEW.client_id
+    AND status != 'cancelled';
+  
+  -- Calcular costes (compras + gastos + horas)
+  SELECT 
+    COALESCE(SUM(po.total_amount), 0) +
+    COALESCE(SUM(e.amount), 0) +
+    COALESCE(SUM(t.actual_hours * u.hourly_rate), 0)
+  INTO client_costs
+  FROM projects p
+  LEFT JOIN purchase_orders po ON po.project_id = p.id
+  LEFT JOIN expenses e ON e.project_id = p.id
+  LEFT JOIN tasks t ON t.project_id = p.id
+  LEFT JOIN users u ON u.id = t.assigned_to[1]  -- Simplificado, en producción usar tabla de relación
+  WHERE p.client_id = NEW.client_id;
+  
+  -- Calcular beneficio y margen
+  client_profit := client_revenue - client_costs;
+  client_margin := CASE 
+    WHEN client_revenue > 0 THEN (client_profit / client_revenue) * 100
+    ELSE 0
+  END;
+  
+  -- Actualizar cliente
+  UPDATE clients
+  SET
+    total_revenue = client_revenue,
+    total_costs = client_costs,
+    net_profit = client_profit,
+    profit_margin = client_margin,
+    updated_at = NOW()
+  WHERE id = NEW.client_id;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+---
+
+## Row Level Security (RLS) - Supabase
+
+### Políticas de Seguridad
+
+```sql
+-- Habilitar RLS en la tabla clients
+ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
+
+-- Política: Los usuarios pueden ver todos los clientes activos
+CREATE POLICY "Users can view active clients"
+ON clients
+FOR SELECT
+USING (
+  status = 'active' OR
+  auth.uid() IN (SELECT id FROM users WHERE role IN ('admin', 'manager'))
+);
+
+-- Política: Solo admins y managers pueden crear clientes
+CREATE POLICY "Admins and managers can create clients"
+ON clients
+FOR INSERT
+WITH CHECK (
+  auth.uid() IN (SELECT id FROM users WHERE role IN ('admin', 'manager'))
+);
+
+-- Política: Solo admins y managers pueden actualizar clientes
+CREATE POLICY "Admins and managers can update clients"
+ON clients
+FOR UPDATE
+USING (
+  auth.uid() IN (SELECT id FROM users WHERE role IN ('admin', 'manager'))
+);
+
+-- Política: Solo admins pueden eliminar clientes
+CREATE POLICY "Only admins can delete clients"
+ON clients
+FOR DELETE
+USING (
+  auth.uid() IN (SELECT id FROM users WHERE role = 'admin')
+);
+```
+
+---
+
+## Ejemplo de Uso
+
+### Cliente Completo
+
+```typescript
+const exampleClient: Client = {
+  // Identificación
+  id: "client-2025-001",
+  code: "CLI-2025-0001",
+  
+  // Información básica
+  name: "Constructora ABC, S.L.",
+  commercial_name: "ABC Construcciones",
+  description: "Cliente principal del sector construcción",
+  type: "company",
+  status: "active",
+  
+  // Datos fiscales
+  tax_id: "B12345678",
+  tax_id_type: "cif",
+  retention_percentage: 0,  // Empresa, no retención
+  vat_exempt: false,
+  vat_type: "general",
+  
+  // Dirección fiscal
+  fiscal_address: "Calle Principal, 123",
+  fiscal_city: "Madrid",
+  fiscal_postal_code: "28001",
+  fiscal_country: "España",
+  
+  // Contacto principal
+  primary_contact: {
+    name: "Juan Pérez",
+    email: "juan.perez@abcconstrucciones.es",
+    phone: "+34 91 123 45 67",
+    mobile: "+34 600 123 456",
+    position: "Director Comercial"
+  },
+  
+  // Dirección principal
+  address: "Calle Principal, 123",
+  city: "Madrid",
+  postal_code: "28001",
+  province: "Madrid",
+  country: "España",
+  
+  // Ubicaciones adicionales
+  locations: [
+    {
+      id: "loc-001",
+      name: "Obra Principal - Calle Obra, 45",
+      type: "work_site",
+      address: "Calle Obra, 45",
+      city: "Madrid",
+      postal_code: "28002",
+      province: "Madrid",
+      country: "España",
+      contact_name: "María García",
+      contact_phone: "+34 91 987 65 43",
+      created_at: new Date("2025-01-15"),
+      updated_at: new Date("2025-01-15")
+    }
+  ],
+  
+  // Cuentas bancarias
+  bank_accounts: [
+    {
+      id: "bank-001",
+      bank_name: "Banco Santander",
+      account_number: "0049 0001 23 1234567890",
+      iban: "ES91 2100 0418 4502 0005 1332",
+      swift_bic: "BSCHESMM",
+      account_type: "business",
+      holder_name: "Constructora ABC, S.L.",
+      is_default: true,
+      created_at: new Date("2025-01-10"),
+      updated_at: new Date("2025-01-10")
+    }
+  ],
+  
+  // Condiciones comerciales
+  payment_terms: "30_days",
+  discount_percentage: 5,
+  credit_limit: 50000,
+  
+  // Resumen financiero (calculado)
+  current_balance: 15000,
+  overdue_amount: 0,
+  total_invoiced: 125000,
+  total_paid: 110000,
+  pending_amount: 15000,
+  total_quotes: 8,
+  total_proformas: 3,
+  accepted_quotes: 5,
+  total_revenue: 125000,
+  total_costs: 95000,
+  net_profit: 30000,
+  profit_margin: 24,
+  
+  // Metadatos
+  created_at: new Date("2025-01-10"),
+  updated_at: new Date("2025-01-20"),
+  created_by: "user-001",
+  updated_by: "user-001",
+  
+  // Notas
+  notes: "Cliente prioritario, atención especial",
+  tags: ["construcción", "prioritario", "madrid"]
+};
+```
+
+---
+
+## Funcionalidades Futuras
+
+### 1. Historial Completo
+
+- Historial de todas las interacciones (llamadas, emails, reuniones)
+- Historial de cambios en datos fiscales
+- Historial de cambios en condiciones comerciales
+
+### 2. Análisis Avanzado
+
+- Gráficos de evolución de facturación
+- Análisis de rentabilidad por cliente
+- Comparativa de clientes
+- Predicción de pagos
+
+### 3. Integración con Facturación
+
+- Generación automática de facturas recurrentes
+- Recordatorios de pago automáticos
+- Conciliación bancaria automática
+
+### 4. Gestión de Documentos
+
+- Almacenamiento de documentos fiscales (NIF, CIF, etc.)
+- Almacenamiento de contratos
+- Almacenamiento de presupuestos y facturas en PDF
+
+---
+
+## Notas de Implementación
+
+### Validaciones Importantes
+
+1. **Código de Cliente**: Debe ser único y generarse automáticamente
+2. **NIF/CIF**: Validar formato según tipo de cliente
+3. **IBAN**: Validar formato IBAN español e internacional
+4. **Email**: Validar formato de email en contactos
+5. **Retención**: Solo aplicable a profesionales/autónomos (no empresas)
+
+### Consideraciones de Rendimiento
+
+1. **Resumen Financiero**: Los cálculos se realizan mediante triggers para mantener consistencia
+2. **Índices**: Se han creado índices en campos de búsqueda frecuente (code, tax_id, name, status)
+3. **Búsqueda por Etiquetas**: Se usa índice GIN para búsqueda eficiente de tags
+4. **Coordenadas GPS**: Se usa índice GIST para búsquedas geográficas
+
+### Migración desde Sistema Anterior
+
+Si existe un sistema anterior, considerar:
+1. Mapeo de campos antiguos a nuevos
+2. Migración de datos fiscales
+3. Migración de contactos y ubicaciones
+4. Cálculo inicial de resúmenes financieros
+
+---
+
+*Última actualización: Documentación inicial del sistema de clientes*
+
