@@ -51,11 +51,9 @@ Este archivo contiene todas las tareas extraídas de los proyectos. Cada tarea t
 - `proj-2025-003`: 8 tareas
 - `proj-2025-005`: 7 tareas
 
-### `tasks-november-2025.json` y `tasks-december-2025.json`
+### ⚠️ Archivos Eliminados
 
-**Formato**: Tareas independientes (no asociadas a proyectos)
-
-Estos archivos contienen tareas que no pertenecen a proyectos específicos, utilizadas para el módulo "Inicio" (calendarios).
+Los archivos `tasks-november-2025.json` y `tasks-december-2025.json` han sido eliminados. Ahora trabajamos exclusivamente con tareas asignadas a proyectos desde `tasks.json`.
 
 ---
 
@@ -89,11 +87,9 @@ const phaseTasks = await fetchProjectTasks('proj-2025-001', 'phase-proj-001-001'
 const allTasks = await fetchAllProjectTasks();
 ```
 
-### Combinar con tareas mensuales
+### Uso en Calendarios
 
-El hook `useCalendarTasks` ya combina automáticamente:
-- Tareas de archivos mensuales (`tasks-november-2025.json`, `tasks-december-2025.json`)
-- Tareas de proyectos (`tasks.json`)
+El hook `useCalendarTasks` carga automáticamente las tareas de proyectos desde `tasks.json`, filtrando por el mes consultado. Todas las tareas mostradas en los calendarios pertenecen a proyectos.
 
 ---
 

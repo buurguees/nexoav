@@ -12,8 +12,6 @@ import { TaskType } from "../taskCategories";
 import { startOfMonth, endOfMonth } from "date-fns";
 
 // Importar datos JSON (en producción esto vendría del backend)
-import tasksNovember2025 from "../../data/tasks/tasks-november-2025.json";
-import tasksDecember2025 from "../../data/tasks/tasks-december-2025.json";
 import projectTasks from "../../data/tasks/tasks.json"; // Tareas de proyectos (normalizadas)
 
 /**
@@ -32,33 +30,14 @@ export async function fetchTasksForMonth(viewDate: Date): Promise<Task[]> {
   const monthStart = startOfMonth(viewDate);
   const monthEnd = endOfMonth(viewDate);
 
-  // Determinar qué archivo JSON cargar según el mes
-  // Combinamos tareas de archivos mensuales + tareas de proyectos
-  let tasksData: any[] = [];
-  
-  // Cargar tareas de archivos mensuales (tareas independientes)
-  if (year === 2025 && month === 10) { // Noviembre (0-indexed, noviembre = 10)
-    tasksData = [...tasksData, ...(tasksNovember2025 as any[])];
-  } else if (year === 2025 && month === 11) { // Diciembre (0-indexed, diciembre = 11)
-    tasksData = [...tasksData, ...(tasksDecember2025 as any[])];
-    // Incluir tareas de noviembre que terminen después del inicio de diciembre
-    const novemberTasks = tasksNovember2025 as any[];
-    const overlappingTasks = novemberTasks.filter((task: any) => {
-      const taskEnd = new Date(task.endDate);
-      return taskEnd >= monthStart;
-    });
-    tasksData = [...tasksData, ...overlappingTasks];
-  }
-  
   // Cargar tareas de proyectos (normalizadas, con project_id)
   // Filtrar solo las que se solapan con el mes consultado
-  const projectTasksInMonth = (projectTasks as any[]).filter((task: any) => {
+  const tasksData = (projectTasks as any[]).filter((task: any) => {
     if (!task.startDate) return false;
     const taskStart = new Date(task.startDate);
     const taskEnd = new Date(task.endDate || task.startDate);
     return taskStart <= monthEnd && taskEnd >= monthStart;
   });
-  tasksData = [...tasksData, ...projectTasksInMonth];
 
   // Convertir los datos JSON a objetos Task con fechas Date
   const tasks: Task[] = tasksData.map((taskData) => ({
