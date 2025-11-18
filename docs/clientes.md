@@ -58,7 +58,10 @@ export interface Client {
   // INFORMACIÓN BÁSICA
   // ============================================
   name: string;                  // Nombre o razón social (obligatorio)
-  commercial_name?: string;      // Nombre comercial (opcional, para mostrar en facturas)
+                                // Ejemplo: "SOFT CONTROLS DOMOTICA Y AUDIOVISUALES S"
+  commercial_name?: string;      // Nombre comercial (opcional, para mostrar en facturas y listados)
+                                // Ejemplo: "Soft Controls" (más corto y amigable que la razón social)
+                                // Si no se proporciona, se usa `name` como fallback
   description?: string;          // Descripción general del cliente
   
   // Tipo de cliente
@@ -1090,10 +1093,11 @@ El listado de clientes muestra los siguientes campos en orden:
    - Campo: `client.code`
    - Formato: String con padding de 4 dígitos
 
-2. **Nombre del Cliente** (`name`)
-   - Razón social o nombre del cliente
-   - Campo: `client.name`
-   - Se puede mostrar `commercial_name` si está disponible
+2. **Nombre del Cliente** (`name` o `commercial_name`)
+   - Se muestra el nombre comercial si está disponible, si no, la razón social
+   - Campo: `client.commercial_name ?? client.name`
+   - Ejemplo: "Soft Controls" (nombre comercial) en lugar de "SOFT CONTROLS DOMOTICA Y AUDIOVISUALES S" (razón social)
+   - El nombre comercial es más corto y amigable para listados y facturas
 
 3. **Estado** (`status`)
    - Estado actual del cliente
