@@ -8,6 +8,24 @@ Este documento define la estructura completa del sistema de gestión de clientes
 - **Gestión fiscal**: Datos fiscales, retenciones, IVA
 - **Gestión de proyectos**: Asignación de proyectos a clientes
 - **Análisis financiero**: Resumen de facturación, beneficios, historial
+- **Facturación profesional**: Email específico, referencias (PO, proyecto), cumplimiento normativo
+
+### ✅ Validación de Facturación
+
+Este sistema incluye **todos los datos imprescindibles** para facturar correctamente según la normativa española:
+
+- ✅ Razón social / Nombre del cliente
+- ✅ CIF/NIF/NIE con validación
+- ✅ Dirección fiscal completa
+- ✅ Persona de contacto y email
+- ✅ Condiciones de pago
+- ✅ Cliente exento de IVA o tipo de IVA
+- ✅ Retención IRPF (solo autónomos)
+- ✅ **Email específico de facturación** (`billing_email`)
+- ✅ **Referencia interna del cliente** (`billing_reference`)
+- ✅ **Referencia de proyecto** (`project_reference`)
+
+**Conclusión**: El sistema cumple totalmente con los requisitos de Hacienda y permite emitir facturas sin fallos, incluso para clientes corporativos y administración pública.
 
 ---
 
@@ -113,6 +131,23 @@ export interface Client {
   credit_limit?: number;        // Límite de crédito (€)
   current_balance?: number;     // ⚠️ CALCULADO: Saldo actual (facturado - pagado)
   overdue_amount?: number;      // ⚠️ CALCULADO: Importe vencido
+  
+  // ============================================
+  // FACTURACIÓN
+  // ============================================
+  // Email específico para facturación
+  // En empresas medianas/grandes suele haber un email administrativo exclusivo
+  // Ejemplo: facturacion@empresa.com
+  // Evita errores cuando el contacto principal es comercial o técnico
+  billing_email?: string;       // Email específico para envío de facturas
+  
+  // Referencias para facturación
+  // Muy importante para corporaciones, cadenas y ayuntamientos
+  billing_reference?: string;    // Referencia interna que pide el cliente
+                                // PO (Purchase Order), referencia contable, etc.
+                                // Evita devoluciones de facturas por "falta de referencia"
+  project_reference?: string;   // Referencia de proyecto solicitada por el cliente
+                                // Usado por corporaciones, cadenas y administración pública
   
   // ============================================
   // RESUMEN FINANCIERO (CALCULADO)
@@ -514,6 +549,11 @@ CREATE TABLE clients (
   payment_terms_days INTEGER,
   discount_percentage DECIMAL(5,2),  -- 0-100
   credit_limit DECIMAL(12,2),
+  
+  -- Facturación
+  billing_email VARCHAR(255),  -- Email específico para envío de facturas
+  billing_reference VARCHAR(255),  -- Referencia interna (PO, referencia contable)
+  project_reference VARCHAR(255),  -- Referencia de proyecto (corporaciones, ayuntamientos)
   
   -- Resumen financiero (calculado, se actualiza con triggers)
   current_balance DECIMAL(12,2) DEFAULT 0,
@@ -919,6 +959,11 @@ const exampleClient: Client = {
   payment_terms: "30_days",
   discount_percentage: 5,
   credit_limit: 50000,
+  
+  // Facturación
+  billing_email: "facturacion@abcconstrucciones.es",  // Email específico para facturas
+  billing_reference: "PO-2025-001",  // Referencia interna del cliente
+  project_reference: "PROJ-ABC-2025",  // Referencia de proyecto del cliente
   
   // Resumen financiero (calculado)
   current_balance: 15000,
