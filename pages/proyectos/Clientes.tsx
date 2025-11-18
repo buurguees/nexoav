@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { ClientList } from "../../components/clients";
 import { fetchClients } from "../../lib/mocks/clientMocks";
 import { Client } from "../../lib/types/client";
 import { motion } from "motion/react";
@@ -89,13 +88,23 @@ export function Clientes({ className }: ClientesProps) {
       style={{
         height: '100%',
         padding: 'var(--spacing-md)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
-      <ClientList
-        clients={clients}
-        onClientClick={handleClientClick}
-        onCreateClient={handleCreateClient}
-      />
+      <div style={{ textAlign: 'center' }}>
+        <h1 style={{ color: 'var(--foreground)', marginBottom: 'var(--spacing-md)' }}>
+          Clientes ({clients.length})
+        </h1>
+        <p style={{ color: 'var(--foreground-secondary)' }}>
+          El componente ClientList ha sido eliminado.
+        </p>
+        <p style={{ color: 'var(--foreground-tertiary)', fontSize: '12px', marginTop: 'var(--spacing-sm)' }}>
+          Se cargaron {clients.length} clientes correctamente.
+        </p>
+      </div>
     </motion.div>
   );
 }
