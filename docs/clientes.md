@@ -483,12 +483,14 @@ accepted_quotes = COUNT(quotes WHERE quotes.client_id = client.id AND quotes.typ
 ### Beneficio Neto
 
 ```typescript
-// Ingresos totales (facturado)
+// ⚠️ IMPORTANTE: Ingresos totales SIN IVA (facturado)
+// total_invoiced ya está calculado sin IVA (usa subtotal)
 total_revenue = total_invoiced
 
-// Costes totales (compras, gastos, horas trabajadas)
+// ⚠️ IMPORTANTE: Costes totales SIN IVA (compras, gastos, horas trabajadas)
+// Todos los cálculos se realizan sin IVA para mantener consistencia
 total_costs = 
-  SUM(purchase_orders.total_amount WHERE purchase_orders.client_id = client.id) +
+  SUM(purchase_orders.subtotal WHERE purchase_orders.client_id = client.id) +
   SUM(expenses.amount WHERE expenses.client_id = client.id) +
   SUM(tasks.actual_hours * hourly_rate WHERE tasks.project_id IN (SELECT id FROM projects WHERE client_id = client.id))
 
@@ -1073,6 +1075,203 @@ Referencia Proyecto: PROJ-ABC-2025
 - Almacenamiento de documentos fiscales (NIF, CIF, etc.)
 - Almacenamiento de contratos
 - Almacenamiento de presupuestos y facturas en PDF
+
+---
+
+## Listado de Clientes
+
+### Campos del Listado
+
+El listado de clientes muestra los siguientes campos en orden:
+
+1. **Número de Cliente** (`code`)
+   - Código secuencial del cliente (0001, 0002, 0003, ..., 9999)
+   - Campo: `client.code`
+   - Formato: String con padding de 4 dígitos
+
+2. **Nombre del Cliente** (`name`)
+   - Razón social o nombre del cliente
+   - Campo: `client.name`
+   - Se puede mostrar `commercial_name` si está disponible
+
+3. **Estado** (`status`)
+   - Estado actual del cliente
+   - Campo: `client.status`
+   - Valores: `"active"`, `"inactive"`, `"prospect"`, `"blocked"`
+   - Se muestra con badge/etiqueta de color según estado
+
+4. **Nº de Proyectos Totales** (`projects_count`)
+   - Total de proyectos asociados al cliente (todos los estados)
+   - Campo calculado: `projects_count`
+   - Cálculo: `COUNT(projects WHERE projects.client_id = client.id)`
+   - No se almacena en BD, se calcula en tiempo real o se cachea
+
+5. **Nº de Proyectos Activos** (`active_projects_count`)
+   - Proyectos en estado activo (en progreso o aprobados)
+   - Campo calculado: `active_projects_count`
+   - Cálculo: `COUNT(projects WHERE projects.client_id = client.id AND projects.status IN ('in_progress', 'approved'))`
+   - No se almacena en BD, se calcula en tiempo real o se cachea
+
+6. **Total Facturado** (`total_invoiced`)
+   - Total facturado históricamente al cliente
+   - Campo: `client.total_invoiced`
+   - ⚠️ **IMPORTANTE: Sin IVA** - Se calcula excluyendo el IVA de las facturas
+   - Cálculo: `SUM(invoices.subtotal WHERE invoices.client_id = client.id AND invoices.status != 'cancelled')`
+   - Formato: Moneda (€) sin decimales o con 2 decimales según preferencia
+
+7. **Margen Limpio** (`net_profit` o `profit_margin`)
+   - Beneficio neto del cliente (ingresos - costes)
+   - Campo: `client.net_profit` (en €) o `client.profit_margin` (en %)
+   - ⚠️ **IMPORTANTE: Sin IVA** - Todos los cálculos se realizan sin IVA
+   - Cálculo: `total_revenue - total_costs` (ambos sin IVA)
+   - Se puede mostrar como:
+     - Monto absoluto: `net_profit` (ej: €22,500)
+     - Porcentaje: `profit_margin` (ej: 25.71%)
+
+### Cálculo de Total Facturado (Sin IVA)
+
+```typescript
+// ⚠️ CRÍTICO: El total facturado se calcula SIN IVA
+total_invoiced = SUM(
+  invoices.subtotal  // Base imponible (sin IVA)
+  WHERE invoices.client_id = client.id 
+    AND invoices.status != 'cancelled'
+)
+
+// NO usar invoices.total_amount (que incluye IVA)
+// Usar invoices.subtotal (base imponible sin IVA)
+```
+
+**Estructura de Invoice para el cálculo**:
+```typescript
+interface Invoice {
+  id: string;
+  client_id: string;
+  subtotal: number;      // Base imponible (SIN IVA) ✅ Usar este
+  vat_amount: number;   // Importe de IVA
+  total_amount: number; // Total con IVA ❌ NO usar para total_invoiced
+  // ...
+}
+```
+
+### Cálculo de Proyectos
+
+```typescript
+// Total de proyectos
+projects_count = COUNT(
+  SELECT * FROM projects 
+  WHERE client_id = client.id
+)
+
+// Proyectos activos
+active_projects_count = COUNT(
+  SELECT * FROM projects 
+  WHERE client_id = client.id 
+    AND status IN ('in_progress', 'approved')
+)
+```
+
+**Estados de proyecto considerados "activos"**:
+- `"approved"`: Proyecto aprobado, listo para iniciar
+- `"in_progress"`: Proyecto en ejecución
+
+**Estados NO considerados activos**:
+- `"draft"`: Borrador
+- `"quoted"`: Presupuestado
+- `"on_hold"`: En pausa
+- `"completed"`: Completado
+- `"cancelled"`: Cancelado
+
+### Cálculo de Margen Limpio (Sin IVA)
+
+```typescript
+// Ingresos totales (SIN IVA)
+total_revenue = SUM(
+  invoices.subtotal  // Base imponible sin IVA
+  WHERE invoices.client_id = client.id 
+    AND invoices.status != 'cancelled'
+)
+
+// Costes totales (SIN IVA)
+total_costs = 
+  SUM(purchase_orders.subtotal WHERE purchase_orders.client_id = client.id) +
+  SUM(expenses.amount WHERE expenses.client_id = client.id) +
+  SUM(tasks.actual_hours * hourly_rate WHERE tasks.project_id IN (
+    SELECT id FROM projects WHERE client_id = client.id
+  ))
+
+// Beneficio neto (SIN IVA)
+net_profit = total_revenue - total_costs
+
+// Margen de beneficio (%)
+profit_margin = (net_profit / total_revenue) * 100  // Si total_revenue > 0
+```
+
+### Ejemplo de Query SQL para Listado
+
+```sql
+-- Query optimizado para listado de clientes
+SELECT 
+  c.id,
+  c.code,
+  c.name,
+  c.commercial_name,
+  c.status,
+  
+  -- Proyectos (calculados)
+  COUNT(DISTINCT p.id) AS projects_count,
+  COUNT(DISTINCT CASE 
+    WHEN p.status IN ('in_progress', 'approved') 
+    THEN p.id 
+  END) AS active_projects_count,
+  
+  -- Facturación (SIN IVA)
+  COALESCE(SUM(i.subtotal), 0) AS total_invoiced,
+  
+  -- Beneficio neto (SIN IVA)
+  COALESCE(SUM(i.subtotal), 0) - COALESCE(SUM(po.subtotal), 0) - COALESCE(SUM(e.amount), 0) AS net_profit,
+  
+  -- Margen (%)
+  CASE 
+    WHEN COALESCE(SUM(i.subtotal), 0) > 0 
+    THEN ((COALESCE(SUM(i.subtotal), 0) - COALESCE(SUM(po.subtotal), 0) - COALESCE(SUM(e.amount), 0)) / COALESCE(SUM(i.subtotal), 0)) * 100
+    ELSE 0
+  END AS profit_margin
+  
+FROM clients c
+LEFT JOIN projects p ON p.client_id = c.id
+LEFT JOIN invoices i ON i.client_id = c.id AND i.status != 'cancelled'
+LEFT JOIN purchase_orders po ON po.client_id = c.id
+LEFT JOIN expenses e ON e.client_id = c.id
+GROUP BY c.id, c.code, c.name, c.commercial_name, c.status
+ORDER BY c.code;
+```
+
+### Ordenación y Filtrado
+
+**Ordenación por defecto**: Por `code` (número de cliente) ascendente
+
+**Filtros recomendados**:
+- Por estado (`active`, `inactive`, `prospect`, `blocked`)
+- Por rango de facturación
+- Por margen de beneficio
+- Por número de proyectos
+
+### Formato de Visualización
+
+```typescript
+// Ejemplo de formato para el listado
+interface ClientListItem {
+  code: string;                    // "0001"
+  name: string;                    // "SOFT CONTROLS DOMOTICA Y AUDIOVISUALES S"
+  status: ClientStatus;            // "active" → Badge verde "Activo"
+  projects_count: number;          // 8
+  active_projects_count: number;   // 3
+  total_invoiced: number;          // 87500 → "€87.500" o "87.500 €"
+  net_profit: number;              // 22500 → "€22.500" o "22.500 €"
+  profit_margin: number;           // 25.71 → "25,71%" o "25.71%"
+}
+```
 
 ---
 
