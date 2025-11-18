@@ -134,6 +134,99 @@
       "prioritario",
       "valencia"
     ]
+  },
+  {
+    "id": "client-2025-002",
+    "code": "CLI-2025-0002",
+    "name": "SOLUCIONES Y EQUIPOS MULTIFUNCIONALES SL",
+    "commercial_name": "CANON BCN 22",
+    "description": "Empresa especializada en soluciones y equipos multifuncionales. Cliente de Barcelona con actividad comercial en equipamiento de oficina.",
+    "type": "company",
+    "status": "active",
+    "tax_id": "B65595621",
+    "tax_id_type": "cif",
+    "retention_percentage": 0,
+    "vat_exempt": false,
+    "vat_type": "general",
+    "fiscal_address": "CALLE ESPRONCEDA, 333 - 333",
+    "fiscal_city": "BARCELONA",
+    "fiscal_postal_code": "08027",
+    "fiscal_country": "España",
+    "primary_contact": {
+      "name": "Contacto Principal",
+      "email": "info@canonbcn22.com",
+      "phone": "933036211",
+      "mobile": null,
+      "position": "Gerente"
+    },
+    "contacts": [],
+    "address": "CALLE ESPRONCEDA, 333 - 333",
+    "city": "BARCELONA",
+    "postal_code": "08027",
+    "province": "Barcelona",
+    "country": "España",
+    "locations": [
+      {
+        "id": "loc-003",
+        "name": "Oficina Principal",
+        "type": "office",
+        "address": "CALLE ESPRONCEDA, 333 - 333",
+        "city": "BARCELONA",
+        "postal_code": "08027",
+        "province": "Barcelona",
+        "country": "España",
+        "contact_name": null,
+        "contact_phone": "933036211",
+        "notes": "Oficina principal y punto de venta",
+        "created_at": "2025-01-15T10:00:00.000Z",
+        "updated_at": "2025-01-15T10:00:00.000Z"
+      }
+    ],
+    "bank_accounts": [
+      {
+        "id": "bank-002",
+        "bank_name": "Banco BBVA",
+        "account_number": "0182 1234 56 1234567890",
+        "iban": "ES91 0182 1234 5612 3456 7890",
+        "swift_bic": "BBVAESMM",
+        "account_type": "business",
+        "holder_name": "SOLUCIONES Y EQUIPOS MULTIFUNCIONALES SL",
+        "is_default": true,
+        "notes": "Cuenta principal para pagos",
+        "created_at": "2025-01-15T10:00:00.000Z",
+        "updated_at": "2025-01-15T10:00:00.000Z"
+      }
+    ],
+    "payment_terms": "30_days",
+    "discount_percentage": 0,
+    "credit_limit": 30000,
+    "billing_email": "facturacion@canonbcn22.com",
+    "billing_reference": "PO-CBCN-2025",
+    "project_reference": null,
+    "current_balance": 8500,
+    "overdue_amount": 0,
+    "total_invoiced": 45000,
+    "total_paid": 36500,
+    "pending_amount": 8500,
+    "total_quotes": 6,
+    "total_proformas": 2,
+    "accepted_quotes": 4,
+    "total_revenue": 45000,
+    "total_costs": 32000,
+    "net_profit": 13000,
+    "profit_margin": 28.89,
+    "created_at": "2025-01-15T10:00:00.000Z",
+    "updated_at": "2025-11-18T15:00:00.000Z",
+    "created_by": "user-001",
+    "updated_by": "user-001",
+    "notes": "Cliente de Barcelona. Especializado en equipos multifuncionales. Buena relación comercial.",
+    "internal_notes": "Acumula en modelo 347. Cuenta cliente/deudor: 43000010. Operación: General.",
+    "tags": [
+      "equipos",
+      "multifuncionales",
+      "barcelona",
+      "canon"
+    ]
   }
 ]
 
