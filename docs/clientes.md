@@ -1088,7 +1088,7 @@ Referencia Proyecto: PROJ-ABC-2025
 
 ### Campos del Listado
 
-El listado de clientes muestra los siguientes campos en orden (9 campos en total):
+El listado de clientes muestra los siguientes campos en orden (8 campos en total):
 
 1. **Número de Cliente** (`code`)
    - Código secuencial del cliente (0001, 0002, 0003, ..., 9999)
@@ -1126,14 +1126,7 @@ El listado de clientes muestra los siguientes campos en orden (9 campos en total
    - Cálculo: `SUM(invoices.subtotal WHERE invoices.client_id = client.id AND invoices.status != 'cancelled')`
    - Formato: Moneda (€) sin decimales o con 2 decimales según preferencia
 
-7. **Total Facturado** (`total_invoiced`)
-   - Total facturado históricamente al cliente
-   - Campo: `client.total_invoiced`
-   - ⚠️ **IMPORTANTE: Sin IVA** - Se calcula excluyendo el IVA de las facturas
-   - Cálculo: `SUM(invoices.subtotal WHERE invoices.client_id = client.id AND invoices.status != 'cancelled')`
-   - Formato: Moneda (€) sin decimales o con 2 decimales según preferencia
-
-8. **Pendiente de Cobrar** (`pending_amount`)
+7. **Pendiente de Cobrar** (`pending_amount`)
    - Importe ya facturado pero que aún no se ha registrado el pago
    - Campo: `client.pending_amount`
    - ⚠️ **IMPORTANTE: Sin IVA** - Se calcula excluyendo el IVA
@@ -1141,7 +1134,7 @@ El listado de clientes muestra los siguientes campos en orden (9 campos en total
    - Incluye facturas enviadas y vencidas que aún no han sido pagadas
    - Formato: Moneda (€) sin decimales o con 2 decimales según preferencia
 
-9. **Margen Limpio** (`net_profit` o `profit_margin`)
+8. **Margen Limpio** (`net_profit` o `profit_margin`)
    - Beneficio neto del cliente (ingresos - costes)
    - Campo: `client.net_profit` (en €) o `client.profit_margin` (en %)
    - ⚠️ **IMPORTANTE: Sin IVA** - Todos los cálculos se realizan sin IVA
@@ -1291,6 +1284,7 @@ interface ClientListItem {
   projects_count: number;          // 8
   active_projects_count: number;   // 3
   total_invoiced: number;          // 87500 → "€87.500" o "87.500 €"
+  pending_amount: number;          // 12500 → "€12.500" o "12.500 €" (pendiente de cobrar)
   net_profit: number;              // 22500 → "€22.500" o "22.500 €"
   profit_margin: number;           // 25.71 → "25,71%" o "25.71%"
 }
