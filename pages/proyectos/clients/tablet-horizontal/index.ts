@@ -1,0 +1,2 @@
+export { ClientesTabletHorizontal } from "./Clientes";
+

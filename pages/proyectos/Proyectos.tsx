@@ -1,18 +1,18 @@
 "use client";
 
 import { useBreakpoint } from "../../hooks/useBreakpoint";
-import { ClientesDesktop } from "./clients/desktop";
-import { ClientesTabletHorizontal } from "./clients/tablet-horizontal";
-import { ClientesTablet } from "./clients/tablet";
-import { ClientesMobile } from "./clients/mobile";
+import { ProyectosDesktop } from "./proyectos/desktop";
+import { ProyectosTabletHorizontal } from "./proyectos/tablet-horizontal";
+import { ProyectosTablet } from "./proyectos/tablet";
+import { ProyectosMobile } from "./proyectos/mobile";
 
-export interface ClientesProps {
+export interface ProyectosProps {
   className?: string;
 }
 
 /**
- * Página de listado de clientes
- * Muestra todos los clientes con información relevante para gestión de proyectos
+ * Página de listado de proyectos
+ * Muestra todos los proyectos con información relevante para gestión
  * 
  * Selecciona automáticamente la versión correcta según el dispositivo:
  * - Desktop: Listado (60%) + Chart (40%) lado a lado
@@ -20,18 +20,15 @@ export interface ClientesProps {
  * - Tablet Portrait: Chart pequeño arriba + Listado grande abajo
  * - Mobile: Chart pequeño arriba + Listado abajo
  */
-export function Clientes({ className }: ClientesProps) {
+export function Proyectos({ className }: ProyectosProps) {
   const breakpoint = useBreakpoint();
-
-  // Debug: Mostrar breakpoint actual
-  console.log("Breakpoint actual:", breakpoint);
 
   return (
     <div className={`page-content-scroll ${className || ''}`} style={{ height: '100%' }}>
-      {breakpoint === "desktop" && <ClientesDesktop />}
-      {breakpoint === "tablet" && <ClientesTabletHorizontal />}
-      {breakpoint === "tablet-portrait" && <ClientesTablet />}
-      {breakpoint === "mobile" && <ClientesMobile />}
+      {breakpoint === "desktop" && <ProyectosDesktop />}
+      {breakpoint === "tablet" && <ProyectosTabletHorizontal />}
+      {breakpoint === "tablet-portrait" && <ProyectosTablet />}
+      {breakpoint === "mobile" && <ProyectosMobile />}
       {/* Fallback si no coincide ningún breakpoint */}
       {breakpoint !== "desktop" && breakpoint !== "tablet" && breakpoint !== "tablet-portrait" && breakpoint !== "mobile" && (
         <div style={{ padding: "var(--spacing-xl)", color: "var(--foreground-secondary)" }}>
