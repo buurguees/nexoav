@@ -451,8 +451,9 @@ interface Payment {
 Los siguientes campos se calculan automáticamente por el backend:
 
 ```typescript
-// Total facturado (histórico)
-total_invoiced = SUM(invoices.total_amount WHERE invoices.client_id = client.id AND invoices.status != 'cancelled')
+// ⚠️ IMPORTANTE: Total facturado SIN IVA (histórico)
+// Se usa subtotal (base imponible) NO total_amount (que incluye IVA)
+total_invoiced = SUM(invoices.subtotal WHERE invoices.client_id = client.id AND invoices.status != 'cancelled')
 
 // Total pagado (histórico)
 total_paid = SUM(payments.amount WHERE payments.client_id = client.id)
@@ -735,7 +736,7 @@ BEGIN
       WHERE client_id = NEW.client_id
     ),
     pending_amount = (
-      SELECT COALESCE(SUM(total_amount), 0)
+      SELECT COALESCE(SUM(subtotal), 0)  -- ⚠️ SIN IVA: usar subtotal
       FROM invoices
       WHERE client_id = NEW.client_id
         AND status IN ('sent', 'overdue')
@@ -745,7 +746,7 @@ BEGIN
       WHERE client_id = NEW.client_id
     ),
     current_balance = (
-      SELECT COALESCE(SUM(total_amount), 0)
+      SELECT COALESCE(SUM(subtotal), 0)  -- ⚠️ SIN IVA: usar subtotal
       FROM invoices
       WHERE client_id = NEW.client_id
         AND status != 'cancelled'
@@ -755,7 +756,7 @@ BEGIN
       WHERE client_id = NEW.client_id
     ),
     overdue_amount = (
-      SELECT COALESCE(SUM(total_amount), 0)
+      SELECT COALESCE(SUM(subtotal), 0)  -- ⚠️ SIN IVA: usar subtotal
       FROM invoices
       WHERE client_id = NEW.client_id
         AND status = 'overdue'
