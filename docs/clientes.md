@@ -47,11 +47,12 @@ export interface Client {
   // ============================================
   // IDENTIFICACIÓN
   // ============================================
-  id: string;                    // ID único del cliente (UUID)
-  code: string;                  // Código único del cliente (ej: "CLI-2025-001")
+  id: string;                    // ID único del cliente (UUID aleatorio)
+                                // Generado automáticamente por el backend
+  code: string;                  // Código único del cliente (ej: "0001", "0002", "0003")
                                 // ⚠️ GENERADO AUTOMÁTICAMENTE por el backend
-                                // Formato: CLI-YYYY-####
-                                // No editable por el usuario
+                                // Formato: #### (0001 a 9999)
+                                // Secuencial, no editable por el usuario
   
   // ============================================
   // INFORMACIÓN BÁSICA
@@ -507,8 +508,8 @@ profit_margin = (net_profit / total_revenue) * 100  // Si total_revenue > 0
 ```sql
 CREATE TABLE clients (
   -- Identificación
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  code VARCHAR(50) UNIQUE NOT NULL,  -- CLI-YYYY-####
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- UUID aleatorio
+  code VARCHAR(4) UNIQUE NOT NULL,  -- 0001 a 9999 (secuencial)
   
   -- Información básica
   name VARCHAR(255) NOT NULL,
@@ -683,19 +684,20 @@ CREATE INDEX idx_client_bank_accounts_client_id ON client_bank_accounts(client_i
 CREATE OR REPLACE FUNCTION generate_client_code()
 RETURNS TRIGGER AS $$
 DECLARE
-  year_part VARCHAR(4);
   sequence_num INTEGER;
 BEGIN
-  year_part := TO_CHAR(NOW(), 'YYYY');
-  
-  -- Obtener el siguiente número de secuencia para el año actual
-  SELECT COALESCE(MAX(CAST(SUBSTRING(code FROM 9) AS INTEGER)), 0) + 1
+  -- Obtener el siguiente número de secuencia (0001 a 9999)
+  SELECT COALESCE(MAX(CAST(code AS INTEGER)), 0) + 1
   INTO sequence_num
-  FROM clients
-  WHERE code LIKE 'CLI-' || year_part || '-%';
+  FROM clients;
   
-  -- Generar código: CLI-YYYY-####
-  NEW.code := 'CLI-' || year_part || '-' || LPAD(sequence_num::TEXT, 4, '0');
+  -- Validar que no exceda 9999
+  IF sequence_num > 9999 THEN
+    RAISE EXCEPTION 'Se ha alcanzado el límite máximo de códigos de cliente (9999)';
+  END IF;
+  
+  -- Generar código: 0001, 0002, 0003, ..., 9999
+  NEW.code := LPAD(sequence_num::TEXT, 4, '0');
   
   RETURN NEW;
 END;
@@ -882,8 +884,8 @@ USING (
 ```typescript
 const exampleClient: Client = {
   // Identificación
-  id: "client-2025-001",
-  code: "CLI-2025-0001",
+  id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",  // UUID aleatorio
+  code: "0001",  // Código secuencial (0001 a 9999)
   
   // Información básica
   name: "Constructora ABC, S.L.",

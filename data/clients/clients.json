@@ -1,7 +1,7 @@
 [
   {
-    "id": "client-2025-001",
-    "code": "CLI-2025-0001",
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "code": "0001",
     "name": "SOFT CONTROLS DOMOTICA Y AUDIOVISUALES S",
     "commercial_name": "Soft Controls",
     "description": "Empresa especializada en domótica y sistemas audiovisuales. Cliente recurrente con proyectos de instalación LED y sistemas de control.",
@@ -136,8 +136,8 @@
     ]
   },
   {
-    "id": "client-2025-002",
-    "code": "CLI-2025-0002",
+    "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "code": "0002",
     "name": "SOLUCIONES Y EQUIPOS MULTIFUNCIONALES SL",
     "commercial_name": "CANON BCN 22",
     "description": "Empresa especializada en soluciones y equipos multifuncionales. Cliente de Barcelona con actividad comercial en equipamiento de oficina.",
