@@ -1,7 +1,6 @@
 import { Sidebar } from './components/Sidebar';
 import { Header, HeaderSection } from './components/Header';
-import { InicioResumen } from './components/InicioResumen';
-import { InicioCalendario } from './components/InicioCalendario';
+import { InicioResumen, InicioCalendario } from './pages/inicio';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { useBreakpoint } from './hooks/useBreakpoint';

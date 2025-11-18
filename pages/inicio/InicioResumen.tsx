@@ -1,11 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Calendar3Months, Task } from "./calendar";
-import { TaskSummaryWidget } from "./tasks";
+import { Calendar3Months, Task } from "../../components/calendar";
+import { TaskSummaryWidget } from "../../components/tasks";
 import { motion } from "motion/react";
-import { fetchTasksForMonth } from "../lib/mocks/taskMocks";
-import { filterTasksByModule } from "../lib/taskCategories";
+import { fetchTasksForMonth } from "../../lib/mocks/taskMocks";
+import { filterTasksByModule } from "../../lib/taskCategories";
 
 interface InicioResumenProps {
   className?: string;

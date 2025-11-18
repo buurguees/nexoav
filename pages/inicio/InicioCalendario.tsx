@@ -1,14 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Calendar18 } from "./calendar";
-import { TaskCalendarList, TaskForm } from "./tasks";
+import { Calendar18 } from "../../components/calendar";
+import { TaskCalendarList, TaskForm } from "../../components/tasks";
 import { motion } from "motion/react";
-import { useCalendarTasks } from "../hooks/useCalendarTasks";
-import { filterTasksByModule } from "../lib/taskCategories";
-import { TaskFormData } from "./tasks";
+import { useCalendarTasks } from "../../hooks/useCalendarTasks";
+import { filterTasksByModule } from "../../lib/taskCategories";
+import { TaskFormData } from "../../components/tasks";
 
-interface InicioCalendarioProps {
+export interface InicioCalendarioProps {
   className?: string;
 }
 
