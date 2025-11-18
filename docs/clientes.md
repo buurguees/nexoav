@@ -725,7 +725,7 @@ BEGIN
   UPDATE clients
   SET
     total_invoiced = (
-      SELECT COALESCE(SUM(total_amount), 0)
+      SELECT COALESCE(SUM(subtotal), 0)  -- ⚠️ SIN IVA: usar subtotal, no total_amount
       FROM invoices
       WHERE client_id = NEW.client_id
         AND status != 'cancelled'
