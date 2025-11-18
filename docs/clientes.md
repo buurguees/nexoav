@@ -161,7 +161,8 @@ export interface Client {
   // Facturación
   total_invoiced?: number;      // Total facturado (histórico)
   total_paid?: number;           // Total pagado (histórico)
-  pending_amount?: number;       // Importe pendiente de pago
+  pending_amount?: number;       // Pendiente de cobrar: Importe facturado pero aún no pagado (SIN IVA)
+                                // Calculado: facturas enviadas/vencidas - pagos registrados
   
   // Presupuestos y proformas
   total_quotes?: number;         // Total de presupuestos emitidos
@@ -461,7 +462,8 @@ total_invoiced = SUM(invoices.subtotal WHERE invoices.client_id = client.id AND 
 // Total pagado (histórico)
 total_paid = SUM(payments.amount WHERE payments.client_id = client.id)
 
-// ⚠️ IMPORTANTE: Importe pendiente de pago SIN IVA
+// ⚠️ IMPORTANTE: Pendiente de cobrar SIN IVA
+// Representa el importe ya facturado pero que aún no se ha registrado el pago
 pending_amount = SUM(invoices.subtotal WHERE invoices.client_id = client.id AND invoices.status IN ('sent', 'overdue')) - total_paid
 
 // Saldo actual (SIN IVA)
@@ -1086,7 +1088,7 @@ Referencia Proyecto: PROJ-ABC-2025
 
 ### Campos del Listado
 
-El listado de clientes muestra los siguientes campos en orden:
+El listado de clientes muestra los siguientes campos en orden (9 campos en total):
 
 1. **Número de Cliente** (`code`)
    - Código secuencial del cliente (0001, 0002, 0003, ..., 9999)
@@ -1124,7 +1126,22 @@ El listado de clientes muestra los siguientes campos en orden:
    - Cálculo: `SUM(invoices.subtotal WHERE invoices.client_id = client.id AND invoices.status != 'cancelled')`
    - Formato: Moneda (€) sin decimales o con 2 decimales según preferencia
 
-7. **Margen Limpio** (`net_profit` o `profit_margin`)
+7. **Total Facturado** (`total_invoiced`)
+   - Total facturado históricamente al cliente
+   - Campo: `client.total_invoiced`
+   - ⚠️ **IMPORTANTE: Sin IVA** - Se calcula excluyendo el IVA de las facturas
+   - Cálculo: `SUM(invoices.subtotal WHERE invoices.client_id = client.id AND invoices.status != 'cancelled')`
+   - Formato: Moneda (€) sin decimales o con 2 decimales según preferencia
+
+8. **Pendiente de Cobrar** (`pending_amount`)
+   - Importe ya facturado pero que aún no se ha registrado el pago
+   - Campo: `client.pending_amount`
+   - ⚠️ **IMPORTANTE: Sin IVA** - Se calcula excluyendo el IVA
+   - Cálculo: `SUM(invoices.subtotal WHERE invoices.status IN ('sent', 'overdue')) - total_paid`
+   - Incluye facturas enviadas y vencidas que aún no han sido pagadas
+   - Formato: Moneda (€) sin decimales o con 2 decimales según preferencia
+
+9. **Margen Limpio** (`net_profit` o `profit_margin`)
    - Beneficio neto del cliente (ingresos - costes)
    - Campo: `client.net_profit` (en €) o `client.profit_margin` (en %)
    - ⚠️ **IMPORTANTE: Sin IVA** - Todos los cálculos se realizan sin IVA
@@ -1246,6 +1263,7 @@ SELECT
 FROM clients c
 LEFT JOIN projects p ON p.client_id = c.id
 LEFT JOIN invoices i ON i.client_id = c.id AND i.status != 'cancelled'
+LEFT JOIN payments pay ON pay.client_id = c.id
 LEFT JOIN purchase_orders po ON po.client_id = c.id
 LEFT JOIN expenses e ON e.client_id = c.id
 GROUP BY c.id, c.code, c.name, c.commercial_name, c.status
