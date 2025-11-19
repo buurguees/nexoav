@@ -1,15 +1,17 @@
+"use client";
+
+import { InicioResumen } from "./desktop";
+
+export interface InicioResumenProps {
+  className?: string;
+}
+
 /**
  * Páginas del módulo Inicio
  * 
  * Este módulo contiene las vistas principales del módulo "Inicio":
- * - InicioResumen: Vista de resumen con calendario de 3 meses
- * - InicioCalendario: Vista de calendario detallado con listado de tareas
+ * - InicioResumen: Vista de resumen con 6 bloques principales (Calendario, Proyectos, Facturas, Presupuestos, Proveedores, Impuestos)
  */
 
-export { InicioResumen } from './InicioResumen';
-export { InicioCalendario } from './InicioCalendario';
-
-// Exportar tipos si es necesario en el futuro
-export type { InicioResumenProps } from './InicioResumen';
-export type { InicioCalendarioProps } from './InicioCalendario';
-
+// Re-exportar componentes desktop (por ahora, luego se añadirán mobile/tablet)
+export { InicioResumen };

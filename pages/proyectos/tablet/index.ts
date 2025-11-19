@@ -1,0 +1,2 @@
+export { ProyectosTablet } from "./Proyectos";
+

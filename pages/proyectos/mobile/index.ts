@@ -1,0 +1,2 @@
+export { ProyectosMobile } from "./Proyectos";
+

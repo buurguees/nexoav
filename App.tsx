@@ -1,14 +1,23 @@
 import { Sidebar } from './components/Sidebar';
-import { Header, HeaderSection } from './components/Header';
-import { InicioResumen, InicioCalendario } from './pages/inicio';
-import { Clientes } from './pages/proyectos';
+import { Header } from './components/Header';
+import { InicioResumen } from './pages/inicio';
+import { Clientes } from './pages/clientes';
+import { Proyectos } from './pages/proyectos';
+import { Calendario } from './pages/calendario';
+import { Proveedores } from './pages/proveedores';
+import { Gastos } from './pages/gastos';
+import { Facturacion } from './pages/facturacion';
+import { Inventario } from './pages/inventario';
+import { Tesoreria } from './pages/tesoreria';
+import { Contabilidad } from './pages/contabilidad';
+import { Impuestos } from './pages/impuestos';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { useBreakpoint } from './hooks/useBreakpoint';
 import { useRouter } from './hooks/useRouter';
 
 export default function App() {
-  const { section: currentSection, path: currentPath, navigate, changeSection } = useRouter();
+  const { path: currentPath, navigate } = useRouter();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const breakpoint = useBreakpoint();
@@ -18,57 +27,69 @@ export default function App() {
 
   const handleNavigate = (path: string) => {
     navigate(path);
-  };
-
-  const handleSectionChange = (section: HeaderSection) => {
-    // Determinar la ruta por defecto según la sección (primera opción del sidebar)
-    let defaultPath = '/';
-    switch (section) {
-      case 'inicio':
-        defaultPath = '/';
-        break;
-      case 'facturacion':
-        defaultPath = '/facturacion/facturas';
-        break;
-      case 'proyectos':
-        defaultPath = '/proyectos';
-        break;
-      case 'productos':
-        defaultPath = '/productos';
-        break;
-      case 'rrhh':
-        defaultPath = '/rrhh/plantilla';
-        break;
-      case 'empresa':
-        defaultPath = '/empresa/datos';
-        break;
-    }
-    
-    changeSection(section, defaultPath);
-    
-    // Cerrar el sidebar en mobile cuando se cambia de sección desde el navbar inferior
-    if (breakpoint === 'mobile') {
+    // Cerrar el sidebar en mobile/tablet cuando se navega
+    if (isMobile || isTablet) {
       setIsSidebarOpen(false);
     }
   };
 
   const renderContent = () => {
-    // Mostrar InicioResumen cuando estamos en la sección "inicio" y en la ruta "/" (Resumen)
-    if (currentSection === 'inicio' && currentPath === '/') {
+    // Inicio
+    if (currentPath === '/') {
       return <InicioResumen />;
     }
 
-    // Mostrar InicioCalendario cuando estamos en la sección "inicio" y en la ruta "/calendario"
-    if (currentSection === 'inicio' && currentPath === '/calendario') {
-      return <InicioCalendario />;
+    // Calendario
+    if (currentPath === '/calendario') {
+      return <Calendario />;
     }
 
-    // Mostrar Clientes cuando estamos en la sección "proyectos" y en la ruta "/proyectos/clientes"
-    if (currentSection === 'proyectos' && currentPath === '/proyectos/clientes') {
+    // Clientes
+    if (currentPath === '/clientes') {
       return <Clientes />;
     }
 
-    // Mostrar contenido por defecto para otras rutas
+    // Proyectos
+    if (currentPath === '/proyectos') {
+      return <Proyectos />;
+    }
+
+    // Proveedores
+    if (currentPath === '/proveedores') {
+      return <Proveedores />;
+    }
+
+    // Gastos
+    if (currentPath === '/gastos') {
+      return <Gastos />;
+    }
+
+    // Facturación
+    if (currentPath === '/facturacion') {
+      return <Facturacion />;
+    }
+
+    // Inventario
+    if (currentPath === '/inventario') {
+      return <Inventario />;
+    }
+
+    // Tesorería
+    if (currentPath === '/tesoreria') {
+      return <Tesoreria />;
+    }
+
+    // Contabilidad
+    if (currentPath === '/contabilidad') {
+      return <Contabilidad />;
+    }
+
+    // Impuestos
+    if (currentPath === '/impuestos') {
+      return <Impuestos />;
+    }
+
+    // Fallback para rutas no reconocidas
     return (
       <motion.div
         key={currentPath}
@@ -79,13 +100,13 @@ export default function App() {
         style={{ height: '100%' }}
       >
         <h1 style={{ color: 'var(--foreground)', marginBottom: 'var(--spacing-lg)' }}>
-          {currentSection.charAt(0).toUpperCase() + currentSection.slice(1)}
+          Página no encontrada
         </h1>
         <p style={{ color: 'var(--foreground-secondary)' }}>
           Ruta actual: {currentPath || '/'}
         </p>
         <p style={{ color: 'var(--foreground-tertiary)', fontSize: '12px', marginTop: 'var(--spacing-sm)' }}>
-          Esta vista se desarrollará más adelante con contenido específico.
+          Esta ruta no está implementada aún.
         </p>
       </motion.div>
     );
@@ -93,10 +114,8 @@ export default function App() {
 
   return (
     <div style={{ backgroundColor: 'var(--background)', height: '100vh', overflow: 'hidden' }}>
-      {/* Header - Fixed */}
+      {/* Header - Fixed (simplificado: solo búsqueda, notificaciones y perfil) */}
       <Header 
-        currentSection={currentSection} 
-        onSectionChange={handleSectionChange}
         notificationCount={5}
         onMenuClick={() => setIsSidebarOpen(true)}
       />
@@ -104,7 +123,6 @@ export default function App() {
       {/* Sidebar - Fixed */}
       <Sidebar 
         currentPath={currentPath} 
-        currentSection={currentSection}
         onNavigate={handleNavigate}
         onCollapseChange={setIsSidebarCollapsed}
         isOpen={isSidebarOpen}

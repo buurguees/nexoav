@@ -1,0 +1,2 @@
+export { IconWrapper } from './IconWrapper';
+
