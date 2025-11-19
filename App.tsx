@@ -1,5 +1,5 @@
-import { Sidebar } from './components/Sidebar';
-import { Header } from './components/Header';
+import { Sidebar } from './components/sidebar/sidebar';
+import { Header } from './components/header/header';
 import { InicioResumen } from './pages/inicio';
 import { Clientes } from './pages/clientes';
 import { Proyectos } from './pages/proyectos';

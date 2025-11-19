@@ -1,6 +1,8 @@
+"use client";
+
 import { motion, AnimatePresence } from 'motion/react';
-import { HeaderSearch } from '../../header/desktop/HeaderSearch';
-import { HeaderActions } from '../../header/desktop/HeaderActions';
+import { HeaderSearch } from './HeaderSearch';
+import { HeaderActions } from './HeaderActions';
 import { SettingsPanel } from '../../settings/SettingsPanel';
 import { Search, X } from 'lucide-react';
 import { IconWrapper } from '../../icons/desktop/IconWrapper';
