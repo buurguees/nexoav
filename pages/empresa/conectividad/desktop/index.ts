@@ -1,0 +1,2 @@
+export { ConectividadDesktop } from "./Conectividad";
+

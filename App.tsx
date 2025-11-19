@@ -38,6 +38,11 @@ import { Empleados } from './pages/rrhh/empleados';
 import { Nominas } from './pages/rrhh/nominas';
 import { Externos as ExternosRRHH } from './pages/rrhh/externos';
 import { Empresa } from './pages/empresa';
+import { DatosFiscales } from './pages/empresa/datos-fiscales';
+import { Preferencias } from './pages/empresa/preferencias';
+import { Plantillas } from './pages/empresa/plantillas';
+import { Conectividad } from './pages/empresa/conectividad';
+import { Documentacion } from './pages/empresa/documentacion';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { useBreakpoint } from './hooks/useBreakpoint';
@@ -223,12 +228,20 @@ export default function App() {
     }
 
     // Empresa - Submenús
-    if (currentPath === '/empresa/datos-fiscales' || 
-        currentPath === '/empresa/preferencias' || 
-        currentPath === '/empresa/plantillas' ||
-        currentPath === '/empresa/conectividad' ||
-        currentPath === '/empresa/documentacion') {
-      return <Empresa />;
+    if (currentPath === '/empresa/datos-fiscales') {
+      return <DatosFiscales />;
+    }
+    if (currentPath === '/empresa/preferencias') {
+      return <Preferencias />;
+    }
+    if (currentPath === '/empresa/plantillas') {
+      return <Plantillas />;
+    }
+    if (currentPath === '/empresa/conectividad') {
+      return <Conectividad />;
+    }
+    if (currentPath === '/empresa/documentacion') {
+      return <Documentacion />;
     }
 
     // Fallback para rutas no reconocidas

@@ -1,24 +1,22 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 
 /**
- * Página de Impuestos - Versión Desktop (> 1024px)
- * Layout: Sidebar (20%) + Contenido Reservado (80%)
+ * Página de Plantillas - Versión Desktop (> 1024px)
+ * Layout optimizado para gestionar plantillas de la empresa
+ * Listado (60%) + Editor/Vista Previa (40%)
  * Optimizado para diferentes tamaños de pantalla desktop
  */
 
-/**
- * Hook para detectar el tamaño de pantalla desktop
- */
 function useDesktopSize() {
   const [size, setSize] = useState<'small' | 'medium' | 'large' | 'xlarge'>(() => {
     if (typeof window === 'undefined') return 'medium';
     const width = window.innerWidth;
-    if (width < 1280) return 'small';      // 1025px - 1279px: Desktop pequeño
-    if (width < 1600) return 'medium';     // 1280px - 1599px: Desktop medio
-    if (width < 1920) return 'large';      // 1600px - 1919px: Desktop grande
-    return 'xlarge';                        // 1920px+: Desktop extra grande
+    if (width < 1280) return 'small';
+    if (width < 1600) return 'medium';
+    if (width < 1920) return 'large';
+    return 'xlarge';
   });
 
   useEffect(() => {
@@ -104,29 +102,32 @@ function SpaceBlock({
   );
 }
 
-export function ImpuestosDesktop() {
+export function PlantillasDesktop() {
   const desktopSize = useDesktopSize();
   
-  // Configuración responsive según tamaño de desktop
   const config = {
     small: {
       padding: "var(--spacing-xs)",
       gap: "var(--spacing-xs)",
+      headerHeight: "35px",
       fontSize: "11px",
     },
     medium: {
       padding: "var(--spacing-xs)",
       gap: "var(--spacing-xs)",
+      headerHeight: "40px",
       fontSize: "12px",
     },
     large: {
       padding: "var(--spacing-sm)",
       gap: "var(--spacing-sm)",
+      headerHeight: "45px",
       fontSize: "12px",
     },
     xlarge: {
       padding: "var(--spacing-sm)",
       gap: "var(--spacing-sm)",
+      headerHeight: "50px",
       fontSize: "13px",
     },
   };
@@ -137,7 +138,7 @@ export function ImpuestosDesktop() {
     <div
       style={{
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         gap: currentConfig.gap,
         padding: currentConfig.padding,
         height: "100%",
@@ -146,46 +147,120 @@ export function ImpuestosDesktop() {
         overflow: "hidden",
       }}
     >
-      {/* Sidebar (20%) */}
+      {/* Header: Filtros, Título, Herramientas */}
       <div
         style={{
-          width: "20%",
-          display: "flex",
-          flexDirection: "column",
+          display: "grid",
+          gridTemplateColumns: "2fr 6fr 2fr",
           gap: currentConfig.gap,
-          height: "100%",
-          minHeight: 0,
-          overflow: "hidden",
+          height: currentConfig.headerHeight,
+          flexShrink: 0,
+          minHeight: currentConfig.headerHeight,
         }}
       >
         <SpaceBlock
-          label="Sidebar de Impuestos"
+          label="Filtros"
+          height="100%"
+          color="rgba(255, 165, 0, 0.15)"
+          fontSize={currentConfig.fontSize}
+        />
+        <SpaceBlock
+          label="Plantillas"
           height="100%"
           color="var(--background-secondary)"
-          description="Navegación y opciones de impuestos"
+          fontSize={currentConfig.fontSize}
+        />
+        <SpaceBlock
+          label="Herramientas"
+          height="100%"
+          color="rgba(67, 83, 255, 0.15)"
           fontSize={currentConfig.fontSize}
         />
       </div>
 
-      {/* Contenido Reservado (80%) */}
+      {/* Contenido principal: Listado (60%) + Editor (40%) */}
       <div
         style={{
-          width: "80%",
-          display: "flex",
-          flexDirection: "column",
+          display: "grid",
+          gridTemplateColumns: "6fr 4fr",
           gap: currentConfig.gap,
-          height: "100%",
+          flex: 1,
           minHeight: 0,
-          overflow: "hidden",
+          height: "100%",
         }}
       >
-        <SpaceBlock
-          label="Contenido Reservado"
-          height="100%"
-          color="rgba(128, 128, 128, 0.1)"
-          description="Área reservada para contenido futuro"
-          fontSize={currentConfig.fontSize}
-        />
+        {/* Listado de Plantillas (60%) */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: currentConfig.gap,
+            height: "100%",
+            minHeight: 0,
+            overflow: "hidden",
+          }}
+        >
+          {/* Contenido del listado con scroll */}
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: "auto",
+              overflowX: "hidden",
+            }}
+          >
+            <SpaceBlock
+              label="Listado de Plantillas"
+              height="100%"
+              color="rgba(156, 81, 224, 0.1)"
+              fontSize={currentConfig.fontSize}
+            />
+          </div>
+        </div>
+
+        {/* Editor/Vista Previa (40%) */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: currentConfig.gap,
+            height: "100%",
+            minHeight: 0,
+            overflow: "hidden",
+          }}
+        >
+          {/* Título del Editor */}
+          <div
+            style={{
+              height: currentConfig.headerHeight,
+              flexShrink: 0,
+              minHeight: currentConfig.headerHeight,
+            }}
+          >
+            <SpaceBlock
+              label="Editor / Vista Previa"
+              height="100%"
+              color="var(--background-secondary)"
+              fontSize={currentConfig.fontSize}
+            />
+          </div>
+          
+          {/* Contenido del Editor */}
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              overflow: "hidden",
+            }}
+          >
+            <SpaceBlock
+              label="Editor de Plantillas"
+              height="100%"
+              color="rgba(156, 81, 224, 0.15)"
+              fontSize={currentConfig.fontSize}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
