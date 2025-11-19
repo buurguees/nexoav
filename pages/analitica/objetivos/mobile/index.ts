@@ -1,0 +1,2 @@
+export { ObjetivosMobile } from "./Objetivos";
+

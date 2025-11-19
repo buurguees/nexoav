@@ -1,0 +1,2 @@
+export { CuentasBancariasDesktop } from "./CuentasBancarias";
+

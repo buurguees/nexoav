@@ -1,0 +1,2 @@
+export { InformesDesktop } from "./Informes";
+

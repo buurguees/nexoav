@@ -1,0 +1,2 @@
+export { CategoriasTabletHorizontal } from "./Categorias";
+

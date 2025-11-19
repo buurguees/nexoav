@@ -1,0 +1,2 @@
+export { EmpleadosDesktop } from "./Empleados";
+

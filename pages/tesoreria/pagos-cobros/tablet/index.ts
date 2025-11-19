@@ -1,0 +1,2 @@
+export { PagosCobrosTablet } from "./PagosCobros";
+

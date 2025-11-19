@@ -1,0 +1,2 @@
+export { CuentasBancariasTabletHorizontal } from "./CuentasBancarias";
+

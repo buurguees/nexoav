@@ -1,0 +1,2 @@
+export { ServiciosTablet } from "./Servicios";
+

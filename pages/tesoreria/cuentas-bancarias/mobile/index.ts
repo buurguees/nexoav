@@ -1,0 +1,2 @@
+export { CuentasBancariasMobile } from "./CuentasBancarias";
+

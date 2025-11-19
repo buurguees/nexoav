@@ -1,0 +1,2 @@
+export { CuadroCuentasDesktop } from "./CuadroCuentas";
+

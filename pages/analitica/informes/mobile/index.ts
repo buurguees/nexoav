@@ -1,0 +1,2 @@
+export { InformesMobile } from "./Informes";
+

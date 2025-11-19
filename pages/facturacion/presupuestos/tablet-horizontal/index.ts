@@ -1,0 +1,2 @@
+export { PresupuestosTabletHorizontal } from "./Presupuestos";
+

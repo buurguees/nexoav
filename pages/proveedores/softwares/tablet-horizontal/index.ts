@@ -1,0 +1,2 @@
+export { SoftwaresTabletHorizontal } from "./Softwares";
+

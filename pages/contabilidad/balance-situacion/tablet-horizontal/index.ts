@@ -1,0 +1,2 @@
+export { BalanceSituacionTabletHorizontal } from "./BalanceSituacion";
+

@@ -1,0 +1,2 @@
+export { InformesTabletHorizontal } from "./Informes";
+

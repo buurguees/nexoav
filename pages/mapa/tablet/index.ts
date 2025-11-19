@@ -1,0 +1,2 @@
+export { MapaTablet } from "./Mapa";
+

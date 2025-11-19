@@ -1,0 +1,2 @@
+export { MaterialesMobile } from "./Materiales";
+

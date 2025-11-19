@@ -1,0 +1,2 @@
+export { ActivosMobile } from "./Activos";
+

@@ -1,0 +1,2 @@
+export { CategoriasTablet } from "./Categorias";
+

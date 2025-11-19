@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { HeaderSearch } from '../../header/desktop/HeaderSearch';
 import { HeaderActions } from '../../header/desktop/HeaderActions';
+import { SettingsPanel } from '../../settings/SettingsPanel';
 import { Search, X } from 'lucide-react';
 import { IconWrapper } from '../../icons/desktop/IconWrapper';
 import { useState } from 'react';
@@ -17,6 +18,7 @@ export function HeaderDesktop({
   notificationCount = 0
 }: HeaderDesktopProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <motion.header
@@ -38,7 +40,13 @@ export function HeaderDesktop({
     >
       {/* Right Side Actions - Absolute positioned */}
       <div 
-        className="absolute right-6 flex items-center gap-2"
+        style={{
+          position: 'absolute',
+          right: 'var(--spacing-2xl)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--spacing-sm)',
+        }}
       >
         {/* Search Toggle or Search Input */}
         <AnimatePresence mode="wait">
@@ -102,9 +110,17 @@ export function HeaderDesktop({
         <HeaderActions 
           notificationCount={notificationCount}
           onNotificationClick={() => console.log('Notifications')}
-          onSettingsClick={() => console.log('Settings')}
+          onSettingsClick={() => setIsSettingsOpen(true)}
+          onProfileClick={() => console.log('Profile')}
+          userName="Usuario"
         />
       </div>
+
+      {/* Settings Panel */}
+      <SettingsPanel 
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </motion.header>
   );
 }

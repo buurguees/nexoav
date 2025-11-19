@@ -1,0 +1,2 @@
+export { ExternosTablet } from "./Externos";
+

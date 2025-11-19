@@ -6,19 +6,39 @@ interface HeaderActionsProps {
   notificationCount?: number;
   onNotificationClick?: () => void;
   onSettingsClick?: () => void;
+  onProfileClick?: () => void;
+  userName?: string;
+  userAvatar?: string;
 }
 
 export function HeaderActions({ 
   notificationCount = 0, 
   onNotificationClick, 
-  onSettingsClick 
+  onSettingsClick,
+  onProfileClick,
+  userName = 'Usuario',
+  userAvatar
 }: HeaderActionsProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center" style={{ gap: 'var(--spacing-sm)' }}>
       {/* Notifications */}
       <motion.button
         onClick={onNotificationClick}
-        className="relative p-2 rounded-lg hover:bg-white/5 text-white/60 hover:text-white transition-colors"
+        style={{
+          position: 'relative',
+          padding: 'var(--spacing-sm)',
+          borderRadius: 'var(--radius-md)',
+          color: 'var(--foreground-tertiary)',
+          transition: 'var(--transition-default)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
+          e.currentTarget.style.color = 'var(--foreground)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.color = 'var(--foreground-tertiary)';
+        }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -27,9 +47,24 @@ export function HeaderActions({
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-cyan-500 rounded-full flex items-center justify-center"
+            style={{
+              position: 'absolute',
+              top: '-2px',
+              right: '-2px',
+              width: '16px',
+              height: '16px',
+              backgroundColor: 'var(--accent-blue-primary)',
+              borderRadius: 'var(--radius-full)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <span className="text-[9px] font-medium text-black">
+            <span style={{ 
+              fontSize: '9px', 
+              fontWeight: 'var(--font-weight-medium)',
+              color: 'var(--primary-foreground)',
+            }}>
               {notificationCount > 9 ? '9+' : notificationCount}
             </span>
           </motion.div>
@@ -39,12 +74,94 @@ export function HeaderActions({
       {/* Settings */}
       <motion.button
         onClick={onSettingsClick}
-        className="p-2 rounded-lg hover:bg-white/5 text-white/60 hover:text-white transition-colors"
+        style={{
+          padding: 'var(--spacing-sm)',
+          borderRadius: 'var(--radius-md)',
+          color: 'var(--foreground-tertiary)',
+          transition: 'var(--transition-default)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
+          e.currentTarget.style.color = 'var(--foreground)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.color = 'var(--foreground-tertiary)';
+        }}
         whileHover={{ scale: 1.05, rotate: 90 }}
         whileTap={{ scale: 0.95 }}
         transition={{ duration: 0.3 }}
       >
         <IconWrapper icon={Settings} size={16} />
+      </motion.button>
+
+      {/* User Profile */}
+      <motion.button
+        onClick={onProfileClick}
+        style={{
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--spacing-sm)',
+          padding: 'var(--spacing-xs) var(--spacing-sm)',
+          borderRadius: 'var(--radius-md)',
+          transition: 'var(--transition-default)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+        }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <div style={{
+          position: 'relative',
+          width: '32px',
+          height: '32px',
+          borderRadius: 'var(--radius-full)',
+          overflow: 'hidden',
+          background: 'linear-gradient(135deg, var(--accent-blue-light), var(--accent-purple))',
+          flexShrink: 0,
+        }}>
+          {userAvatar ? (
+            <img src={userAvatar} alt={userName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <div style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--foreground)',
+              fontSize: '12px',
+              fontWeight: 'var(--font-weight-medium)',
+            }}>
+              {userName.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </div>
+        {/* Online status indicator */}
+        <div style={{
+          position: 'absolute',
+          left: '18px',
+          bottom: 0,
+          width: '10px',
+          height: '10px',
+          backgroundColor: 'var(--accent-green-completed)',
+          borderRadius: 'var(--radius-full)',
+          border: '2px solid var(--background-sidebar)',
+        }} />
+        {/* User Name */}
+        <span style={{
+          fontSize: '14px',
+          color: 'var(--foreground)',
+          fontWeight: 'var(--font-weight-medium)',
+          whiteSpace: 'nowrap',
+        }}>
+          {userName}
+        </span>
       </motion.button>
     </div>
   );

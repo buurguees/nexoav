@@ -1,0 +1,2 @@
+export { CategoriasMobile } from "./Categorias";
+

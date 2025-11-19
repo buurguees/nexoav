@@ -1,47 +1,507 @@
+/**
+ * ============================================================================
+ * SISTEMA DE TEMAS - globals.css tiene PRIORIDAD ABSOLUTA
+ * ============================================================================
+ * 
+ * IMPORTANTE: Este archivo (globals.css) es la ÚNICA fuente de verdad para
+ * todos los estilos de la aplicación. Todas las páginas y componentes deben
+ * usar las variables CSS definidas aquí para mantener homogeneidad.
+ * 
+ * - ThemeContext solo actúa como selector de tema (cambia clases CSS)
+ * - themes.ts solo proporciona metadatos (nombres, colorScheme)
+ * - globals.css define TODOS los valores de colores, radios, espaciados, etc.
+ * 
+ * USO DE VARIABLES CSS:
+ * - Siempre usar var(--variable-name) en lugar de valores hardcodeados
+ * - Para colores con opacidad, usar las variables *-alpha-* definidas
+ * - Para espaciados, usar var(--spacing-*)
+ * - Para radios, usar var(--radius-*)
+ * - Para tipografía, usar var(--font-*)
+ * 
+ * EJEMPLOS:
+ * ✅ CORRECTO: backgroundColor: 'var(--background-secondary)'
+ * ✅ CORRECTO: color: 'var(--foreground)'
+ * ✅ CORRECTO: padding: 'var(--spacing-md)'
+ * ✅ CORRECTO: borderRadius: 'var(--radius-md)'
+ * ✅ CORRECTO: backgroundColor: 'var(--accent-blue-primary-alpha-15)'
+ * 
+ * ❌ INCORRECTO: backgroundColor: '#2a2a2a'
+ * ❌ INCORRECTO: color: '#FFFFFF'
+ * ❌ INCORRECTO: padding: '12px'
+ * ❌ INCORRECTO: backgroundColor: 'rgba(67, 83, 255, 0.15)'
+ * ============================================================================
+ */
+
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  /* Tipografía - MANTENIENDO SUSE */
-  --font-size: 16px;
+:root,
+:root:not([class*="theme-"]) {
+  /* ========================================================================
+   * SISTEMA DE TIPOGRAFÍA - MANTENIENDO SUSE
+   * ========================================================================
+   * Todos los tamaños de letra deben usar estas variables CSS.
+   * NO usar valores hardcodeados como "12px", "14px", etc.
+   * 
+   * USO: fontSize: 'var(--font-size-xs)' en lugar de fontSize: '10px'
+   * ======================================================================== */
+  
+  /* Tamaño base del HTML (usado como referencia para rem) */
+  --font-size-html: 16px;
+  --font-size: 16px; /* Alias para compatibilidad */
+  
+  /* Escala tipográfica optimizada */
+  /* Extra pequeños - Para etiquetas, badges, tooltips */
+  --font-size-2xs: 8px;      /* 0.5rem - Texto muy pequeño, iconos con texto */
+  --font-size-3xs: 9px;      /* 0.5625rem - Texto diminuto */
+  --font-size-xs: 10px;      /* 0.625rem - Etiquetas pequeñas, badges */
+  
+  /* Pequeños - Para descripciones, metadata, notas */
+  --font-size-sm: 11px;      /* 0.6875rem - Descripciones, metadata */
+  --font-size-sm-alt: 12px;  /* 0.75rem - Texto secundario, descripciones */
+  
+  /* Mediano - Texto base del cuerpo */
+  --font-size-base: 13px;    /* 0.8125rem - Texto base del cuerpo (párrafos) */
+  --font-size-md: 13px;      /* Alias para compatibilidad */
+  
+  /* Medianos-grandes - Para títulos menores y texto destacado */
+  --font-size-lg: 14px;      /* 0.875rem - Texto destacado, subtítulos menores */
+  
+  /* Grandes - Para títulos y encabezados */
+  --font-size-xl: 16px;      /* 1rem - Títulos de sección (h4) */
+  --font-size-2xl: 18px;     /* 1.125rem - Títulos medianos (h3) */
+  --font-size-3xl: 20px;     /* 1.25rem - Títulos grandes (h2) */
+  --font-size-4xl: 24px;     /* 1.5rem - Títulos muy grandes (h1) */
+  --font-size-5xl: 32px;     /* 2rem - Títulos extra grandes */
+  
+  /* Pesos de fuente */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   
-  /* Paleta de colores - Fondos */
+  /* Alturas de línea (line-height) */
+  --line-height-tight: 1.2;    /* Para títulos grandes */
+  --line-height-normal: 1.5;    /* Para texto base */
+  --line-height-relaxed: 1.75; /* Para texto largo/legible */
+  
+  /* Espaciado entre letras (letter-spacing) */
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.02em;
+  --letter-spacing-wider: 0.05em; /* Para uppercase labels */
+  
+  /* Paleta de colores - Fondos (Valores por defecto - Tema Silk) */
+  /* Estas variables se sobrescriben por las clases de tema en globals.css */
+  --background: oklch(97% 0.0035 67.78);
+  --background-secondary: oklch(95% 0.0081 61.42);
+  --background-sidebar: oklch(90% 0.0081 61.42);
+  --background-header: oklch(95% 0.0081 61.42);
+  
+  /* Paleta de colores - Texto (Valores por defecto) */
+  --foreground: oklch(40% 0.0081 61.42);
+  --foreground-secondary: oklch(50% 0.0081 61.42);
+  --foreground-tertiary: oklch(60% 0.0081 61.42);
+  --foreground-disabled: oklch(70% 0.0081 61.42);
+  
+  /* Paleta de colores - Acentos (Valores por defecto) */
+  --accent-blue-primary: oklch(23.27% 0.0249 284.3);
+  --accent-blue-hover: oklch(30% 0.0249 284.3);
+  --accent-blue-light: oklch(50% 0.1148 241.68);
+  --accent-purple: oklch(23.27% 0.0249 284.3);
+  --accent-green-completed: oklch(83.92% 0.0901 136.87);
+  --accent-green-hover: oklch(88% 0.0901 136.87);
+  
+  /* Paleta de colores - Estados (Valores por defecto) */
+  --state-in-progress: oklch(80.39% 0.1148 241.68);
+  --state-pending: oklch(60% 0.0081 61.42);
+  --state-completed: oklch(83.92% 0.0901 136.87);
+  
+  /* Paleta de colores - Bordes (Valores por defecto) */
+  --border-soft: oklch(95% 0.0081 61.42);
+  --border-medium: oklch(90% 0.0081 61.42);
+  --border-highlight: oklch(85% 0.0081 61.42);
+  
+  /* Componentes base (Valores por defecto) */
+  --card: oklch(97% 0.0035 67.78);
+  --card-foreground: oklch(40% 0.0081 61.42);
+  --popover: oklch(97% 0.0035 67.78);
+  --popover-foreground: oklch(40% 0.0081 61.42);
+  --primary: oklch(23.27% 0.0249 284.3);
+  --primary-foreground: oklch(94.22% 0.2505 117.44);
+  --secondary: oklch(23.27% 0.0249 284.3);
+  --secondary-foreground: oklch(73.92% 0.2135 50.94);
+  --muted: oklch(90% 0.0081 61.42);
+  --muted-foreground: oklch(50% 0.0081 61.42);
+  --accent: oklch(23.27% 0.0249 284.3);
+  --accent-foreground: oklch(88.92% 0.2061 189.9);
+  --destructive: oklch(75.1% 0.1814 22.37);
+  --destructive-foreground: oklch(35.1% 0.1814 22.37);
+  --border: oklch(90% 0.0081 61.42);
+  --input: oklch(97% 0.0035 67.78);
+  --input-background: oklch(97% 0.0035 67.78);
+  --switch-background: oklch(90% 0.0081 61.42);
+  --ring: oklch(23.27% 0.0249 284.3);
+  
+  /* Sidebar (Valores por defecto) */
+  --sidebar: oklch(90% 0.0081 61.42);
+  --sidebar-foreground: oklch(40% 0.0081 61.42);
+  --sidebar-primary: oklch(23.27% 0.0249 284.3);
+  --sidebar-primary-foreground: oklch(94.22% 0.2505 117.44);
+  --sidebar-accent: oklch(95% 0.0081 61.42);
+  --sidebar-accent-foreground: oklch(40% 0.0081 61.42);
+  --sidebar-border: oklch(90% 0.0081 61.42);
+  --sidebar-ring: oklch(23.27% 0.0249 284.3);
+  
+  /* Espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 32px;
+  
+  /* Border radius (Valores por defecto - Tema Silk) */
+  /* Estas variables se sobrescriben dinámicamente por el ThemeContext */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+  --radius: 0.5rem;
+  --radius-selector: 2rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.2);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.3);
+  --shadow-xl: 0 8px 32px rgba(0,0,0,0.4);
+  
+  /* Transiciones */
+  --transition-default: all 0.2s ease;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Layout */
+  --sidebar-width: 216px;
+  --header-height: 56px;
+  --content-padding: 24px;
+  --max-content-width: 1400px;
+  --grid-gap: 16px;
+  
+  /* Propiedades adicionales (Valores por defecto) */
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --depth: 1;
+  --noise: 0;
+  
+  /* Charts (Valores por defecto) */
+  --chart-1: oklch(23.27% 0.0249 284.3);
+  --chart-2: oklch(83.92% 0.0901 136.87);
+  --chart-3: oklch(80.39% 0.1148 241.68);
+  --chart-4: oklch(83.92% 0.1085 80);
+  --chart-5: oklch(75.1% 0.1814 22.37);
+  
+  /* Colores con opacidad para uso en backgrounds semitransparentes */
+  /* Usar estas variables en lugar de rgba() hardcodeado */
+  --accent-blue-primary-alpha-10: color-mix(in srgb, var(--accent-blue-primary) 10%, transparent);
+  --accent-blue-primary-alpha-15: color-mix(in srgb, var(--accent-blue-primary) 15%, transparent);
+  --accent-blue-primary-alpha-20: color-mix(in srgb, var(--accent-blue-primary) 20%, transparent);
+  --accent-green-completed-alpha-10: color-mix(in srgb, var(--accent-green-completed) 10%, transparent);
+  --accent-green-completed-alpha-15: color-mix(in srgb, var(--accent-green-completed) 15%, transparent);
+  --accent-green-completed-alpha-20: color-mix(in srgb, var(--accent-green-completed) 20%, transparent);
+  --accent-purple-alpha-10: color-mix(in srgb, var(--accent-purple) 10%, transparent);
+  --accent-purple-alpha-15: color-mix(in srgb, var(--accent-purple) 15%, transparent);
+  --accent-purple-alpha-20: color-mix(in srgb, var(--accent-purple) 20%, transparent);
+  --warning-alpha-10: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  --warning-alpha-15: color-mix(in srgb, var(--color-warning) 15%, transparent);
+  --warning-alpha-20: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  --error-alpha-10: color-mix(in srgb, var(--color-error) 10%, transparent);
+  --error-alpha-15: color-mix(in srgb, var(--color-error) 15%, transparent);
+  --error-alpha-20: color-mix(in srgb, var(--color-error) 20%, transparent);
+  --neutral-alpha-10: color-mix(in srgb, var(--color-neutral) 10%, transparent);
+  --neutral-alpha-15: color-mix(in srgb, var(--color-neutral) 15%, transparent);
+  --neutral-alpha-20: color-mix(in srgb, var(--color-neutral) 20%, transparent);
+  
+  /* Colores del tema Silk para uso directo */
+  --color-base-100: oklch(97% 0.0035 67.78);
+  --color-base-200: oklch(95% 0.0081 61.42);
+  --color-base-300: oklch(90% 0.0081 61.42);
+  --color-base-content: oklch(40% 0.0081 61.42);
+  --color-primary: oklch(23.27% 0.0249 284.3);
+  --color-primary-content: oklch(94.22% 0.2505 117.44);
+  --color-secondary: oklch(23.27% 0.0249 284.3);
+  --color-secondary-content: oklch(73.92% 0.2135 50.94);
+  --color-accent: oklch(23.27% 0.0249 284.3);
+  --color-accent-content: oklch(88.92% 0.2061 189.9);
+  --color-neutral: oklch(20% 0 0);
+  --color-neutral-content: oklch(80% 0.0081 61.42);
+  --color-info: oklch(80.39% 0.1148 241.68);
+  --color-info-content: oklch(30.39% 0.1148 241.68);
+  --color-success: oklch(83.92% 0.0901 136.87);
+  --color-success-content: oklch(23.92% 0.0901 136.87);
+  --color-warning: oklch(83.92% 0.1085 80);
+  --color-warning-content: oklch(43.92% 0.1085 80);
+  --color-error: oklch(75.1% 0.1814 22.37);
+  --color-error-content: oklch(35.1% 0.1814 22.37);
+}
+
+/* Los temas se aplican mediante clases CSS - globals.css tiene prioridad */
+/* ThemeContext solo cambia la clase del tema, no sobrescribe variables */
+
+/* Tema Silk */
+.theme-silk {
+  --background: oklch(97% 0.0035 67.78);
+  --background-secondary: oklch(95% 0.0081 61.42);
+  --background-sidebar: oklch(90% 0.0081 61.42);
+  --background-header: oklch(95% 0.0081 61.42);
+  --foreground: oklch(40% 0.0081 61.42);
+  --foreground-secondary: oklch(50% 0.0081 61.42);
+  --foreground-tertiary: oklch(60% 0.0081 61.42);
+  --foreground-disabled: oklch(70% 0.0081 61.42);
+  --accent-blue-primary: oklch(23.27% 0.0249 284.3);
+  --accent-blue-hover: oklch(30% 0.0249 284.3);
+  --accent-blue-light: oklch(50% 0.1148 241.68);
+  --accent-purple: oklch(23.27% 0.0249 284.3);
+  --accent-green-completed: oklch(83.92% 0.0901 136.87);
+  --accent-green-hover: oklch(88% 0.0901 136.87);
+  --state-in-progress: oklch(80.39% 0.1148 241.68);
+  --state-pending: oklch(60% 0.0081 61.42);
+  --state-completed: oklch(83.92% 0.0901 136.87);
+  --border-soft: oklch(95% 0.0081 61.42);
+  --border-medium: oklch(90% 0.0081 61.42);
+  --border-highlight: oklch(85% 0.0081 61.42);
+  --card: oklch(97% 0.0035 67.78);
+  --card-foreground: oklch(40% 0.0081 61.42);
+  --popover: oklch(97% 0.0035 67.78);
+  --popover-foreground: oklch(40% 0.0081 61.42);
+  --primary: oklch(23.27% 0.0249 284.3);
+  --primary-foreground: oklch(94.22% 0.2505 117.44);
+  --secondary: oklch(23.27% 0.0249 284.3);
+  --secondary-foreground: oklch(73.92% 0.2135 50.94);
+  --muted: oklch(90% 0.0081 61.42);
+  --muted-foreground: oklch(50% 0.0081 61.42);
+  --accent: oklch(23.27% 0.0249 284.3);
+  --accent-foreground: oklch(88.92% 0.2061 189.9);
+  --destructive: oklch(75.1% 0.1814 22.37);
+  --destructive-foreground: oklch(35.1% 0.1814 22.37);
+  --border: oklch(90% 0.0081 61.42);
+  --input: oklch(97% 0.0035 67.78);
+  --input-background: oklch(97% 0.0035 67.78);
+  --switch-background: oklch(90% 0.0081 61.42);
+  --ring: oklch(23.27% 0.0249 284.3);
+  --sidebar: oklch(90% 0.0081 61.42);
+  --sidebar-foreground: oklch(40% 0.0081 61.42);
+  --sidebar-primary: oklch(23.27% 0.0249 284.3);
+  --sidebar-primary-foreground: oklch(94.22% 0.2505 117.44);
+  --sidebar-accent: oklch(95% 0.0081 61.42);
+  --sidebar-accent-foreground: oklch(40% 0.0081 61.42);
+  --sidebar-border: oklch(90% 0.0081 61.42);
+  --sidebar-ring: oklch(23.27% 0.0249 284.3);
+  --chart-1: oklch(23.27% 0.0249 284.3);
+  --chart-2: oklch(83.92% 0.0901 136.87);
+  --chart-3: oklch(80.39% 0.1148 241.68);
+  --chart-4: oklch(83.92% 0.1085 80);
+  --chart-5: oklch(75.1% 0.1814 22.37);
+  --radius-selector: 2rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1rem;
+  --radius: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border-width: 2px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Tema Ocean */
+.theme-ocean {
+  --background: oklch(98% 0.019 200.873);
+  --background-secondary: oklch(95% 0.045 203.388);
+  --background-sidebar: oklch(91% 0.08 205.041);
+  --background-header: oklch(95% 0.045 203.388);
+  --foreground: oklch(39% 0.07 227.392);
+  --foreground-secondary: oklch(45% 0.07 227.392);
+  --foreground-tertiary: oklch(50% 0.07 227.392);
+  --foreground-disabled: oklch(60% 0.07 227.392);
+  --accent-blue-primary: oklch(0% 0 0);
+  --accent-blue-hover: oklch(10% 0 0);
+  --accent-blue-light: oklch(78% 0.154 211.53);
+  --accent-purple: oklch(67% 0.182 276.935);
+  --accent-green-completed: oklch(79% 0.209 151.711);
+  --accent-green-hover: oklch(85% 0.209 151.711);
+  --state-in-progress: oklch(78% 0.154 211.53);
+  --state-pending: oklch(52% 0.105 223.128);
+  --state-completed: oklch(79% 0.209 151.711);
+  --border-soft: oklch(95% 0.045 203.388);
+  --border-medium: oklch(91% 0.08 205.041);
+  --border-highlight: oklch(87% 0.08 205.041);
+  --card: oklch(98% 0.019 200.873);
+  --card-foreground: oklch(39% 0.07 227.392);
+  --popover: oklch(98% 0.019 200.873);
+  --popover-foreground: oklch(39% 0.07 227.392);
+  --primary: oklch(0% 0 0);
+  --primary-foreground: oklch(100% 0 0);
+  --secondary: oklch(67% 0.182 276.935);
+  --secondary-foreground: oklch(25% 0.09 281.288);
+  --muted: oklch(91% 0.08 205.041);
+  --muted-foreground: oklch(45% 0.07 227.392);
+  --accent: oklch(71% 0.202 349.761);
+  --accent-foreground: oklch(28% 0.109 3.907);
+  --destructive: oklch(71% 0.194 13.428);
+  --destructive-foreground: oklch(27% 0.105 12.094);
+  --border: oklch(91% 0.08 205.041);
+  --input: oklch(98% 0.019 200.873);
+  --input-background: oklch(98% 0.019 200.873);
+  --switch-background: oklch(91% 0.08 205.041);
+  --ring: oklch(0% 0 0);
+  --sidebar: oklch(91% 0.08 205.041);
+  --sidebar-foreground: oklch(39% 0.07 227.392);
+  --sidebar-primary: oklch(0% 0 0);
+  --sidebar-primary-foreground: oklch(100% 0 0);
+  --sidebar-accent: oklch(95% 0.045 203.388);
+  --sidebar-accent-foreground: oklch(39% 0.07 227.392);
+  --sidebar-border: oklch(91% 0.08 205.041);
+  --sidebar-ring: oklch(0% 0 0);
+  --chart-1: oklch(0% 0 0);
+  --chart-2: oklch(79% 0.209 151.711);
+  --chart-3: oklch(78% 0.154 211.53);
+  --chart-4: oklch(82% 0.189 84.429);
+  --chart-5: oklch(71% 0.194 13.428);
+  --radius-selector: 0.5rem;
+  --radius-field: 2rem;
+  --radius-box: 2rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 2rem;
+  --radius: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border-width: 1.5px;
+  --depth: 0;
+  --noise: 1;
+  /* Colores con opacidad - Tema Ocean */
+  --accent-blue-primary-alpha-10: color-mix(in srgb, var(--accent-blue-primary) 10%, transparent);
+  --accent-blue-primary-alpha-15: color-mix(in srgb, var(--accent-blue-primary) 15%, transparent);
+  --accent-blue-primary-alpha-20: color-mix(in srgb, var(--accent-blue-primary) 20%, transparent);
+  --accent-green-completed-alpha-10: color-mix(in srgb, var(--accent-green-completed) 10%, transparent);
+  --accent-green-completed-alpha-15: color-mix(in srgb, var(--accent-green-completed) 15%, transparent);
+  --accent-green-completed-alpha-20: color-mix(in srgb, var(--accent-green-completed) 20%, transparent);
+  --accent-purple-alpha-10: color-mix(in srgb, var(--accent-purple) 10%, transparent);
+  --accent-purple-alpha-15: color-mix(in srgb, var(--accent-purple) 15%, transparent);
+  --accent-purple-alpha-20: color-mix(in srgb, var(--accent-purple) 20%, transparent);
+}
+
+/* Tema Coffee */
+.theme-coffee {
+  --background: oklch(24% 0.023 329.708);
+  --background-secondary: oklch(21% 0.021 329.708);
+  --background-sidebar: oklch(16% 0.019 329.708);
+  --background-header: oklch(21% 0.021 329.708);
+  --foreground: oklch(72.354% 0.092 79.129);
+  --foreground-secondary: oklch(65% 0.092 79.129);
+  --foreground-tertiary: oklch(58% 0.092 79.129);
+  --foreground-disabled: oklch(50% 0.092 79.129);
+  --accent-blue-primary: oklch(42.621% 0.074 224.389);
+  --accent-blue-hover: oklch(50% 0.074 224.389);
+  --accent-blue-light: oklch(79.49% 0.063 184.558);
+  --accent-purple: oklch(34.465% 0.029 199.194);
+  --accent-green-completed: oklch(74.722% 0.072 131.116);
+  --accent-green-hover: oklch(80% 0.072 131.116);
+  --state-in-progress: oklch(79.49% 0.063 184.558);
+  --state-pending: oklch(16.51% 0.015 326.261);
+  --state-completed: oklch(74.722% 0.072 131.116);
+  --border-soft: oklch(21% 0.021 329.708);
+  --border-medium: oklch(16% 0.019 329.708);
+  --border-highlight: oklch(12% 0.019 329.708);
+  --card: oklch(24% 0.023 329.708);
+  --card-foreground: oklch(72.354% 0.092 79.129);
+  --popover: oklch(24% 0.023 329.708);
+  --popover-foreground: oklch(72.354% 0.092 79.129);
+  --primary: oklch(71.996% 0.123 62.756);
+  --primary-foreground: oklch(14.399% 0.024 62.756);
+  --secondary: oklch(34.465% 0.029 199.194);
+  --secondary-foreground: oklch(86.893% 0.005 199.194);
+  --muted: oklch(16% 0.019 329.708);
+  --muted-foreground: oklch(65% 0.092 79.129);
+  --accent: oklch(42.621% 0.074 224.389);
+  --accent-foreground: oklch(88.524% 0.014 224.389);
+  --destructive: oklch(77.318% 0.128 31.871);
+  --destructive-foreground: oklch(15.463% 0.025 31.871);
+  --border: oklch(16% 0.019 329.708);
+  --input: oklch(24% 0.023 329.708);
+  --input-background: oklch(24% 0.023 329.708);
+  --switch-background: oklch(16% 0.019 329.708);
+  --ring: oklch(71.996% 0.123 62.756);
+  --sidebar: oklch(16% 0.019 329.708);
+  --sidebar-foreground: oklch(72.354% 0.092 79.129);
+  --sidebar-primary: oklch(71.996% 0.123 62.756);
+  --sidebar-primary-foreground: oklch(14.399% 0.024 62.756);
+  --sidebar-accent: oklch(21% 0.021 329.708);
+  --sidebar-accent-foreground: oklch(72.354% 0.092 79.129);
+  --sidebar-border: oklch(16% 0.019 329.708);
+  --sidebar-ring: oklch(71.996% 0.123 62.756);
+  --chart-1: oklch(71.996% 0.123 62.756);
+  --chart-2: oklch(74.722% 0.072 131.116);
+  --chart-3: oklch(79.49% 0.063 184.558);
+  --chart-4: oklch(88.15% 0.14 87.722);
+  --chart-5: oklch(77.318% 0.128 31.871);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1rem;
+  --radius: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border-width: 1px;
+  --depth: 0;
+  --noise: 0;
+  /* Colores con opacidad - Tema Coffee */
+  --accent-blue-primary-alpha-10: color-mix(in srgb, var(--accent-blue-primary) 10%, transparent);
+  --accent-blue-primary-alpha-15: color-mix(in srgb, var(--accent-blue-primary) 15%, transparent);
+  --accent-blue-primary-alpha-20: color-mix(in srgb, var(--accent-blue-primary) 20%, transparent);
+  --accent-green-completed-alpha-10: color-mix(in srgb, var(--accent-green-completed) 10%, transparent);
+  --accent-green-completed-alpha-15: color-mix(in srgb, var(--accent-green-completed) 15%, transparent);
+  --accent-green-completed-alpha-20: color-mix(in srgb, var(--accent-green-completed) 20%, transparent);
+  --accent-purple-alpha-10: color-mix(in srgb, var(--accent-purple) 10%, transparent);
+  --accent-purple-alpha-15: color-mix(in srgb, var(--accent-purple) 15%, transparent);
+  --accent-purple-alpha-20: color-mix(in srgb, var(--accent-purple) 20%, transparent);
+}
+
+/* Tema Dark (Original) */
+.theme-dark {
   --background: #1a1a1a;
   --background-secondary: #2a2a2a;
   --background-sidebar: #0f0f0f;
   --background-header: #1f1f1f;
-  
-  /* Paleta de colores - Texto */
   --foreground: #FFFFFF;
   --foreground-secondary: #B4B4B4;
   --foreground-tertiary: #808080;
   --foreground-disabled: #4D4D4D;
-  
-  /* Paleta de colores - Acentos */
   --accent-blue-primary: #4353FF;
   --accent-blue-hover: #5563FF;
   --accent-blue-light: #7B88FF;
   --accent-purple: #9B51E0;
   --accent-green-completed: #00C875;
   --accent-green-hover: #00D67F;
-  
-  /* Paleta de colores - Estados */
   --state-in-progress: #4353FF;
   --state-pending: #6C757D;
   --state-completed: #00C875;
-  
-  /* Paleta de colores - Bordes */
   --border-soft: #2a2a2a;
   --border-medium: #3a3a3a;
   --border-highlight: #4a4a4a;
-  
-  /* Componentes base */
   --card: #2a2a2a;
   --card-foreground: #FFFFFF;
   --popover: #2a2a2a;
@@ -61,8 +521,6 @@
   --input-background: #2a2a2a;
   --switch-background: #3a3a3a;
   --ring: #4353FF;
-  
-  /* Sidebar */
   --sidebar: #0f0f0f;
   --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #4353FF;
@@ -71,60 +529,34 @@
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #2a2a2a;
   --sidebar-ring: #4353FF;
-  
-  /* Espaciado */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 20px;
-  --spacing-2xl: 24px;
-  --spacing-3xl: 32px;
-  
-  /* Border radius */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
-  --radius-full: 9999px;
-  --radius: 6px;
-  
-  /* Sombras */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
-  --shadow-md: 0 2px 8px rgba(0,0,0,0.2);
-  --shadow-lg: 0 4px 16px rgba(0,0,0,0.3);
-  --shadow-xl: 0 8px 32px rgba(0,0,0,0.4);
-  
-  /* Transiciones */
-  --transition-default: all 0.2s ease;
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* Layout */
-  --sidebar-width: 216px;
-  --header-height: 56px;
-  --content-padding: 24px;
-  --max-content-width: 1400px;
-  --grid-gap: 16px;
-  
-  /* Charts */
   --chart-1: #4353FF;
   --chart-2: #00C875;
   --chart-3: #9B51E0;
   --chart-4: #7B88FF;
   --chart-5: #5563FF;
-}
-
-/* Aplicar tema dark por defecto */
-.dark,
-:root {
-  --background: #1a1a1a;
-  --background-secondary: #2a2a2a;
-  --background-sidebar: #0f0f0f;
-  --background-header: #1f1f1f;
-  --foreground: #FFFFFF;
-  --foreground-secondary: #B4B4B4;
-  --foreground-tertiary: #808080;
-  --foreground-disabled: #4D4D4D;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius: 6px;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border-width: 1px;
+  --depth: 0;
+  --noise: 0;
+  /* Colores con opacidad - Tema Dark */
+  --accent-blue-primary-alpha-10: color-mix(in srgb, var(--accent-blue-primary) 10%, transparent);
+  --accent-blue-primary-alpha-15: color-mix(in srgb, var(--accent-blue-primary) 15%, transparent);
+  --accent-blue-primary-alpha-20: color-mix(in srgb, var(--accent-blue-primary) 20%, transparent);
+  --accent-green-completed-alpha-10: color-mix(in srgb, var(--accent-green-completed) 10%, transparent);
+  --accent-green-completed-alpha-15: color-mix(in srgb, var(--accent-green-completed) 15%, transparent);
+  --accent-green-completed-alpha-20: color-mix(in srgb, var(--accent-green-completed) 20%, transparent);
+  --accent-purple-alpha-10: color-mix(in srgb, var(--accent-purple) 10%, transparent);
+  --accent-purple-alpha-15: color-mix(in srgb, var(--accent-purple) 15%, transparent);
+  --accent-purple-alpha-20: color-mix(in srgb, var(--accent-purple) 20%, transparent);
 }
 
 @theme inline {
@@ -185,6 +617,33 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* Variables del tema Silk - ya están disponibles desde :root */
+  --radius-selector: var(--radius-selector);
+  --radius-field: var(--radius-field);
+  --radius-box: var(--radius-box);
+  --size-selector: var(--size-selector);
+  --size-field: var(--size-field);
+  /* Variables de tipografía para uso en Tailwind */
+  --font-size-xs: var(--font-size-xs);
+  --font-size-2xs: var(--font-size-2xs);
+  --font-size-3xs: var(--font-size-3xs);
+  --font-size-sm: var(--font-size-sm);
+  --font-size-sm-alt: var(--font-size-sm-alt);
+  --font-size-base: var(--font-size-base);
+  --font-size-md: var(--font-size-md);
+  --font-size-lg: var(--font-size-lg);
+  --font-size-xl: var(--font-size-xl);
+  --font-size-2xl: var(--font-size-2xl);
+  --font-size-3xl: var(--font-size-3xl);
+  --font-size-4xl: var(--font-size-4xl);
+  --font-size-5xl: var(--font-size-5xl);
+  --line-height-tight: var(--line-height-tight);
+  --line-height-normal: var(--line-height-normal);
+  --line-height-relaxed: var(--line-height-relaxed);
+  --letter-spacing-tight: var(--letter-spacing-tight);
+  --letter-spacing-normal: var(--letter-spacing-normal);
+  --letter-spacing-wide: var(--letter-spacing-wide);
+  --letter-spacing-wider: var(--letter-spacing-wider);
 }
 
 @layer base {
@@ -207,7 +666,7 @@
   }
   
   html {
-    font-size: var(--font-size);
+    font-size: var(--font-size-html);
   }
 
   #root {
@@ -217,62 +676,117 @@
 }
 
 /**
- * Base typography - MANTENIENDO SUSE
+ * ========================================================================
+ * TIPOGRAFÍA BASE - MANTENIENDO SUSE
+ * ========================================================================
+ * Todos los elementos HTML usan las variables CSS definidas arriba.
+ * Esto asegura homogeneidad en toda la aplicación.
+ * ========================================================================
  */
 @layer base {
   :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
+    /* Títulos */
     h1 {
-      font-size: 20px;
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-tight);
       color: var(--foreground);
+      letter-spacing: var(--letter-spacing-tight);
     }
 
     h2 {
-      font-size: 18px;
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-tight);
       color: var(--foreground);
+      letter-spacing: var(--letter-spacing-tight);
     }
 
     h3 {
-      font-size: 16px;
+      font-size: var(--font-size-xl);
       font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      line-height: var(--line-height-normal);
       color: var(--foreground);
+      letter-spacing: var(--letter-spacing-normal);
     }
 
     h4 {
-      font-size: 14px;
+      font-size: var(--font-size-lg);
       font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      line-height: var(--line-height-normal);
       color: var(--foreground);
+      letter-spacing: var(--letter-spacing-normal);
     }
 
+    /* Texto base */
     p {
-      font-size: 13px;
+      font-size: var(--font-size-base);
       font-weight: var(--font-weight-regular);
-      line-height: 1.5;
+      line-height: var(--line-height-normal);
       color: var(--foreground-secondary);
+      letter-spacing: var(--letter-spacing-normal);
     }
 
+    /* Elementos de formulario */
     label {
-      font-size: 13px;
+      font-size: var(--font-size-base);
       font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      line-height: var(--line-height-normal);
       color: var(--foreground);
+      letter-spacing: var(--letter-spacing-normal);
     }
 
     button {
-      font-size: 13px;
+      font-size: var(--font-size-base);
       font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      line-height: var(--line-height-normal);
+      letter-spacing: var(--letter-spacing-normal);
     }
 
     input {
-      font-size: 13px;
+      font-size: var(--font-size-base);
       font-weight: var(--font-weight-regular);
-      line-height: 1.5;
+      line-height: var(--line-height-normal);
+      letter-spacing: var(--letter-spacing-normal);
+    }
+
+    textarea {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-regular);
+      line-height: var(--line-height-normal);
+      letter-spacing: var(--letter-spacing-normal);
+    }
+
+    select {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-regular);
+      line-height: var(--line-height-normal);
+      letter-spacing: var(--letter-spacing-normal);
+    }
+
+    /* Texto pequeño - para descripciones, metadata */
+    small {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-regular);
+      line-height: var(--line-height-normal);
+      color: var(--foreground-tertiary);
+      letter-spacing: var(--letter-spacing-normal);
+    }
+
+    /* Texto extra pequeño - para badges, etiquetas */
+    .text-xs {
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-normal);
+    }
+
+    .text-2xs {
+      font-size: var(--font-size-2xs);
+      line-height: var(--line-height-normal);
+    }
+
+    .text-3xs {
+      font-size: var(--font-size-3xs);
+      line-height: var(--line-height-normal);
     }
   }
 }

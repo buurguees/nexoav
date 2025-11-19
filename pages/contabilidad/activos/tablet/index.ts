@@ -1,0 +1,2 @@
+export { ActivosTablet } from "./Activos";
+

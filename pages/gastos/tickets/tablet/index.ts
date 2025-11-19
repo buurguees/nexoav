@@ -1,0 +1,2 @@
+export { TicketsTablet } from "./Tickets";
+

@@ -1,0 +1,2 @@
+export { ActivosTabletHorizontal } from "./Activos";
+

@@ -15,9 +15,9 @@ export function SidebarNavItem({ label, icon, isActive = false, onClick }: Sideb
       onClick={onClick}
       className="relative w-full text-left transition-all duration-200 ease-out group flex items-center"
       style={{
-        padding: '6px 12px',
+        padding: `var(--spacing-xs) var(--spacing-md)`,
         borderRadius: 'var(--radius-md)',
-        gap: '10px',
+        gap: 'var(--spacing-md)',
         height: '32px',
         backgroundColor: isActive ? 'var(--background-secondary)' : 'transparent',
         color: isActive ? 'var(--foreground)' : 'var(--foreground-tertiary)',
@@ -43,7 +43,7 @@ export function SidebarNavItem({ label, icon, isActive = false, onClick }: Sideb
         isActive={isActive}
         className="flex-shrink-0"
       />
-      <span className="text-xs font-medium" style={{ fontSize: '12px', fontWeight: 'var(--font-weight-medium)' }}>{label}</span>
+      <span className="text-xs font-medium" style={{ fontSize: '14px', fontWeight: 'var(--font-weight-medium)' }}>{label}</span>
     </motion.button>
   );
 }

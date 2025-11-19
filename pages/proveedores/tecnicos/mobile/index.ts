@@ -1,0 +1,2 @@
+export { TecnicosMobile } from "./Tecnicos";
+

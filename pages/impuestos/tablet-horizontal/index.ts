@@ -1,0 +1,2 @@
+﻿export { ImpuestosTabletHorizontal } from "./Impuestos";
+

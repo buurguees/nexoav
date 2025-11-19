@@ -1,14 +1,9 @@
 import { motion } from 'motion/react';
 import { Logo } from '../../Logo';
-import { SidebarHeader } from '../../sidebar/desktop/SidebarHeader';
 import { SidebarNavItem } from '../../sidebar/desktop/SidebarNavItem';
-import { 
-  Menu,
-  X,
-} from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { IconWrapper } from '../../icons/desktop/IconWrapper';
-import { sidebarNavigation } from '../../../lib/config/sidebarNavigation';
+import { SidebarExpandableNavItem } from '../../sidebar/desktop/SidebarExpandableNavItem';
+import { sidebarNavigation, empresaNavigation } from '../../../lib/config/sidebarNavigation';
+import { useState, useCallback, useEffect } from 'react';
 
 interface SidebarDesktopProps {
   className?: string;
@@ -27,7 +22,21 @@ export function SidebarDesktop({
   onNavigate,
   onCollapseChange
 }: SidebarDesktopProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // Estado para gestionar qué elementos están expandidos (máximo 2)
+  // Usamos un array para mantener el orden FIFO
+  const [expandedItems, setExpandedItems] = useState<string[]>(() => {
+    // Inicializar con los elementos que tienen subitems activos
+    const activeItems: string[] = [];
+    sidebarNavigation.forEach(item => {
+      if (item.subItems && item.subItems.some(subItem => currentPath === subItem.path)) {
+        activeItems.push(item.path);
+      }
+    });
+    if (empresaNavigation.subItems && empresaNavigation.subItems.some(subItem => currentPath === subItem.path)) {
+      activeItems.push(empresaNavigation.path);
+    }
+    return activeItems.slice(0, 2); // Máximo 2
+  });
 
   const handleNavClick = (path: string) => {
     if (onNavigate) {
@@ -35,34 +44,88 @@ export function SidebarDesktop({
     }
   };
 
-  const toggleSidebar = () => {
-    const newCollapsedState = !isCollapsed;
-    setIsCollapsed(newCollapsedState);
-    if (onCollapseChange) {
-      onCollapseChange(newCollapsedState);
-    }
-  };
-
-  // Notificar el estado inicial al montar
-  useEffect(() => {
-    if (onCollapseChange) {
-      onCollapseChange(isCollapsed);
-    }
+  // Función para manejar la expansión/colapso de elementos
+  const handleExpansionChange = useCallback((itemPath: string, isExpanded: boolean) => {
+    setExpandedItems(prev => {
+      if (isExpanded) {
+        // Si se está expandiendo
+        if (prev.includes(itemPath)) {
+          // Ya está expandido, no hacer nada
+          return prev;
+        }
+        // Si ya hay 2 expandidos, quitar el primero (FIFO)
+        if (prev.length >= 2) {
+          return [prev[1], itemPath]; // Mantener el segundo y añadir el nuevo
+        }
+        // Añadir el nuevo
+        return [...prev, itemPath];
+      } else {
+        // Si se está colapsando, simplemente remover
+        return prev.filter(path => path !== itemPath);
+      }
+    });
   }, []);
+
+  // Efecto para expandir automáticamente el elemento padre cuando se navega a un subitem
+  useEffect(() => {
+    // Buscar si el currentPath corresponde a un subitem
+    let parentPath: string | null = null;
+    
+    // Buscar en sidebarNavigation
+    for (const item of sidebarNavigation) {
+      if (item.subItems && item.subItems.some(subItem => subItem.path === currentPath)) {
+        parentPath = item.path;
+        break;
+      }
+    }
+    
+    // Si no se encontró, buscar en empresaNavigation
+    if (!parentPath && empresaNavigation.subItems) {
+      if (empresaNavigation.subItems.some(subItem => subItem.path === currentPath)) {
+        parentPath = empresaNavigation.path;
+      }
+    }
+    
+    // Si encontramos un padre y no está expandido, expandirlo
+    if (parentPath && !expandedItems.includes(parentPath)) {
+      handleExpansionChange(parentPath, true);
+    }
+  }, [currentPath, expandedItems, handleExpansionChange]);
 
   // Sidebar content - Navigation with all 11 main modules
   const renderSidebarContent = () => {
     return (
       <div className="space-y-0.5">
-        {sidebarNavigation.map((item) => (
-          <SidebarNavItem
-            key={item.path}
-            label={item.label}
-            icon={item.icon}
-            isActive={currentPath === item.path}
-            onClick={() => handleNavClick(item.path)}
-          />
-        ))}
+        {sidebarNavigation.map((item) => {
+          // Si tiene submenús, usar el componente expandible
+          if (item.subItems && item.subItems.length > 0) {
+            const isExpanded = expandedItems.includes(item.path);
+            return (
+              <SidebarExpandableNavItem
+                key={item.path}
+                label={item.label}
+                icon={item.icon}
+                subItems={item.subItems}
+                mainPath={item.path}
+                isActive={currentPath === item.path}
+                currentPath={currentPath}
+                onNavigate={handleNavClick}
+                isExpanded={isExpanded}
+                onExpansionChange={(expanded) => handleExpansionChange(item.path, expanded)}
+              />
+            );
+          }
+          // Si no tiene submenús, usar el componente normal
+          return (
+            <SidebarNavItem
+              key={item.path}
+              label={item.label}
+              icon={item.icon}
+              isActive={currentPath === item.path}
+              onClick={() => handleNavClick(item.path)}
+            />
+          );
+        })}
       </div>
     );
   };
@@ -72,7 +135,7 @@ export function SidebarDesktop({
       initial={{ x: -280 }}
       animate={{ 
         x: 0,
-        width: isCollapsed ? '80px' : 'var(--sidebar-width)'
+        width: 'var(--sidebar-width)'
       }}
       transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
       className={`flex flex-col ${className}`}
@@ -87,64 +150,59 @@ export function SidebarDesktop({
         zIndex: 999,
       }}
     >
-      {/* Logo Header with Toggle */}
-      <div className="px-4 py-3 flex items-center justify-between gap-3" style={{ borderBottom: '1px solid var(--border-soft)' }}>
-        {!isCollapsed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex items-center gap-2"
-          >
-            <Logo variant="icon" animated={false} className="w-6 h-6" />
-            <div className="flex items-baseline gap-[0.15em]">
-              <span className="text-sm tracking-[0.15em] font-light" style={{ color: 'var(--foreground)' }}>NEXO</span>
-              <span className="text-sm tracking-[0.15em] font-extralight" style={{ color: 'var(--foreground-tertiary)' }}>AV</span>
-            </div>
-          </motion.div>
-        )}
-        
-        <motion.button
-          onClick={toggleSidebar}
-          className="p-1.5 rounded-lg transition-colors"
-          style={{
-            color: 'var(--foreground-tertiary)',
-            borderRadius: 'var(--radius-md)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
-            e.currentTarget.style.color = 'var(--foreground)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = 'var(--foreground-tertiary)';
-          }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          {isCollapsed ? <IconWrapper icon={Menu} size={16} /> : <IconWrapper icon={X} size={16} />}
-        </motion.button>
+      {/* Logo Header */}
+      <div style={{
+        padding: `var(--spacing-md) var(--spacing-lg)`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--spacing-sm)',
+        borderBottom: '1px solid var(--border-soft)',
+      }}>
+        <Logo variant="icon" animated={false} className="w-6 h-6" />
+        <div className="flex items-baseline gap-[0.15em]">
+          <span className="text-sm tracking-[0.15em] font-light" style={{ color: 'var(--foreground)' }}>NEXO</span>
+          <span className="text-sm tracking-[0.15em] font-extralight" style={{ color: 'var(--foreground-tertiary)' }}>AV</span>
+        </div>
       </div>
 
       {/* Main Navigation */}
-      {!isCollapsed && (
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1, duration: 0.3 }}
-          className="flex-1 overflow-y-auto px-2.5 py-3"
-        >
-          {renderSidebarContent()}
-        </motion.div>
-      )}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+        style={{
+          flex: 1,
+          overflowY: 'hidden', // Sin scroll para evitar scrollbar
+          overflowX: 'hidden',
+          padding: `var(--spacing-md) var(--spacing-md)`,
+        }}
+      >
+        {renderSidebarContent()}
+      </motion.div>
 
-      {/* User Profile at Bottom */}
-      {!isCollapsed && (
-        <SidebarHeader
-          userName="Andrew Smith"
-          userRole="Product Designer"
-        />
-      )}
+      {/* Sección Empresa - Parte inferior */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+        style={{
+          borderTop: '1px solid var(--border-soft)',
+          padding: 'var(--spacing-sm) var(--spacing-xs)',
+        }}
+      >
+          <SidebarExpandableNavItem
+            label={empresaNavigation.label}
+            icon={empresaNavigation.icon}
+            subItems={empresaNavigation.subItems || []}
+            mainPath={empresaNavigation.path}
+            isActive={currentPath === empresaNavigation.path}
+            currentPath={currentPath}
+            onNavigate={handleNavClick}
+            isExpanded={expandedItems.includes(empresaNavigation.path)}
+            onExpansionChange={(expanded) => handleExpansionChange(empresaNavigation.path, expanded)}
+          />
+      </motion.div>
+
     </motion.aside>
   );
 }

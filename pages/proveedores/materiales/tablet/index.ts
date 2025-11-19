@@ -1,0 +1,2 @@
+export { MaterialesTablet } from "./Materiales";
+

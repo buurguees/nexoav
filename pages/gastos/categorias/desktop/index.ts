@@ -1,0 +1,2 @@
+export { CategoriasDesktop } from "./Categorias";
+

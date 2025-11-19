@@ -1,0 +1,2 @@
+export { PagosCobrosMobile } from "./PagosCobros";
+

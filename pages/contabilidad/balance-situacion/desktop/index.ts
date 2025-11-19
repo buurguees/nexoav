@@ -1,0 +1,2 @@
+export { BalanceSituacionDesktop } from "./BalanceSituacion";
+

@@ -1,0 +1,2 @@
+export { CuadroCuentasMobile } from "./CuadroCuentas";
+

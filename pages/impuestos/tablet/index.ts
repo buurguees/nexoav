@@ -1,0 +1,2 @@
+﻿export { ImpuestosTablet } from "./Impuestos";
+

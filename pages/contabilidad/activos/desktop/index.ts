@@ -1,0 +1,2 @@
+export { ActivosDesktop } from "./Activos";
+

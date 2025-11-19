@@ -1,0 +1,2 @@
+export { ProductosTabletHorizontal } from "./Productos";
+

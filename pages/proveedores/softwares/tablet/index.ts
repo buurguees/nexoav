@@ -1,0 +1,2 @@
+export { SoftwaresTablet } from "./Softwares";
+

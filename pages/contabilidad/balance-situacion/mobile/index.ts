@@ -1,0 +1,2 @@
+export { BalanceSituacionMobile } from "./BalanceSituacion";
+

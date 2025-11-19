@@ -1,0 +1,2 @@
+export { MapaMobile } from "./Mapa";
+

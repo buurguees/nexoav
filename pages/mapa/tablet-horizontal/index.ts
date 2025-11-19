@@ -1,0 +1,2 @@
+export { MapaTabletHorizontal } from "./Mapa";
+

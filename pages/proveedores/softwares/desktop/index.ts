@@ -1,0 +1,2 @@
+export { SoftwaresDesktop } from "./Softwares";
+

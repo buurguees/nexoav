@@ -1,0 +1,2 @@
+export { ObjetivosTablet } from "./Objetivos";
+

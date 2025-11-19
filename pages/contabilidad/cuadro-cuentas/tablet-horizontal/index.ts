@@ -1,0 +1,2 @@
+export { CuadroCuentasTabletHorizontal } from "./CuadroCuentas";
+

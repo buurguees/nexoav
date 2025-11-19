@@ -1,0 +1,2 @@
+﻿export { InicioTablet } from "./Inicio";
+

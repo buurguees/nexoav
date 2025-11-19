@@ -1,0 +1,2 @@
+export { ProveedoresResumenDesktop } from "./ProveedoresResumen";
+

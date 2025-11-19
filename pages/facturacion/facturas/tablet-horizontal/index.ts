@@ -1,0 +1,2 @@
+export { FacturasTabletHorizontal } from "./Facturas";
+

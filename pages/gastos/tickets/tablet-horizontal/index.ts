@@ -1,0 +1,2 @@
+export { TicketsTabletHorizontal } from "./Tickets";
+

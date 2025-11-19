@@ -1,0 +1,2 @@
+export { PagosCobrosDesktop } from "./PagosCobros";
+

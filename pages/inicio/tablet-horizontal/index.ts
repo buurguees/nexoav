@@ -1,0 +1,2 @@
+﻿export { InicioTabletHorizontal } from "./Inicio";
+

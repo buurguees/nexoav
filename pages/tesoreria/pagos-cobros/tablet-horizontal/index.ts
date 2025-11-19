@@ -1,0 +1,2 @@
+export { PagosCobrosTabletHorizontal } from "./PagosCobros";
+

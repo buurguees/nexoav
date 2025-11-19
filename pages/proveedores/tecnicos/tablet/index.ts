@@ -1,0 +1,2 @@
+export { TecnicosTablet } from "./Tecnicos";
+

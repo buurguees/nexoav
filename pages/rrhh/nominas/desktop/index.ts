@@ -1,0 +1,2 @@
+export { NominasDesktop } from "./Nominas";
+

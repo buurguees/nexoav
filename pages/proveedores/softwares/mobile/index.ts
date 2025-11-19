@@ -1,0 +1,2 @@
+export { SoftwaresMobile } from "./Softwares";
+

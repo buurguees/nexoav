@@ -1,0 +1,2 @@
+export { CashflowTabletHorizontal } from "./Cashflow";
+

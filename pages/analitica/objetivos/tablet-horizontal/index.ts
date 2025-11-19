@@ -1,0 +1,2 @@
+export { ObjetivosTabletHorizontal } from "./Objetivos";
+

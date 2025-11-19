@@ -1,0 +1,2 @@
+export { RectificativasTablet } from "./Rectificativas";
+

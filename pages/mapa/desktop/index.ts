@@ -1,0 +1,2 @@
+export { MapaDesktop } from "./Mapa";
+

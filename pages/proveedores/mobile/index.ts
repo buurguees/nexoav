@@ -1,0 +1,2 @@
+export { ProveedoresResumenMobile } from "./ProveedoresResumen";
+

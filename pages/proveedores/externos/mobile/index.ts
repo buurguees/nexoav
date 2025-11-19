@@ -1,0 +1,2 @@
+export { ExternosMobile } from "./Externos";
+
