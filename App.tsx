@@ -48,15 +48,23 @@ import { useState } from 'react';
 import { useBreakpoint } from './hooks/useBreakpoint';
 import { useRouter } from './hooks/useRouter';
 import { ThemeProvider } from './src/contexts/ThemeContext';
+import { SidebarProvider, useSidebar } from './src/contexts/SidebarContext';
 
-export default function App() {
+// Componente interno que usa el contexto del sidebar
+function AppContent({ 
+  isSidebarCollapsed, 
+  setIsSidebarCollapsed 
+}: { 
+  isSidebarCollapsed: boolean; 
+  setIsSidebarCollapsed: (collapsed: boolean) => void;
+}) {
   const { path: currentPath, navigate } = useRouter();
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const breakpoint = useBreakpoint();
   const isTabletPortrait = breakpoint === 'tablet-portrait';
   const isMobile = breakpoint === 'mobile';
   const isTablet = breakpoint === 'tablet';
+  const { sidebarWidth } = useSidebar(); // Obtener el ancho dinámico del sidebar
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -268,47 +276,66 @@ export default function App() {
   };
 
   return (
+    <div style={{ backgroundColor: 'var(--background)', height: '100vh', overflow: 'hidden' }}>
+      {/* Header - Fixed (simplificado: solo búsqueda, notificaciones y perfil) */}
+      <Header 
+        notificationCount={5}
+        onMenuClick={() => setIsSidebarOpen(true)}
+      />
+
+      {/* Sidebar - Fixed */}
+      <Sidebar 
+        currentPath={currentPath} 
+        onNavigate={handleNavigate}
+        onCollapseChange={setIsSidebarCollapsed}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        isCollapsed={isSidebarCollapsed}
+      />
+
+      {/* Main Content Area - With padding to compensate for fixed header and sidebar */}
+      <main 
+        style={{ 
+          backgroundColor: 'var(--background)', 
+          padding: (isTabletPortrait || isTablet || isMobile) ? '0' : 'var(--content-padding)', // Sin padding en tablet/mobile, las páginas lo manejan
+          marginTop: 'var(--header-height)',
+          marginBottom: (isTabletPortrait || isMobile) ? 'var(--header-height)' : '0', // Para tablet-portrait y mobile que tienen header inferior
+          marginLeft: isTabletPortrait 
+            ? `${sidebarWidth}px` // Ancho dinámico del sidebar en tablet-portrait (64px colapsado, 160px expandido)
+            : isMobile
+            ? '0' // Mobile no tiene sidebar fijo
+            : isTablet
+            ? `${sidebarWidth}px` // Tablet horizontal: ancho dinámico (64px colapsado, 200px expandido)
+            : (isSidebarCollapsed ? '80px' : 'var(--sidebar-width)'), // Desktop
+          width: (isTabletPortrait || isTablet)
+            ? `calc(100vw - ${sidebarWidth}px)` // Ancho dinámico que se ajusta al sidebar
+            : undefined, // Desktop y mobile usan el comportamiento por defecto
+          height: (isTabletPortrait || isMobile)
+            ? 'calc(100vh - var(--header-height) * 2)' 
+            : 'calc(100vh - var(--header-height))', // Para tablet-portrait y mobile necesita espacio para ambos headers
+          transition: isTabletPortrait ? 'none' : 'margin-left 0.6s cubic-bezier(0.19, 1, 0.22, 1)',
+          overflow: 'hidden',
+          boxSizing: 'border-box',
+        }}
+      >
+        {renderContent()}
+      </main>
+    </div>
+  );
+}
+
+export default function App() {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const breakpoint = useBreakpoint();
+
+  return (
     <ThemeProvider>
-      <div style={{ backgroundColor: 'var(--background)', height: '100vh', overflow: 'hidden' }}>
-        {/* Header - Fixed (simplificado: solo búsqueda, notificaciones y perfil) */}
-        <Header 
-          notificationCount={5}
-          onMenuClick={() => setIsSidebarOpen(true)}
+      <SidebarProvider isCollapsed={isSidebarCollapsed} breakpoint={breakpoint}>
+        <AppContent 
+          isSidebarCollapsed={isSidebarCollapsed}
+          setIsSidebarCollapsed={setIsSidebarCollapsed}
         />
-
-        {/* Sidebar - Fixed */}
-        <Sidebar 
-          currentPath={currentPath} 
-          onNavigate={handleNavigate}
-          onCollapseChange={setIsSidebarCollapsed}
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-        />
-
-        {/* Main Content Area - With padding to compensate for fixed header and sidebar */}
-        <main 
-          style={{ 
-            backgroundColor: 'var(--background)', 
-            padding: 'var(--content-padding)',
-            marginTop: 'var(--header-height)',
-            marginBottom: (isTabletPortrait || isMobile) ? 'var(--header-height)' : '0', // Para tablet-portrait y mobile que tienen header inferior
-            marginLeft: isTabletPortrait 
-              ? '160px' // Ancho fijo del sidebar en tablet-portrait
-              : isMobile
-              ? '0' // Mobile no tiene sidebar fijo
-              : isTablet
-              ? 'var(--sidebar-width-tablet-horizontal)' // Tablet horizontal: 200px
-              : (isSidebarCollapsed ? '80px' : 'var(--sidebar-width)'), // Desktop
-            height: (isTabletPortrait || isMobile)
-              ? 'calc(100vh - var(--header-height) * 2)' 
-              : 'calc(100vh - var(--header-height))', // Para tablet-portrait y mobile necesita espacio para ambos headers
-            transition: isTabletPortrait ? 'none' : 'margin-left 0.6s cubic-bezier(0.19, 1, 0.22, 1)',
-            overflow: 'hidden',
-          }}
-        >
-          {renderContent()}
-        </main>
-      </div>
+      </SidebarProvider>
     </ThemeProvider>
   );
 }

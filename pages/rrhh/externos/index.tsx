@@ -2,8 +2,8 @@
 
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { ExternosDesktop } from "./desktop";
-// import { ExternosTabletHorizontal } from "./tablet-horizontal";
-// import { ExternosTablet } from "./tablet";
+import { ExternosTabletHorizontal } from "./tablet-horizontal";
+import { ExternosTablet } from "./tablet";
 // import { ExternosMobile } from "./mobile";
 
 export interface ExternosProps {
@@ -26,8 +26,8 @@ export function Externos({ className }: ExternosProps) {
   return (
     <div className={`page-content-scroll ${className || ''}`} style={{ height: '100%' }}>
       {breakpoint === "desktop" && <ExternosDesktop />}
-      {/* {breakpoint === "tablet" && <ExternosTabletHorizontal />} */}
-      {/* {breakpoint === "tablet-portrait" && <ExternosTablet />} */}
+      {breakpoint === "tablet" && <ExternosTabletHorizontal />}
+      {breakpoint === "tablet-portrait" && <ExternosTablet />}
       {/* {breakpoint === "mobile" && <ExternosMobile />} */}
       {breakpoint !== "desktop" && (
         <div style={{ padding: "var(--spacing-xl)", color: "var(--foreground-secondary)" }}>

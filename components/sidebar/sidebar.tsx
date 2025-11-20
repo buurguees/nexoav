@@ -13,6 +13,7 @@ interface SidebarProps {
   onCollapseChange?: (isCollapsed: boolean) => void;
   isOpen?: boolean;
   onClose?: () => void;
+  isCollapsed?: boolean;
 }
 
 /**
@@ -30,7 +31,8 @@ export function Sidebar({
   onNavigate,
   onCollapseChange,
   isOpen,
-  onClose
+  onClose,
+  isCollapsed
 }: SidebarProps) {
   const breakpoint = useBreakpoint();
 
@@ -52,6 +54,7 @@ export function Sidebar({
           onCollapseChange={onCollapseChange}
           isOpen={isOpen}
           onClose={onClose}
+          isCollapsed={isCollapsed}
         />
       )}
       {breakpoint === "tablet-portrait" && (
@@ -62,6 +65,7 @@ export function Sidebar({
           onCollapseChange={onCollapseChange}
           isOpen={isOpen}
           onClose={onClose}
+          isCollapsed={isCollapsed}
         />
       )}
       {breakpoint === "mobile" && (

@@ -1,0 +1,2 @@
+export { EmpleadosTablet } from "./Empleados";
+

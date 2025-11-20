@@ -2,8 +2,8 @@
 
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { DatosFiscalesDesktop } from "./desktop";
-// import { DatosFiscalesTabletHorizontal } from "./tablet-horizontal";
-// import { DatosFiscalesTablet } from "./tablet";
+import { DatosFiscalesTabletHorizontal } from "./tablet-horizontal";
+import { DatosFiscalesTablet } from "./tablet";
 // import { DatosFiscalesMobile } from "./mobile";
 
 export interface DatosFiscalesProps {
@@ -26,8 +26,8 @@ export function DatosFiscales({ className }: DatosFiscalesProps) {
   return (
     <div className={`page-content-scroll ${className || ''}`} style={{ height: '100%' }}>
       {breakpoint === "desktop" && <DatosFiscalesDesktop />}
-      {/* {breakpoint === "tablet" && <DatosFiscalesTabletHorizontal />} */}
-      {/* {breakpoint === "tablet-portrait" && <DatosFiscalesTablet />} */}
+      {breakpoint === "tablet" && <DatosFiscalesTabletHorizontal />}
+      {breakpoint === "tablet-portrait" && <DatosFiscalesTablet />}
       {/* {breakpoint === "mobile" && <DatosFiscalesMobile />} */}
       {breakpoint !== "desktop" && (
         <div style={{ padding: "var(--spacing-xl)", color: "var(--foreground-secondary)" }}>

@@ -1,0 +1,2 @@
+export { NominasTabletHorizontal } from "./Nominas";
+

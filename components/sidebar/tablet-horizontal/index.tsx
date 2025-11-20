@@ -6,6 +6,7 @@ import { sidebarNavigation, empresaNavigation } from '../../../lib/config/sideba
 import { useState, useCallback, useEffect } from 'react';
 import { LucideIcon, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { IconWrapper } from '../../icons/desktop/IconWrapper';
+import { useSidebar } from '../../../src/contexts/SidebarContext';
 
 interface SidebarTabletHorizontalProps {
   className?: string;
@@ -14,6 +15,7 @@ interface SidebarTabletHorizontalProps {
   onCollapseChange?: (isCollapsed: boolean) => void;
   isOpen?: boolean;
   onClose?: () => void;
+  isCollapsed?: boolean; // Estado inicial del sidebar desde App.tsx
 }
 
 interface SidebarNavSubItem {
@@ -307,9 +309,15 @@ export function SidebarTabletHorizontal({
   onNavigate,
   onCollapseChange,
   isOpen: _isOpen = false,
-  onClose: _onClose
+  onClose,
+  isCollapsed: externalIsCollapsed = false
 }: SidebarTabletHorizontalProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(externalIsCollapsed);
+  
+  // Sincronizar el estado interno con el estado externo
+  useEffect(() => {
+    setIsCollapsed(externalIsCollapsed);
+  }, [externalIsCollapsed]);
   const [expandedItems, setExpandedItems] = useState<string[]>(() => {
     const activeItems: string[] = [];
     sidebarNavigation.forEach((item: typeof sidebarNavigation[0]) => {
@@ -338,6 +346,10 @@ export function SidebarTabletHorizontal({
   const handleNavClick = (path: string) => {
     if (onNavigate) {
       onNavigate(path);
+    }
+    // Cerrar el sidebar automáticamente al navegar en tablet
+    if (onClose) {
+      onClose();
     }
   };
 
@@ -417,7 +429,9 @@ export function SidebarTabletHorizontal({
     );
   };
 
-  const sidebarWidth = isCollapsed ? '64px' : 'var(--sidebar-width)';
+  // Usar el ancho del contexto del sidebar para tablet horizontal (200px expandido, 64px colapsado)
+  const { sidebarWidth: contextSidebarWidth } = useSidebar();
+  const sidebarWidth = `${contextSidebarWidth}px`;
 
   return (
     <motion.aside

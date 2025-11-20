@@ -1,0 +1,2 @@
+export { ConectividadTablet } from "./Conectividad";
+

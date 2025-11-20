@@ -3,7 +3,7 @@
 import { useBreakpoint } from "../../hooks/useBreakpoint";
 import { CalendarioDesktop } from "./desktop";
 // import { CalendarioTabletHorizontal } from "./tablet-horizontal";
-// import { CalendarioTablet } from "./tablet";
+import { CalendarioTablet } from "./tablet";
 // import { CalendarioMobile } from "./mobile";
 
 export interface CalendarioProps {
@@ -17,7 +17,7 @@ export interface CalendarioProps {
  * Selecciona automáticamente la versión correcta según el dispositivo:
  * - Desktop: (> 1024px)
  * - Tablet Horizontal: (1024px - 1280px) - Por implementar
- * - Tablet Portrait: (768px - 1024px) - Por implementar
+ * - Tablet Portrait: (768px - 1024px)
  * - Mobile: (< 768px) - Por implementar
  */
 export function Calendario({ className }: CalendarioProps) {
@@ -27,9 +27,9 @@ export function Calendario({ className }: CalendarioProps) {
     <div className={`page-content-scroll ${className || ''}`} style={{ height: '100%' }}>
       {breakpoint === "desktop" && <CalendarioDesktop />}
       {/* {breakpoint === "tablet" && <CalendarioTabletHorizontal />} */}
-      {/* {breakpoint === "tablet-portrait" && <CalendarioTablet />} */}
+      {breakpoint === "tablet-portrait" && <CalendarioTablet />}
       {/* {breakpoint === "mobile" && <CalendarioMobile />} */}
-      {breakpoint !== "desktop" && (
+      {breakpoint !== "desktop" && breakpoint !== "tablet-portrait" && (
         <div style={{ padding: "var(--spacing-xl)", color: "var(--foreground-secondary)" }}>
           Versión {breakpoint} del Calendario por implementar
         </div>

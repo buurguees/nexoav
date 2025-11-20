@@ -2,8 +2,8 @@
 
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { NominasDesktop } from "./desktop";
-// import { NominasTabletHorizontal } from "./tablet-horizontal";
-// import { NominasTablet } from "./tablet";
+import { NominasTabletHorizontal } from "./tablet-horizontal";
+import { NominasTablet } from "./tablet";
 // import { NominasMobile } from "./mobile";
 
 export interface NominasProps {
@@ -26,8 +26,8 @@ export function Nominas({ className }: NominasProps) {
   return (
     <div className={`page-content-scroll ${className || ''}`} style={{ height: '100%' }}>
       {breakpoint === "desktop" && <NominasDesktop />}
-      {/* {breakpoint === "tablet" && <NominasTabletHorizontal />} */}
-      {/* {breakpoint === "tablet-portrait" && <NominasTablet />} */}
+      {breakpoint === "tablet" && <NominasTabletHorizontal />}
+      {breakpoint === "tablet-portrait" && <NominasTablet />}
       {/* {breakpoint === "mobile" && <NominasMobile />} */}
       {breakpoint !== "desktop" && (
         <div style={{ padding: "var(--spacing-xl)", color: "var(--foreground-secondary)" }}>

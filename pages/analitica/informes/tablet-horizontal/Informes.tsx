@@ -1,8 +1,13 @@
 "use client";
 
+import { motion } from "motion/react";
+import { useTabletHorizontalSize } from "../../../../hooks/useTabletHorizontalSize";
+
 /**
  * Página de Informes - Versión Tablet Horizontal (768px - 1024px, horizontal)
  * Layout: 70/30 horizontal
+ * - 70%: Listado completo con título, filtros, herramientas
+ * - 30%: Charts y tarjetas apilados verticalmente
  */
 
 interface SpaceBlockProps {
@@ -13,6 +18,7 @@ interface SpaceBlockProps {
   description?: string;
   borderStyle?: "dashed" | "solid";
   borderWidth?: string;
+  fontSize?: string;
 }
 
 function SpaceBlock({
@@ -22,13 +28,14 @@ function SpaceBlock({
   color = "var(--background-secondary)",
   description,
   borderStyle = "dashed",
-  borderWidth = "2px"
+  borderWidth = "2px",
+  fontSize = "11px"
 }: SpaceBlockProps) {
   return (
     <div
       style={{
         width,
-        height,
+        height: typeof height === "number" ? `${height}px` : height,
         backgroundColor: color,
         border: `${borderWidth} ${borderStyle} var(--border-medium)`,
         borderRadius: "var(--radius-md)",
@@ -44,7 +51,7 @@ function SpaceBlock({
     >
       <div
         style={{
-          fontSize: "11px",
+          fontSize: fontSize,
           fontWeight: "var(--font-weight-semibold)",
           color: "var(--foreground-secondary)",
           textAlign: "center",
@@ -72,73 +79,200 @@ function SpaceBlock({
 }
 
 export function InformesTabletHorizontal() {
+  const tabletHorizontalSize = useTabletHorizontalSize();
+
+  const config = {
+    small: {
+      padding: "var(--spacing-sm)",
+      gap: "var(--spacing-sm)",
+      headerHeight: "35px",
+      fontSize: "10px",
+    },
+    medium: {
+      padding: "var(--spacing-md)",
+      gap: "var(--spacing-md)",
+      headerHeight: "40px",
+      fontSize: "11px",
+    },
+    large: {
+      padding: "var(--spacing-md)",
+      gap: "var(--spacing-md)",
+      headerHeight: "45px",
+      fontSize: "11px",
+    },
+  };
+
+  const currentConfig = config[tabletHorizontalSize];
+
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
       style={{
         display: "flex",
         flexDirection: "row",
-        gap: "var(--spacing-xs)",
-        padding: "var(--spacing-xs)",
+        gap: currentConfig.gap,
+        padding: currentConfig.padding,
         height: "100%",
         width: "100%",
         boxSizing: "border-box",
         overflow: "hidden",
       }}
     >
+      {/* Listado - 70% */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "var(--spacing-xs)",
+          gap: currentConfig.gap,
           width: "70%",
           height: "100%",
           minHeight: 0,
           overflow: "hidden",
         }}
       >
+        {/* Encabezado del Listado */}
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr 1fr",
-            gap: "var(--spacing-xs)",
-            height: "35px",
+            gap: currentConfig.gap,
+            height: currentConfig.headerHeight,
             flexShrink: 0,
           }}
         >
-          <SpaceBlock label="Filtros" height="100%" color="rgba(255, 165, 0, 0.15)" />
-          <SpaceBlock label="Título: Informes" height="100%" color="var(--background-secondary)" />
-          <SpaceBlock label="Herramientas" height="100%" color="rgba(67, 83, 255, 0.15)" />
+          <SpaceBlock
+            label="Filtros"
+            height="100%"
+            color="rgba(255, 165, 0, 0.15)"
+            description="Filtros de búsqueda"
+            fontSize={currentConfig.fontSize}
+          />
+          <SpaceBlock
+            label="Informes"
+            height="100%"
+            color="var(--background-secondary)"
+            description="Título"
+            fontSize={currentConfig.fontSize}
+          />
+          <SpaceBlock
+            label="Herramientas"
+            height="100%"
+            color="rgba(67, 83, 255, 0.15)"
+            description="Herramientas"
+            fontSize={currentConfig.fontSize}
+          />
         </div>
-        <div style={{ flexShrink: 0, minHeight: "35px" }}>
-          <SpaceBlock label="Cabecera de la Tabla" height="35px" color="rgba(0, 200, 117, 0.15)" />
+        {/* Cabecera de la Tabla */}
+        <div style={{ flexShrink: 0, minHeight: currentConfig.headerHeight }}>
+          <SpaceBlock
+            label="Cabecera de la Tabla"
+            height={currentConfig.headerHeight}
+            color="rgba(0, 200, 117, 0.15)"
+            description="Cabecera"
+            fontSize={currentConfig.fontSize}
+          />
         </div>
-        <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden" }}>
-          <SpaceBlock label="Listado de Informes" height="100%" color="rgba(0, 200, 117, 0.1)" />
+        {/* Contenido del Listado */}
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            overflowY: "auto",
+            overflowX: "hidden",
+          }}
+        >
+          <SpaceBlock
+            label="Listado de Informes"
+            height="100%"
+            color="rgba(0, 200, 117, 0.1)"
+            description="Listado de informes"
+            fontSize={currentConfig.fontSize}
+          />
         </div>
       </div>
+
+      {/* Charts - 30% */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "var(--spacing-xs)",
+          gap: currentConfig.gap,
           width: "30%",
           height: "100%",
           minHeight: 0,
           overflow: "hidden",
         }}
       >
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "var(--spacing-xs)", height: "35px", flexShrink: 0 }}>
-          <SpaceBlock label="Resumen" height="100%" color="var(--background-secondary)" />
-          <SpaceBlock label="Filtro" height="100%" color="rgba(255, 165, 0, 0.15)" />
+        {/* Título */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "2fr 1fr",
+            gap: currentConfig.gap,
+            height: currentConfig.headerHeight,
+            flexShrink: 0,
+          }}
+        >
+          <SpaceBlock
+            label="Resumen"
+            height="100%"
+            color="var(--background-secondary)"
+            description="Resumen"
+            fontSize={currentConfig.fontSize}
+          />
+          <SpaceBlock
+            label="Filtro"
+            height="100%"
+            color="rgba(255, 165, 0, 0.15)"
+            description="Filtro"
+            fontSize={currentConfig.fontSize}
+          />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "var(--spacing-xs)", flexShrink: 0 }}>
-          <SpaceBlock label="Total Informes" height="60px" color="rgba(0, 200, 117, 0.2)" borderWidth="2px" />
-          <SpaceBlock label="Stock Bajo" height="60px" color="rgba(220, 53, 69, 0.2)" borderWidth="2px" />
+        {/* Tarjetas compactas */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gap: currentConfig.gap,
+            flexShrink: 0,
+          }}
+        >
+          <SpaceBlock
+            label="Total Informes"
+            height="60px"
+            color="rgba(0, 200, 117, 0.2)"
+            borderWidth="2px"
+            fontSize={currentConfig.fontSize}
+          />
+          <SpaceBlock
+            label="Informes del Mes"
+            height="60px"
+            color="rgba(67, 83, 255, 0.2)"
+            borderWidth="2px"
+            fontSize={currentConfig.fontSize}
+          />
         </div>
-        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: "var(--spacing-xs)" }}>
-          <SpaceBlock label="Gráfico: Informes por Categoría" height="100%" color="rgba(67, 83, 255, 0.15)" />
+        {/* Gráficos */}
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            gap: currentConfig.gap,
+          }}
+        >
+          <SpaceBlock
+            label="Gráfico: Informes por Tipo"
+            height="100%"
+            color="rgba(67, 83, 255, 0.15)"
+            description="Gráfico"
+            fontSize={currentConfig.fontSize}
+          />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

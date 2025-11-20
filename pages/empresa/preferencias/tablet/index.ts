@@ -1,0 +1,2 @@
+export { PreferenciasTablet } from "./Preferencias";
+

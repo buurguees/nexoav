@@ -1,0 +1,2 @@
+export { PlantillasTabletHorizontal } from "./Plantillas";
+

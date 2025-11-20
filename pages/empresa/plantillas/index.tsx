@@ -2,8 +2,8 @@
 
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { PlantillasDesktop } from "./desktop";
-// import { PlantillasTabletHorizontal } from "./tablet-horizontal";
-// import { PlantillasTablet } from "./tablet";
+import { PlantillasTabletHorizontal } from "./tablet-horizontal";
+import { PlantillasTablet } from "./tablet";
 // import { PlantillasMobile } from "./mobile";
 
 export interface PlantillasProps {
@@ -20,7 +20,10 @@ export function Plantillas({ className }: PlantillasProps) {
   return (
     <div className={`page-content-scroll ${className || ''}`} style={{ height: '100%' }}>
       {breakpoint === "desktop" && <PlantillasDesktop />}
-      {breakpoint !== "desktop" && (
+      {breakpoint === "tablet" && <PlantillasTabletHorizontal />}
+      {breakpoint === "tablet-portrait" && <PlantillasTablet />}
+      {/* {breakpoint === "mobile" && <PlantillasMobile />} */}
+      {breakpoint !== "desktop" && breakpoint !== "tablet" && breakpoint !== "tablet-portrait" && (
         <div style={{ padding: "var(--spacing-xl)", color: "var(--foreground-secondary)" }}>
           Versión {breakpoint} de Plantillas por implementar
         </div>

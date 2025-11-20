@@ -2,8 +2,8 @@
 
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { EmpleadosDesktop } from "./desktop/Empleados";
-// import { EmpleadosTabletHorizontal } from "./tablet-horizontal";
-// import { EmpleadosTablet } from "./tablet";
+import { EmpleadosTabletHorizontal } from "./tablet-horizontal";
+import { EmpleadosTablet } from "./tablet";
 // import { EmpleadosMobile } from "./mobile";
 
 export interface EmpleadosProps {
@@ -26,8 +26,8 @@ export function Empleados({ className }: EmpleadosProps) {
   return (
     <div className={`page-content-scroll ${className || ''}`} style={{ height: '100%' }}>
       {breakpoint === "desktop" && <EmpleadosDesktop />}
-      {/* {breakpoint === "tablet" && <EmpleadosTabletHorizontal />} */}
-      {/* {breakpoint === "tablet-portrait" && <EmpleadosTablet />} */}
+      {breakpoint === "tablet" && <EmpleadosTabletHorizontal />}
+      {breakpoint === "tablet-portrait" && <EmpleadosTablet />}
       {/* {breakpoint === "mobile" && <EmpleadosMobile />} */}
       {breakpoint !== "desktop" && (
         <div style={{ padding: "var(--spacing-xl)", color: "var(--foreground-secondary)" }}>

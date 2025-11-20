@@ -1,0 +1,2 @@
+export { DocumentacionTabletHorizontal } from "./Documentacion";
+

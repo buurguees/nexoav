@@ -2,8 +2,8 @@
 
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { DocumentacionDesktop } from "./desktop";
-// import { DocumentacionTabletHorizontal } from "./tablet-horizontal";
-// import { DocumentacionTablet } from "./tablet";
+import { DocumentacionTabletHorizontal } from "./tablet-horizontal";
+import { DocumentacionTablet } from "./tablet";
 // import { DocumentacionMobile } from "./mobile";
 
 export interface DocumentacionProps {
@@ -20,7 +20,10 @@ export function Documentacion({ className }: DocumentacionProps) {
   return (
     <div className={`page-content-scroll ${className || ''}`} style={{ height: '100%' }}>
       {breakpoint === "desktop" && <DocumentacionDesktop />}
-      {breakpoint !== "desktop" && (
+      {breakpoint === "tablet" && <DocumentacionTabletHorizontal />}
+      {breakpoint === "tablet-portrait" && <DocumentacionTablet />}
+      {/* {breakpoint === "mobile" && <DocumentacionMobile />} */}
+      {breakpoint !== "desktop" && breakpoint !== "tablet" && breakpoint !== "tablet-portrait" && (
         <div style={{ padding: "var(--spacing-xl)", color: "var(--foreground-secondary)" }}>
           Versión {breakpoint} de Documentación por implementar
         </div>

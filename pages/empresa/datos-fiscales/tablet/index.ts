@@ -1,0 +1,2 @@
+export { DatosFiscalesTablet } from "./DatosFiscales";
+

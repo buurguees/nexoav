@@ -1,0 +1,2 @@
+export { ExternosTabletHorizontal } from "./Externos";
+

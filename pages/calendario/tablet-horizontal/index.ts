@@ -1,0 +1,2 @@
+export { CalendarioTabletHorizontal } from "./Calendario";
+

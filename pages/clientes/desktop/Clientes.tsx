@@ -1,41 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useDesktopSize } from "../../../hooks/useDesktopSize";
 
 /**
  * Página de Clientes - Versión Desktop (> 1024px)
  * Layout: Listado (60%) + Chart (40%) lado a lado
  * Optimizado para diferentes tamaños de pantalla desktop
  */
-
-/**
- * Hook para detectar el tamaño de pantalla desktop
- */
-function useDesktopSize() {
-  const [size, setSize] = useState<'small' | 'medium' | 'large' | 'xlarge'>(() => {
-    if (typeof window === 'undefined') return 'medium';
-    const width = window.innerWidth;
-    if (width < 1280) return 'small';      // 1025px - 1279px: Desktop pequeño
-    if (width < 1600) return 'medium';     // 1280px - 1599px: Desktop medio
-    if (width < 1920) return 'large';      // 1600px - 1919px: Desktop grande
-    return 'xlarge';                        // 1920px+: Desktop extra grande
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      if (width < 1280) setSize('small');
-      else if (width < 1600) setSize('medium');
-      else if (width < 1920) setSize('large');
-      else setSize('xlarge');
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return size;
-}
 
 interface SpaceBlockProps {
   label: string;

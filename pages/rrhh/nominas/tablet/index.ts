@@ -1,0 +1,2 @@
+export { NominasTablet } from "./Nominas";
+

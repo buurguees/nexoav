@@ -1,9 +1,15 @@
 "use client";
 
+import { motion } from "motion/react";
+import { useTabletSize } from "../../../../hooks/useTabletSize";
+
 /**
- * Página de Tecnicos - Versión Tablet Portrait (768px - 1024px, vertical)
- * Layout: Listado completo con título, filtros, herramientas (prioridad máxima)
- * Charts opcionales y compactos arriba
+ * Página de Técnicos - Versión Tablet Portrait (768px - 1024px)
+ * Layout optimizado para tablet portrait:
+ * - Header: Filtros, Título, Herramientas
+ * - 3 Tarjetas de Información (en fila)
+ * - Listado de Técnicos (con scroll)
+ * - Gráficos en la parte inferior
  */
 
 interface SpaceBlockProps {
@@ -14,6 +20,7 @@ interface SpaceBlockProps {
   description?: string;
   borderStyle?: "dashed" | "solid";
   borderWidth?: string;
+  fontSize?: string;
 }
 
 function SpaceBlock({
@@ -23,13 +30,14 @@ function SpaceBlock({
   color = "var(--background-secondary)",
   description,
   borderStyle = "dashed",
-  borderWidth = "2px"
+  borderWidth = "2px",
+  fontSize = "11px"
 }: SpaceBlockProps) {
   return (
     <div
       style={{
         width,
-        height,
+        height: typeof height === "number" ? `${height}px` : height,
         backgroundColor: color,
         border: `${borderWidth} ${borderStyle} var(--border-medium)`,
         borderRadius: "var(--radius-md)",
@@ -45,7 +53,7 @@ function SpaceBlock({
     >
       <div
         style={{
-          fontSize: "11px",
+          fontSize: fontSize,
           fontWeight: "var(--font-weight-semibold)",
           color: "var(--foreground-secondary)",
           textAlign: "center",
@@ -73,133 +81,194 @@ function SpaceBlock({
 }
 
 export function TecnicosTablet() {
+  const tabletSize = useTabletSize();
+
+  // Configuración responsive según tamaño de tablet
+  const config = {
+    small: {
+      padding: "var(--spacing-sm)",
+      gap: "var(--spacing-sm)",
+      headerHeight: "35px",
+      cardsHeight: "100px",
+      tableHeaderHeight: "30px",
+      chartsHeight: "120px",
+      fontSize: "10px",
+    },
+    medium: {
+      padding: "var(--spacing-md)",
+      gap: "var(--spacing-md)",
+      headerHeight: "40px",
+      cardsHeight: "120px",
+      tableHeaderHeight: "35px",
+      chartsHeight: "140px",
+      fontSize: "11px",
+    },
+    large: {
+      padding: "var(--spacing-md)",
+      gap: "var(--spacing-md)",
+      headerHeight: "45px",
+      cardsHeight: "140px",
+      tableHeaderHeight: "40px",
+      chartsHeight: "160px",
+      fontSize: "11px",
+    },
+  };
+
+  const currentConfig = config[tabletSize];
+
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "var(--spacing-xs)",
-        padding: "var(--spacing-xs)",
+        gap: currentConfig.gap,
+        padding: currentConfig.padding,
         height: "100%",
         width: "100%",
         boxSizing: "border-box",
         overflow: "hidden",
       }}
     >
-      {/* Charts y Tarjetas compactos - 3 columnas: C1, C2, y columna derecha con T1 y T2 */}
+      {/* Header: Filtros, Título, Herramientas */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 6fr 2fr",
+          gap: currentConfig.gap,
+          height: currentConfig.headerHeight,
+          flexShrink: 0,
+          minHeight: currentConfig.headerHeight,
+        }}
+      >
+        <SpaceBlock
+          label="Filtros"
+          height="100%"
+          color="rgba(255, 165, 0, 0.15)"
+          description="Filtros de búsqueda y filtrado"
+          fontSize={currentConfig.fontSize}
+        />
+        <SpaceBlock
+          label="Técnicos"
+          height="100%"
+          color="var(--background-secondary)"
+          description="Título de la sección"
+          fontSize={currentConfig.fontSize}
+        />
+        <SpaceBlock
+          label="Herramientas"
+          height="100%"
+          color="rgba(67, 83, 255, 0.15)"
+          description="Herramientas de gestión"
+          fontSize={currentConfig.fontSize}
+        />
+      </div>
+
+      {/* 3 Tarjetas de Información */}
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr",
-          gap: "var(--spacing-xs)",
-          height: "120px",
+          gap: currentConfig.gap,
+          height: currentConfig.cardsHeight,
           flexShrink: 0,
-          minHeight: "120px",
+          minHeight: currentConfig.cardsHeight,
         }}
       >
-        {/* Columna 1: Gráfico de Barras (C1) */}
         <SpaceBlock
-          label="Gráfico Barras: Proyectos por Estado"
+          label="Total Técnicos"
           height="100%"
-          color="rgba(67, 83, 255, 0.15)"
-          description="Barras: Aprobados, En progreso, En pausa, Completados"
+          color="rgba(0, 200, 117, 0.2)"
+          description="Número total de técnicos activos"
+          borderWidth="2px"
+          fontSize={currentConfig.fontSize}
         />
-        
-        {/* Columna 2: Gráfico de Líneas (C2) */}
         <SpaceBlock
-          label="Gráfico Líneas: Evolución Proyectos"
+          label="En Activo"
           height="100%"
-          color="rgba(0, 200, 117, 0.15)"
-          description="Eje X: meses. Eje Y: nº de proyectos creados / cerrados"
+          color="rgba(67, 83, 255, 0.2)"
+          description="Técnicos actualmente en proyectos"
+          borderWidth="2px"
+          fontSize={currentConfig.fontSize}
         />
-        
-        {/* Columna 3: Tarjetas T1 y T2 apiladas verticalmente */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "var(--spacing-xs)",
-            height: "100%",
-            minHeight: 0,
-            boxSizing: "border-box",
-          }}
-        >
-          {/* Tarjeta 1: Total de Proyectos Activos (T1) */}
-          <div style={{ flex: "1 1 50%", minHeight: 0 }}>
-            <SpaceBlock
-              label="Tarjeta 1: Total Proyectos Activos"
-              height="100%"
-              color="rgba(0, 200, 117, 0.2)"
-              description="Número grande. Subtítulo: 'En progreso / aprobados'"
-              borderWidth="2px"
-            />
-          </div>
-          {/* Tarjeta 2: Volumen Económico (T2) */}
-          <div style={{ flex: "1 1 50%", minHeight: 0 }}>
-            <SpaceBlock
-              label="Tarjeta 2: Volumen Económico"
-              height="100%"
-              color="rgba(67, 83, 255, 0.2)"
-              description="Importe total de proyectos. Indicador verde/rojo"
-              borderWidth="2px"
-            />
-          </div>
-        </div>
+        <SpaceBlock
+          label="Valoración Media"
+          height="100%"
+          color="rgba(255, 165, 0, 0.2)"
+          description="Valoración promedio de técnicos"
+          borderWidth="2px"
+          fontSize={currentConfig.fontSize}
+        />
       </div>
 
-      {/* Listado de Tecnicos - PRIORIDAD MÁXIMA */}
+      {/* Listado de Técnicos */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "var(--spacing-xs)",
+          gap: currentConfig.gap,
           flex: 1,
           minHeight: 0,
           overflow: "hidden",
         }}
       >
-        {/* Encabezado del Listado - Fijo - 3 Bloques */}
+        {/* Cabecera de la Tabla */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: "var(--spacing-xs)",
-            height: "35px",
+            gridTemplateColumns: tabletSize === 'small'
+              ? "0.8fr 2fr 1fr 1fr"
+              : tabletSize === 'medium'
+              ? "0.8fr 2.5fr 1fr 1fr 1fr"
+              : "0.8fr 2.5fr 1fr 1fr 1fr 0.8fr",
+            gap: "2px",
+            height: currentConfig.tableHeaderHeight,
             flexShrink: 0,
-            minHeight: "35px",
+            minHeight: currentConfig.tableHeaderHeight,
           }}
         >
-          {/* Bloque 1: Filtros */}
           <SpaceBlock
-            label="Filtros"
+            label="Código"
             height="100%"
-            color="rgba(255, 165, 0, 0.15)"
-            description="Filtros de búsqueda y filtrado"
-          />
-          {/* Bloque 2: Título */}
-          <SpaceBlock
-            label="Título: Tecnicos"
-            height="100%"
-            color="var(--background-secondary)"
-            description="Título de la sección"
-          />
-          {/* Bloque 3: Herramientas */}
-          <SpaceBlock
-            label="Herramientas"
-            height="100%"
-            color="rgba(67, 83, 255, 0.15)"
-            description="Herramientas de gestión"
-          />
-        </div>
-
-        {/* Cabecera de la Tabla - Fija */}
-        <div style={{ flexShrink: 0, minHeight: "35px" }}>
-          <SpaceBlock
-            label="Cabecera de la Tabla"
-            height="35px"
             color="rgba(0, 200, 117, 0.15)"
-            description="Cabecera con columnas: código, nombre, estado, proyectos, facturación"
+            fontSize={currentConfig.fontSize}
           />
+          <SpaceBlock
+            label="Nombre"
+            height="100%"
+            color="rgba(0, 200, 117, 0.15)"
+            fontSize={currentConfig.fontSize}
+          />
+          <SpaceBlock
+            label="Estado"
+            height="100%"
+            color="rgba(0, 200, 117, 0.15)"
+            fontSize={currentConfig.fontSize}
+          />
+          <SpaceBlock
+            label="Especialidad"
+            height="100%"
+            color="rgba(0, 200, 117, 0.15)"
+            fontSize={currentConfig.fontSize}
+          />
+          {tabletSize !== 'small' && (
+            <SpaceBlock
+              label="Valoración"
+              height="100%"
+              color="rgba(0, 200, 117, 0.15)"
+              fontSize={currentConfig.fontSize}
+            />
+          )}
+          {tabletSize === 'large' && (
+            <SpaceBlock
+              label="Acciones"
+              height="100%"
+              color="rgba(0, 200, 117, 0.15)"
+              fontSize={currentConfig.fontSize}
+            />
+          )}
         </div>
 
         {/* Contenido del Listado - Con scroll */}
@@ -212,14 +281,41 @@ export function TecnicosTablet() {
           }}
         >
           <SpaceBlock
-            label="Listado de Tecnicos"
+            label="Listado de Técnicos"
             height="100%"
             color="rgba(0, 200, 117, 0.1)"
-            description="Tabla/Lista con información de cada T�cnico. Scroll vertical cuando hay muchos Tecnicos."
+            description="Tabla/Lista con información de cada técnico"
+            fontSize={currentConfig.fontSize}
           />
         </div>
       </div>
-    </div>
+
+      {/* Gráficos en la parte inferior */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: currentConfig.gap,
+          height: currentConfig.chartsHeight,
+          flexShrink: 0,
+          minHeight: currentConfig.chartsHeight,
+        }}
+      >
+        <SpaceBlock
+          label="Gráfico de Barras"
+          height="100%"
+          color="rgba(67, 83, 255, 0.15)"
+          description="Distribución de técnicos por especialidad"
+          fontSize={currentConfig.fontSize}
+        />
+        <SpaceBlock
+          label="Gráfico de Líneas"
+          height="100%"
+          color="rgba(0, 200, 117, 0.15)"
+          description="Evolución de contrataciones en el tiempo"
+          fontSize={currentConfig.fontSize}
+        />
+      </div>
+    </motion.div>
   );
 }
-

@@ -1,9 +1,15 @@
 "use client";
 
+import { motion } from "motion/react";
+import { useTabletSize } from "../../../../hooks/useTabletSize";
+
 /**
- * Página de Softwares - Versión Tablet Portrait (768px - 1024px, vertical)
- * Layout: Listado completo con título, filtros, herramientas (prioridad máxima)
- * Charts opcionales y compactos arriba
+ * Página de Softwares - Versión Tablet Portrait (768px - 1024px)
+ * Layout optimizado para tablet portrait:
+ * - Header: Filtros, Título, Herramientas
+ * - 3 Tarjetas de Información (en fila)
+ * - Listado de Softwares (con scroll)
+ * - Gráficos en la parte inferior
  */
 
 interface SpaceBlockProps {
@@ -14,6 +20,7 @@ interface SpaceBlockProps {
   description?: string;
   borderStyle?: "dashed" | "solid";
   borderWidth?: string;
+  fontSize?: string;
 }
 
 function SpaceBlock({
@@ -23,13 +30,14 @@ function SpaceBlock({
   color = "var(--background-secondary)",
   description,
   borderStyle = "dashed",
-  borderWidth = "2px"
+  borderWidth = "2px",
+  fontSize = "11px"
 }: SpaceBlockProps) {
   return (
     <div
       style={{
         width,
-        height,
+        height: typeof height === "number" ? `${height}px` : height,
         backgroundColor: color,
         border: `${borderWidth} ${borderStyle} var(--border-medium)`,
         borderRadius: "var(--radius-md)",
@@ -45,7 +53,7 @@ function SpaceBlock({
     >
       <div
         style={{
-          fontSize: "11px",
+          fontSize: fontSize,
           fontWeight: "var(--font-weight-semibold)",
           color: "var(--foreground-secondary)",
           textAlign: "center",
@@ -73,153 +81,135 @@ function SpaceBlock({
 }
 
 export function SoftwaresTablet() {
+  const tabletSize = useTabletSize();
+
+  const config = {
+    small: {
+      padding: "var(--spacing-sm)",
+      gap: "var(--spacing-sm)",
+      headerHeight: "35px",
+      cardsHeight: "100px",
+      tableHeaderHeight: "30px",
+      chartsHeight: "120px",
+      fontSize: "10px",
+    },
+    medium: {
+      padding: "var(--spacing-md)",
+      gap: "var(--spacing-md)",
+      headerHeight: "40px",
+      cardsHeight: "120px",
+      tableHeaderHeight: "35px",
+      chartsHeight: "140px",
+      fontSize: "11px",
+    },
+    large: {
+      padding: "var(--spacing-md)",
+      gap: "var(--spacing-md)",
+      headerHeight: "45px",
+      cardsHeight: "140px",
+      tableHeaderHeight: "40px",
+      chartsHeight: "160px",
+      fontSize: "11px",
+    },
+  };
+
+  const currentConfig = config[tabletSize];
+
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "var(--spacing-xs)",
-        padding: "var(--spacing-xs)",
+        gap: currentConfig.gap,
+        padding: currentConfig.padding,
         height: "100%",
         width: "100%",
         boxSizing: "border-box",
         overflow: "hidden",
       }}
     >
-      {/* Charts y Tarjetas compactos - 3 columnas: C1, C2, y columna derecha con T1 y T2 */}
+      {/* Header */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 6fr 2fr",
+          gap: currentConfig.gap,
+          height: currentConfig.headerHeight,
+          flexShrink: 0,
+          minHeight: currentConfig.headerHeight,
+        }}
+      >
+        <SpaceBlock label="Filtros" height="100%" color="rgba(255, 165, 0, 0.15)" description="Filtros" fontSize={currentConfig.fontSize} />
+        <SpaceBlock label="Softwares" height="100%" color="var(--background-secondary)" description="Título" fontSize={currentConfig.fontSize} />
+        <SpaceBlock label="Herramientas" height="100%" color="rgba(67, 83, 255, 0.15)" description="Herramientas" fontSize={currentConfig.fontSize} />
+      </div>
+
+      {/* 3 Tarjetas */}
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr",
-          gap: "var(--spacing-xs)",
-          height: "120px",
+          gap: currentConfig.gap,
+          height: currentConfig.cardsHeight,
           flexShrink: 0,
-          minHeight: "120px",
+          minHeight: currentConfig.cardsHeight,
         }}
       >
-        {/* Columna 1: Gráfico de Barras (C1) */}
-        <SpaceBlock
-          label="Gráfico Barras: Proyectos por Estado"
-          height="100%"
-          color="rgba(67, 83, 255, 0.15)"
-          description="Barras: Aprobados, En progreso, En pausa, Completados"
-        />
-        
-        {/* Columna 2: Gráfico de Líneas (C2) */}
-        <SpaceBlock
-          label="Gráfico Líneas: Evolución Proyectos"
-          height="100%"
-          color="rgba(0, 200, 117, 0.15)"
-          description="Eje X: meses. Eje Y: nº de proyectos creados / cerrados"
-        />
-        
-        {/* Columna 3: Tarjetas T1 y T2 apiladas verticalmente */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "var(--spacing-xs)",
-            height: "100%",
-            minHeight: 0,
-            boxSizing: "border-box",
-          }}
-        >
-          {/* Tarjeta 1: Total de Proyectos Activos (T1) */}
-          <div style={{ flex: "1 1 50%", minHeight: 0 }}>
-            <SpaceBlock
-              label="Tarjeta 1: Total Proyectos Activos"
-              height="100%"
-              color="rgba(0, 200, 117, 0.2)"
-              description="Número grande. Subtítulo: 'En progreso / aprobados'"
-              borderWidth="2px"
-            />
-          </div>
-          {/* Tarjeta 2: Volumen Económico (T2) */}
-          <div style={{ flex: "1 1 50%", minHeight: 0 }}>
-            <SpaceBlock
-              label="Tarjeta 2: Volumen Económico"
-              height="100%"
-              color="rgba(67, 83, 255, 0.2)"
-              description="Importe total de proyectos. Indicador verde/rojo"
-              borderWidth="2px"
-            />
-          </div>
-        </div>
+        <SpaceBlock label="Total Softwares" height="100%" color="rgba(0, 200, 117, 0.2)" description="Total de softwares" borderWidth="2px" fontSize={currentConfig.fontSize} />
+        <SpaceBlock label="Activos" height="100%" color="rgba(67, 83, 255, 0.2)" description="Softwares en uso" borderWidth="2px" fontSize={currentConfig.fontSize} />
+        <SpaceBlock label="Coste Mensual" height="100%" color="rgba(255, 165, 0, 0.2)" description="Coste total mensual" borderWidth="2px" fontSize={currentConfig.fontSize} />
       </div>
 
-      {/* Listado de Softwares - PRIORIDAD MÁXIMA */}
+      {/* Listado */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "var(--spacing-xs)",
+          gap: currentConfig.gap,
           flex: 1,
           minHeight: 0,
           overflow: "hidden",
         }}
       >
-        {/* Encabezado del Listado - Fijo - 3 Bloques */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: "var(--spacing-xs)",
-            height: "35px",
+            gridTemplateColumns: tabletSize === 'small' ? "0.8fr 2fr 1fr 1fr" : tabletSize === 'medium' ? "0.8fr 2.5fr 1fr 1fr 1fr" : "0.8fr 2.5fr 1fr 1fr 1fr 0.8fr",
+            gap: "2px",
+            height: currentConfig.tableHeaderHeight,
             flexShrink: 0,
-            minHeight: "35px",
+            minHeight: currentConfig.tableHeaderHeight,
           }}
         >
-          {/* Bloque 1: Filtros */}
-          <SpaceBlock
-            label="Filtros"
-            height="100%"
-            color="rgba(255, 165, 0, 0.15)"
-            description="Filtros de búsqueda y filtrado"
-          />
-          {/* Bloque 2: Título */}
-          <SpaceBlock
-            label="Título: Softwares"
-            height="100%"
-            color="var(--background-secondary)"
-            description="Título de la sección"
-          />
-          {/* Bloque 3: Herramientas */}
-          <SpaceBlock
-            label="Herramientas"
-            height="100%"
-            color="rgba(67, 83, 255, 0.15)"
-            description="Herramientas de gestión"
-          />
+          <SpaceBlock label="Código" height="100%" color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
+          <SpaceBlock label="Nombre" height="100%" color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
+          <SpaceBlock label="Estado" height="100%" color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
+          <SpaceBlock label="Tipo" height="100%" color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
+          {tabletSize !== 'small' && <SpaceBlock label="Coste" height="100%" color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />}
+          {tabletSize === 'large' && <SpaceBlock label="Acciones" height="100%" color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />}
         </div>
-
-        {/* Cabecera de la Tabla - Fija */}
-        <div style={{ flexShrink: 0, minHeight: "35px" }}>
-          <SpaceBlock
-            label="Cabecera de la Tabla"
-            height="35px"
-            color="rgba(0, 200, 117, 0.15)"
-            description="Cabecera con columnas: código, nombre, estado, proyectos, facturación"
-          />
-        </div>
-
-        {/* Contenido del Listado - Con scroll */}
-        <div
-          style={{
-            flex: 1,
-            minHeight: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
-          }}
-        >
-          <SpaceBlock
-            label="Listado de Softwares"
-            height="100%"
-            color="rgba(0, 200, 117, 0.1)"
-            description="Tabla/Lista con información de cada Software. Scroll vertical cuando hay muchos Softwares."
-          />
+        <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden" }}>
+          <SpaceBlock label="Listado de Softwares" height="100%" color="rgba(0, 200, 117, 0.1)" description="Tabla con información de softwares" fontSize={currentConfig.fontSize} />
         </div>
       </div>
-    </div>
+
+      {/* Gráficos */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: currentConfig.gap,
+          height: currentConfig.chartsHeight,
+          flexShrink: 0,
+          minHeight: currentConfig.chartsHeight,
+        }}
+      >
+        <SpaceBlock label="Gráfico de Barras" height="100%" color="rgba(67, 83, 255, 0.15)" description="Distribución por tipo" fontSize={currentConfig.fontSize} />
+        <SpaceBlock label="Gráfico de Líneas" height="100%" color="rgba(0, 200, 117, 0.15)" description="Evolución de costes" fontSize={currentConfig.fontSize} />
+      </div>
+    </motion.div>
   );
 }
-

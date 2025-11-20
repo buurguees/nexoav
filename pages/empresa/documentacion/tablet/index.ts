@@ -1,0 +1,2 @@
+export { DocumentacionTablet } from "./Documentacion";
+

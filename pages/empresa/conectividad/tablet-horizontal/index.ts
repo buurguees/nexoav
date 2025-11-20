@@ -1,0 +1,2 @@
+export { ConectividadTabletHorizontal } from "./Conectividad";
+
