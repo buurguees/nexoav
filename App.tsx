@@ -1,5 +1,6 @@
 import { Sidebar } from './components/sidebar/sidebar';
 import { Header } from './components/header/header';
+import { BottomNavbar } from './components/navigation/mobile/BottomNavbar';
 import { InicioResumen } from './pages/inicio';
 import { Clientes } from './pages/clientes';
 import { Proyectos } from './pages/proyectos';
@@ -276,11 +277,12 @@ function AppContent({
   };
 
   return (
-    <div style={{ backgroundColor: 'var(--background)', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ backgroundColor: 'var(--background)', height: '100vh', overflow: 'hidden', margin: 0, padding: 0, position: 'relative' }}>
       {/* Header - Fixed (simplificado: solo búsqueda, notificaciones y perfil) */}
       <Header 
         notificationCount={5}
         onMenuClick={() => setIsSidebarOpen(true)}
+        onNavigate={handleNavigate}
       />
 
       {/* Sidebar - Fixed */}
@@ -298,19 +300,28 @@ function AppContent({
         style={{ 
           backgroundColor: 'var(--background)', 
           padding: (isTabletPortrait || isTablet || isMobile) ? '0' : 'var(--content-padding)', // Sin padding en tablet/mobile, las páginas lo manejan
-          marginTop: 'var(--header-height)',
-          marginBottom: (isTabletPortrait || isMobile) ? 'var(--header-height)' : '0', // Para tablet-portrait y mobile que tienen header inferior
+          position: isMobile ? 'absolute' : 'relative', // Absolute para mobile para que el contenido empiece desde el top
+          top: isMobile ? 'var(--header-height)' : undefined, // Posicionar desde el header en mobile
+          left: isMobile ? '0' : undefined,
+          right: isMobile ? '0' : undefined,
+          bottom: isMobile ? 'var(--header-height)' : undefined, // Espacio para el bottom navbar
+          marginTop: isMobile ? '0' : 'var(--header-height)', // Solo marginTop para desktop/tablet
+          marginBottom: (isTabletPortrait || isMobile) ? '0' : '0', // Sin marginBottom cuando usamos position absolute
           marginLeft: isTabletPortrait 
-            ? `${sidebarWidth}px` // Ancho dinámico del sidebar en tablet-portrait (64px colapsado, 160px expandido)
+            ? `${sidebarWidth}px` // Ancho dinámico del sidebar en tablet-portrait (64px colapsado, 160px expandido) - el borde está incluido con box-sizing: border-box
             : isMobile
             ? '0' // Mobile no tiene sidebar fijo
             : isTablet
-            ? `${sidebarWidth}px` // Tablet horizontal: ancho dinámico (64px colapsado, 200px expandido)
-            : (isSidebarCollapsed ? '80px' : 'var(--sidebar-width)'), // Desktop
+            ? `${sidebarWidth}px` // Tablet horizontal: ancho dinámico (64px colapsado, 200px expandido) - el borde está incluido con box-sizing: border-box
+            : (isSidebarCollapsed ? '80px' : 'var(--sidebar-width)'), // Desktop - el borde está incluido con box-sizing: border-box
           width: (isTabletPortrait || isTablet)
             ? `calc(100vw - ${sidebarWidth}px)` // Ancho dinámico que se ajusta al sidebar
-            : undefined, // Desktop y mobile usan el comportamiento por defecto
-          height: (isTabletPortrait || isMobile)
+            : isMobile
+            ? '100vw' // Ancho completo para mobile
+            : undefined, // Desktop usa el comportamiento por defecto
+          height: isMobile 
+            ? undefined // En mobile, height se calcula con top y bottom
+            : (isTabletPortrait || isMobile)
             ? 'calc(100vh - var(--header-height) * 2)' 
             : 'calc(100vh - var(--header-height))', // Para tablet-portrait y mobile necesita espacio para ambos headers
           transition: isTabletPortrait ? 'none' : 'margin-left 0.6s cubic-bezier(0.19, 1, 0.22, 1)',
@@ -320,6 +331,14 @@ function AppContent({
       >
         {renderContent()}
       </main>
+
+      {/* Bottom Navbar - Solo en Mobile */}
+      {isMobile && (
+        <BottomNavbar 
+          currentPath={currentPath} 
+          onNavigate={handleNavigate}
+        />
+      )}
     </div>
   );
 }

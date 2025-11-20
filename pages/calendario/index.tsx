@@ -4,7 +4,7 @@ import { useBreakpoint } from "../../hooks/useBreakpoint";
 import { CalendarioDesktop } from "./desktop";
 // import { CalendarioTabletHorizontal } from "./tablet-horizontal";
 import { CalendarioTablet } from "./tablet";
-// import { CalendarioMobile } from "./mobile";
+import { CalendarioMobile } from "./mobile";
 
 export interface CalendarioProps {
   className?: string;
@@ -28,8 +28,8 @@ export function Calendario({ className }: CalendarioProps) {
       {breakpoint === "desktop" && <CalendarioDesktop />}
       {/* {breakpoint === "tablet" && <CalendarioTabletHorizontal />} */}
       {breakpoint === "tablet-portrait" && <CalendarioTablet />}
-      {/* {breakpoint === "mobile" && <CalendarioMobile />} */}
-      {breakpoint !== "desktop" && breakpoint !== "tablet-portrait" && (
+      {breakpoint === "mobile" && <CalendarioMobile />}
+      {breakpoint !== "desktop" && breakpoint !== "tablet-portrait" && breakpoint !== "mobile" && (
         <div style={{ padding: "var(--spacing-xl)", color: "var(--foreground-secondary)" }}>
           Versión {breakpoint} del Calendario por implementar
         </div>
