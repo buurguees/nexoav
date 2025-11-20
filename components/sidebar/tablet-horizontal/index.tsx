@@ -451,6 +451,7 @@ export function SidebarTabletHorizontal({
         backgroundColor: 'var(--background-sidebar)',
         borderRight: '1px solid var(--border-soft)',
         zIndex: 999,
+        boxSizing: 'border-box',
       }}
     >
       {/* Logo Header con botón de toggle */}

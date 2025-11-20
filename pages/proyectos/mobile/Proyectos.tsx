@@ -2,8 +2,7 @@
 
 /**
  * Página de Proyectos - Versión Mobile (< 768px)
- * Layout: Listado completo con título, filtros, herramientas (prioridad máxima)
- * Charts opcionales y muy compactos arriba
+ * Layout: Solo tabla y listado (sin tarjetas ni gráficos)
  */
 
 interface SpaceBlockProps {
@@ -86,53 +85,7 @@ export function ProyectosMobile() {
         overflow: "hidden",
       }}
     >
-      {/* Tarjetas compactas - 4 tarjetas en grid 2x2 */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows: "1fr 1fr",
-          gap: "var(--spacing-xs)",
-          height: "100px",
-          flexShrink: 0,
-          minHeight: "100px",
-        }}
-      >
-        {/* Tarjeta 1: Total de Proyectos Activos */}
-        <SpaceBlock
-          label="Tarjeta 1: Total Proyectos Activos"
-          height="100%"
-          color="rgba(0, 200, 117, 0.2)"
-          description="Número grande. Subtítulo: 'En progreso / aprobados'"
-          borderWidth="2px"
-        />
-        {/* Tarjeta 2: Volumen Económico */}
-        <SpaceBlock
-          label="Tarjeta 2: Volumen Económico"
-          height="100%"
-          color="rgba(67, 83, 255, 0.2)"
-          description="Importe total de proyectos. Indicador verde/rojo"
-          borderWidth="2px"
-        />
-        {/* Tarjeta 3: Facturación Emitida */}
-        <SpaceBlock
-          label="Tarjeta 3: Facturación Emitida"
-          height="100%"
-          color="rgba(255, 165, 0, 0.2)"
-          description="Total facturado. Badge: 'Pagado / Pendiente / Vencido'"
-          borderWidth="2px"
-        />
-        {/* Tarjeta 4: Próximo Hito / Vencimiento */}
-        <SpaceBlock
-          label="Tarjeta 4: Próximo Hito / Vencimiento"
-          height="100%"
-          color="rgba(220, 53, 69, 0.2)"
-          description="Fecha del próximo hito estimado"
-          borderWidth="2px"
-        />
-      </div>
-
-      {/* Listado de proyectos - PRIORIDAD MÁXIMA */}
+      {/* Listado de proyectos */}
       <div
         style={{
           display: "flex",

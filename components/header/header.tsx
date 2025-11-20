@@ -9,6 +9,7 @@ import { HeaderMobile } from "./mobile";
 interface HeaderProps {
   notificationCount?: number;
   onMenuClick?: () => void;
+  onNavigate?: (path: string) => void;
 }
 
 /**
@@ -22,7 +23,8 @@ interface HeaderProps {
  */
 export function Header({ 
   notificationCount = 0,
-  onMenuClick
+  onMenuClick,
+  onNavigate
 }: HeaderProps) {
   const breakpoint = useBreakpoint();
 
@@ -49,6 +51,7 @@ export function Header({
         <HeaderMobile
           notificationCount={notificationCount}
           onMenuClick={onMenuClick}
+          onNavigate={onNavigate}
         />
       )}
       {breakpoint !== "desktop" && breakpoint !== "tablet" && breakpoint !== "tablet-portrait" && breakpoint !== "mobile" && (

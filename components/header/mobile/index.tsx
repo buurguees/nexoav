@@ -4,13 +4,16 @@ import { motion, AnimatePresence } from 'motion/react';
 import { HeaderSearch } from './HeaderSearch';
 import { HeaderActions } from './HeaderActions';
 import { SettingsPanel } from '../../settings/SettingsPanel';
-import { Search, X, Menu } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { IconWrapper } from '../../icons/desktop/IconWrapper';
+import { Logo } from '../../Logo';
+import { useRouter } from '../../../hooks/useRouter';
 import { useState } from 'react';
 
 interface HeaderMobileProps {
   notificationCount?: number;
   onMenuClick?: () => void;
+  onNavigate?: (path: string) => void;
 }
 
 /**
@@ -19,16 +22,21 @@ interface HeaderMobileProps {
  */
 export function HeaderMobile({ 
   notificationCount = 0,
-  onMenuClick
+  onMenuClick,
+  onNavigate
 }: HeaderMobileProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { navigate: routerNavigate } = useRouter();
+  
+  // Usar la función de navegación pasada como prop, o la del hook como fallback
+  const navigate = onNavigate || routerNavigate;
 
   return (
     <motion.header
-      initial={{ y: -80 }}
+      initial={{ y: 0 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
+      transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
       className="flex items-center relative"
       style={{
         position: 'fixed',
@@ -40,31 +48,35 @@ export function HeaderMobile({
         borderBottom: '1px solid var(--border-soft)',
         padding: '0 var(--spacing-md)',
         zIndex: 1000,
+        margin: 0,
+        boxSizing: 'border-box',
       }}
     >
-      {/* Left Side - Menu Button */}
-      {onMenuClick && (
-        <motion.button
-          onClick={onMenuClick}
-          className="p-2 rounded-lg transition-colors mr-2"
-          style={{
-            color: 'var(--foreground-tertiary)',
-            borderRadius: 'var(--radius-md)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
-            e.currentTarget.style.color = 'var(--foreground)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = 'var(--foreground-tertiary)';
-          }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <IconWrapper icon={Menu} size={20} />
-        </motion.button>
-      )}
+      {/* Left Side - Logo (clickeable para ir a inicio) */}
+      <motion.button
+        onClick={() => navigate('/')}
+        className="p-1.5 rounded-lg transition-colors mr-2"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'var(--foreground)',
+          backgroundColor: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          borderRadius: 'var(--radius-md)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+        }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <Logo variant="icon" animated={false} className="w-8 h-8" />
+      </motion.button>
 
       {/* Right Side Actions - Absolute positioned */}
       <div 
