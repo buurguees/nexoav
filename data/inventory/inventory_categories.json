@@ -1,0 +1,29 @@
+[
+  {
+    "id": "c10e8400-e29b-41d4-a716-446655440500",
+    "name": "Mano de Obra",
+    "accounting_account_sales": "705",
+    "accounting_account_purchase": "600",
+    "description": "Servicios de mano de obra técnica",
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "c20e8400-e29b-41d4-a716-446655440510",
+    "name": "Logística",
+    "accounting_account_sales": "705",
+    "accounting_account_purchase": "600",
+    "description": "Servicios logísticos y desplazamientos",
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "c30e8400-e29b-41d4-a716-446655440520",
+    "name": "Pantalla LED",
+    "accounting_account_sales": "705",
+    "accounting_account_purchase": "600",
+    "description": "Equipamiento de pantallas LED y componentes relacionados",
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  }
+]
