@@ -1,0 +1,13 @@
+[
+  {
+    "id": "660e8400-e29b-41d4-a716-446655440001",
+    "bank_name": "Banco Sabadell",
+    "iban": "ES52 0081 0200 2900 0473 7679",
+    "swift_bic": "BSABESBBXXX",
+    "is_visible_on_invoices": true,
+    "is_default": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  }
+]
+

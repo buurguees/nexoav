@@ -1,0 +1,24 @@
+[
+  {
+    "id": "f10e8400-e29b-41d4-a716-446655440300",
+    "email": "alex.burgues@avtechesdeveniments.com",
+    "full_name": "Alex Burgués",
+    "role": "admin",
+    "department": null,
+    "supplier_id": null,
+    "is_active": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "f20e8400-e29b-41d4-a716-446655440310",
+    "email": "eric.izquierdo@avtechesdeveniments.com",
+    "full_name": "Eric Izquierdo",
+    "role": "admin",
+    "department": null,
+    "supplier_id": null,
+    "is_active": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  }
+]

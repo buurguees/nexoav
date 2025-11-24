@@ -1,0 +1,25 @@
+[
+  {
+    "id": "770e8400-e29b-41d4-a716-446655440002",
+    "type": "presupuesto",
+    "name": "Plantilla por Defecto",
+    "template_html": "",
+    "terms_text": "",
+    "is_active": true,
+    "is_default": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "770e8400-e29b-41d4-a716-446655440003",
+    "type": "factura",
+    "name": "Plantilla por Defecto",
+    "template_html": "",
+    "terms_text": "",
+    "is_active": true,
+    "is_default": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  }
+]
+

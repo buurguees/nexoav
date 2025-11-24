@@ -1,0 +1,73 @@
+[
+  {
+    "id": "990e8400-e29b-41d4-a716-446655440011",
+    "client_id": "880e8400-e29b-41d4-a716-446655440010",
+    "full_name": "",
+    "position": "",
+    "email": "",
+    "phone": "933036211",
+    "tags": ["facturacion"],
+    "is_billing_contact": true,
+    "is_primary": true,
+    "notes": "",
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "bb0e8400-e29b-41d4-a716-446655440021",
+    "client_id": "aa0e8400-e29b-41d4-a716-446655440020",
+    "full_name": "Nathaly Ziraldo García",
+    "position": "Dpto. Producción y Logística",
+    "email": "nathaly@eikonos.com",
+    "phone": "+34 934 397 305",
+    "tags": ["produccion", "logistica"],
+    "is_billing_contact": false,
+    "is_primary": true,
+    "notes": "Fax: +34 934 051 828",
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "bb0e8400-e29b-41d4-a716-446655440022",
+    "client_id": "aa0e8400-e29b-41d4-a716-446655440020",
+    "full_name": "Contacto General",
+    "position": "Administración",
+    "email": "eikonos@eikonos.com",
+    "phone": "+34 934 397 305",
+    "tags": ["facturacion", "administracion"],
+    "is_billing_contact": true,
+    "is_primary": false,
+    "notes": "Email y teléfono general de la empresa",
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "dd0e8400-e29b-41d4-a716-446655440031",
+    "client_id": "cc0e8400-e29b-41d4-a716-446655440030",
+    "full_name": "Adrián",
+    "position": "Contacto Principal",
+    "email": "adrian@softcontrols.es",
+    "phone": "+34 688 904 657",
+    "tags": ["facturacion", "tecnico"],
+    "is_billing_contact": true,
+    "is_primary": true,
+    "notes": "",
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "ff0e8400-e29b-41d4-a716-446655440041",
+    "client_id": "ee0e8400-e29b-41d4-a716-446655440040",
+    "full_name": "Sandra",
+    "position": "Contacto Principal",
+    "email": "sandraa@recubik.com",
+    "phone": "",
+    "tags": ["facturacion"],
+    "is_billing_contact": true,
+    "is_primary": true,
+    "notes": "",
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  }
+]
+

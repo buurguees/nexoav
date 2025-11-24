@@ -1,0 +1,138 @@
+[
+  {
+    "id": "880e8400-e29b-41d4-a716-446655440010",
+    "internal_code": "CLI-0001",
+    "fiscal_name": "CBCN SOLUCIONES Y EQUIPOS MULTIFUNCIONALES SL",
+    "commercial_name": "CANON BCN 22",
+    "vat_number": "B65595621",
+    "billing_address": {
+      "street": "CALLE ESPRONCEDA, 333 - 333",
+      "city": "BARCELONA",
+      "zip": "08027",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "shipping_address": {
+      "street": "CALLE ESPRONCEDA, 333 - 333",
+      "city": "BARCELONA",
+      "zip": "08027",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "payment_terms": "30 días",
+    "payment_method": "transferencia",
+    "notes": "Cliente. Acumula en modelo 347. Cuenta cliente/deudor: 43000010",
+    "is_active": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "aa0e8400-e29b-41d4-a716-446655440020",
+    "internal_code": "CLI-0002",
+    "fiscal_name": "EIKONOS SA (EIKONOS, S.A.)",
+    "commercial_name": "EIKONOS",
+    "vat_number": "A08948846",
+    "billing_address": {
+      "street": "CALLE MARINA, 32",
+      "city": "Cornellà de llobregat",
+      "zip": "08940",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "shipping_address": {
+      "street": "CALLE MARINA, 32",
+      "city": "Cornellà de llobregat",
+      "zip": "08940",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "payment_terms": "30 días",
+    "payment_method": "transferencia",
+    "notes": "Cliente. Web: https://www.eikonos.com",
+    "is_active": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "cc0e8400-e29b-41d4-a716-446655440030",
+    "internal_code": "CLI-0003",
+    "fiscal_name": "SOFT CONTROLS DOMOTICA Y AUDIOVISUALES SOCIEDAD LIMITADA",
+    "commercial_name": "SOFT CONTROLS DOMOTICA",
+    "vat_number": "B92971670",
+    "billing_address": {
+      "street": "CALLE SEVILLA, 31 - 3",
+      "city": "VALENCIA",
+      "zip": "46006",
+      "province": "Valencia/València",
+      "country": "España"
+    },
+    "shipping_address": {
+      "street": "CALLE SEVILLA, 31 - 3",
+      "city": "VALENCIA",
+      "zip": "46006",
+      "province": "Valencia/València",
+      "country": "España"
+    },
+    "payment_terms": "30 días",
+    "payment_method": "transferencia",
+    "notes": "Cliente. Web: https://tienda.softcontrols.es/",
+    "is_active": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "ee0e8400-e29b-41d4-a716-446655440040",
+    "internal_code": "CLI-0004",
+    "fiscal_name": "RECUBIK CARTELERÍA DIGITAL",
+    "commercial_name": "",
+    "vat_number": "B67319798",
+    "billing_address": {
+      "street": "C/ Serra del Montsec, 44 Entre Suelo 1ra",
+      "city": "Esplugues de Llobregat",
+      "zip": "08950",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "shipping_address": {
+      "street": "C/ Serra del Montsec, 44 Entre Suelo 1ra",
+      "city": "Esplugues de Llobregat",
+      "zip": "08950",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "payment_terms": "30 días",
+    "payment_method": "transferencia",
+    "notes": "Cliente. Acumula en modelo 347. Cuenta cliente/deudor: 43000003. Web: https://digitalsignageweb.com/",
+    "is_active": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  },
+  {
+    "id": "110e8400-e29b-41d4-a716-446655440050",
+    "internal_code": "CLI-0005",
+    "fiscal_name": "ADRICO MULTIMEDIA SL",
+    "commercial_name": "",
+    "vat_number": "B44647931",
+    "billing_address": {
+      "street": "",
+      "city": "Sant Joan Despí",
+      "zip": "08970",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "shipping_address": {
+      "street": "",
+      "city": "Sant Joan Despí",
+      "zip": "08970",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "payment_terms": "30 días",
+    "payment_method": "transferencia",
+    "notes": "Cliente y Proveedor. Acumula en modelo 347. Cuenta cliente/deudor: 43000011. Cuenta proveedor/acreedor: 40000019. Cuenta de ventas: 70500001. Cuenta de compras: 61000001",
+    "is_active": true,
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  }
+]
+

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "h10e8400-e29b-41d4-a716-446655441000",
+    "document_id": "h00e8400-e29b-41d4-a716-446655440999",
+    "item_id": "d10e8400-e29b-41d4-a716-446655440600",
+    "concept": "Jornada Técnico (General)",
+    "description": "Jornada de 8h técnico general de instalación",
+    "quantity": 12.00,
+    "unit_price": 250.00,
+    "discount_percent": 0.00,
+    "subtotal": 3000.00,
+    "tax_percent": 21.00,
+    "total_line": 3630.00,
+    "grouping_tag": "Servicios",
+    "line_order": 1,
+    "created_at": "2025-01-21T00:00:00Z"
+  }
+]

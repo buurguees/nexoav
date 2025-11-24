@@ -1,0 +1,30 @@
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "fiscal_name": "AV TECH ESDEVENIMENTS S.L.",
+    "trade_name": "AV TECH",
+    "cif": "B75835728",
+    "address_fiscal": {
+      "street": "C/ Francesc Hombravella Maristany, 13",
+      "city": "El Masnou",
+      "zip": "08320",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "address_warehouse": {
+      "street": "C/ Francesc Hombravella Maristany, 13",
+      "city": "El Masnou",
+      "zip": "08320",
+      "province": "Barcelona",
+      "country": "España"
+    },
+    "phone": "+34663850001",
+    "email_contact": "proyectos@avtechesdeveniments.com",
+    "default_vat": 21.00,
+    "default_currency": "EUR",
+    "logo_url": "/logos/av-tech-logo.png",
+    "created_at": "2025-01-21T00:00:00Z",
+    "updated_at": "2025-01-21T00:00:00Z"
+  }
+]
+
