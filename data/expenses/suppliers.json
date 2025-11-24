@@ -3,7 +3,7 @@
     "id": "220e8400-e29b-41d4-a716-446655440060",
     "name": "ADRICO MULTIMEDIA SL",
     "cif": "B44647931",
-    "category": "material",
+    "category": "tecnico_freelance",
     "freelance_profile_id": null,
     "address": {
       "street": "",
@@ -15,15 +15,19 @@
     "contact_email": "",
     "contact_phone": "",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Cliente y Proveedor. Acumula en modelo 347. Cuenta proveedor/acreedor: 40000019. Cuenta de compras: 61000001",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0001",
+    "fiscal_name": "ADRICO MULTIMEDIA SL",
+    "commercial_name": "ADRICO"
   },
   {
     "id": "330e8400-e29b-41d4-a716-446655440070",
     "name": "OBRAMAT (BRICOLAJE BRICOMAN, S.L.U)",
+    "commercial_name": "OBRAMAT",
     "cif": "B84406289",
     "category": "material",
     "freelance_profile_id": null,
@@ -37,21 +41,24 @@
     "contact_email": "",
     "contact_phone": "+34 934 003 131",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Proveedor de materiales de bricolaje",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0002",
+    "fiscal_name": "OBRAMAT (BRICOLAJE BRICOMAN, S.L.U)"
   },
   {
     "id": "440e8400-e29b-41d4-a716-446655440080",
     "name": "NETWORK AUDIOVISUAL SOLUTIONS SL",
+    "commercial_name": "NAV SOLUTIONS",
     "cif": "B01711050",
     "category": "tecnico_freelance",
     "freelance_profile_id": null,
     "address": {
       "street": "Calle Veracruz 26",
-      "city": "Móstoles",
+      "city": "Madrid",
       "zip": "28936",
       "province": "Madrid",
       "country": "España"
@@ -59,11 +66,13 @@
     "contact_email": "admin@navsolutions.es",
     "contact_phone": "+34 664 819 279",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Técnico externo. Proveedor de mano de obra. Web: www.navsolutions.es",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0003",
+    "fiscal_name": "NETWORK AUDIOVISUAL SOLUTIONS SL"
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440090",
@@ -81,15 +90,18 @@
     "contact_email": "",
     "contact_phone": "+34 619",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Técnico externo. Autónomo. Proveedor de mano de obra",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0004",
+    "fiscal_name": "DIEGO RODRIGUEZ VILLA"
   },
   {
     "id": "660e8400-e29b-41d4-a716-446655440100",
     "name": "FLOWIT VISUAL SL",
+    "commercial_name": "FLOWIT",
     "cif": "B22685101",
     "category": "tecnico_freelance",
     "freelance_profile_id": null,
@@ -103,11 +115,13 @@
     "contact_email": "jorgeirs19@gmail.com",
     "contact_phone": "+34 695 062 274",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Técnico externo. Proveedor de mano de obra. Contacto: Jorge Iván Reinares",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0005",
+    "fiscal_name": "FLOWIT VISUAL SL"
   },
   {
     "id": "770e8400-e29b-41d4-a716-446655440110",
@@ -125,11 +139,13 @@
     "contact_email": "d.palaciosalvarez@gmail.com",
     "contact_phone": "",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Técnico externo. Autónomo. Proveedor de mano de obra",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0006",
+    "fiscal_name": "DAVID PALACIOS ÁLVAREZ"
   },
   {
     "id": "880e8400-e29b-41d4-a716-446655440120",
@@ -147,11 +163,14 @@
     "contact_email": "mont-mat@outlook.com",
     "contact_phone": "+34 604 379 175",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Técnico externo. Autónomo. Proveedor de mano de obra. Nombre comercial: Carlos Matos",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0007",
+    "fiscal_name": "CARLOS DAVID MATOS VALDEZ",
+    "commercial_name": "Carlos Matos"
   },
   {
     "id": "990e8400-e29b-41d4-a716-446655440130",
@@ -169,11 +188,14 @@
     "contact_email": "",
     "contact_phone": "",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Proveedor de pantallas LED y componentes relacionados. Marca: SRYLED - Audio - Visual - Solutions",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0008",
+    "fiscal_name": "Shenzhen SRYLED Photoelectric Co., Ltd.",
+    "commercial_name": "SRYLED"
   },
   {
     "id": "aa0e8400-e29b-41d4-a716-446655440140",
@@ -191,11 +213,13 @@
     "contact_email": "support@lovable.dev",
     "contact_phone": "",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Proveedor de software/SaaS. Servicios de desarrollo y plataformas digitales.",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0009",
+    "fiscal_name": "Lovable Labs Incorporated"
   },
   {
     "id": "bb0e8400-e29b-41d4-a716-446655440150",
@@ -213,10 +237,12 @@
     "contact_email": "jcrenom@hotmail.com",
     "contact_phone": "",
     "payment_terms_days": 30,
-    "total_billing": 0.00,
+    "total_billing": 0,
     "notes": "Gestoría. Honorarios mensuales de iguala. Inscrita en el Registro Mercantil de Barcelona, tomo 49110, folio 106, hoja B608077.",
     "is_active": true,
     "created_at": "2025-01-21T00:00:00Z",
-    "updated_at": "2025-01-21T00:00:00Z"
+    "updated_at": "2025-01-21T00:00:00Z",
+    "internal_code": "PROV-0010",
+    "fiscal_name": "RENOM GESTIONS INICIATIVES SL"
   }
 ]

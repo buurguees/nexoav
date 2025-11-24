@@ -20,7 +20,10 @@ import { useBreakpoint } from "../../../hooks/useBreakpoint";
 // Tabla: suppliers (docs/base-de-datos.md, línea 1073)
 export interface SupplierData {
   id: string; // PK (UUID)
-  name: string; // Nombre del proveedor
+  internal_code?: string; // Código interno único (ej: "PROV-0001")
+  fiscal_name: string; // Razón social fiscal
+  commercial_name?: string; // Nombre comercial (opcional)
+  name?: string; // Alias para compatibilidad (deprecated, usar fiscal_name)
   cif?: string; // CIF/NIF del proveedor
   category: "tecnico_freelance" | "material" | "transporte" | "software" | "externo"; // Categoría del proveedor
   freelance_profile_id?: string; // FK (UUID) → profiles.id (solo para técnicos)
@@ -42,6 +45,10 @@ export interface SupplierData {
   total_projects?: number; // Total de proyectos asignados (calculado desde project_staffing)
   total_expenses?: number; // Total de gastos con este proveedor (calculado desde expenses)
   total_billed?: number; // Total facturado/pagado a este proveedor (calculado desde expenses donde status = 'pagado')
+  total_billing?: number; // Total pagado al proveedor (desde suppliers.total_billing)
+  invoices_count?: number; // Nº de facturas emitidas/pagadas (calculado desde expenses donde status IN ('aprobado', 'pagado'))
+  invoices_paid_count?: number; // Nº de facturas pagadas (calculado desde expenses donde status = 'pagado')
+  total_orders?: number; // Nº total de pedidos/gastos (calculado desde expenses, contando todos los expenses del proveedor)
 }
 
 interface ProveedoresListProps {
@@ -101,9 +108,13 @@ export function ProveedoresList({
       const matchesCategory = !category || supplier.category === category;
 
       // Filtro de búsqueda
+      const supplierName = supplier.fiscal_name || supplier.name || "";
+      const supplierCommercialName = supplier.commercial_name || "";
       const matchesSearch =
         searchTerm === "" ||
-        supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        supplierName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        supplierCommercialName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        supplier.internal_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         supplier.cif?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         supplier.contact_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         supplier.contact_phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -122,8 +133,8 @@ export function ProveedoresList({
   const columns: DataListColumn<SupplierData>[] = useMemo(() => {
     const baseColumns: DataListColumn<SupplierData>[] = [
       {
-        key: "name",
-        label: "Nombre",
+        key: "internal_code",
+        label: "Código",
         visibleOn: {
           desktop: true,
           tablet: true,
@@ -131,15 +142,45 @@ export function ProveedoresList({
         },
         render: (supplier) => (
           <span style={{ fontWeight: "var(--font-weight-medium)", color: "var(--foreground)" }}>
-            {supplier.name}
+            {supplier.internal_code || "-"}
           </span>
         ),
+      },
+      {
+        key: "fiscal_name",
+        label: "Nombre",
+        visibleOn: {
+          desktop: true,
+          tablet: true,
+          mobile: true,
+        },
+        render: (supplier) => {
+          const fiscalName = supplier.fiscal_name || supplier.name || "";
+          const commercialName = supplier.commercial_name;
+          return (
+            <div>
+              <div style={{ fontWeight: "var(--font-weight-medium)" }}>
+                {commercialName || fiscalName}
+              </div>
+              {commercialName && (
+                <div
+                  style={{
+                    fontSize: "var(--font-size-xs)",
+                    color: "var(--foreground-tertiary)",
+                  }}
+                >
+                  {fiscalName}
+                </div>
+              )}
+            </div>
+          );
+        },
       },
       {
         key: "cif",
         label: "CIF/NIF",
         visibleOn: {
-          desktop: category !== "software" ? true : false, // Softwares pueden no tener CIF
+          desktop: category === "externo" ? true : false, // Solo externos en desktop
           tablet: category === "material" || category === "externo" ? true : false,
           mobile: false,
         },
@@ -153,7 +194,7 @@ export function ProveedoresList({
         key: "contact_email",
         label: "Email",
         visibleOn: {
-          desktop: category === "tecnico_freelance" || category === "material" || category === "software" || category === "externo" ? true : false,
+          desktop: category === "tecnico_freelance" || category === "material" || category === "externo" ? true : false, // Softwares no muestran email en desktop
           tablet: category === "tecnico_freelance" || category === "material" ? true : false,
           mobile: false,
         },
@@ -167,13 +208,27 @@ export function ProveedoresList({
         key: "contact_phone",
         label: "Teléfono",
         visibleOn: {
-          desktop: category === "tecnico_freelance" || category === "material" || category === "software" || category === "externo" ? true : false,
+          desktop: category === "tecnico_freelance" || category === "material" || category === "externo" ? true : false, // Softwares no muestran teléfono en desktop
           tablet: category === "tecnico_freelance" ? true : false,
           mobile: false,
         },
         render: (supplier) => (
           <span style={{ color: "var(--foreground-secondary)", fontSize: "var(--font-size-sm)" }}>
             {supplier.contact_phone || "-"}
+          </span>
+        ),
+      },
+      {
+        key: "address.city",
+        label: "Ciudad",
+        visibleOn: {
+          desktop: category === "tecnico_freelance" || category === "material" ? true : false, // Técnicos y materiales
+          tablet: category === "tecnico_freelance" ? true : false,
+          mobile: false,
+        },
+        render: (supplier) => (
+          <span style={{ color: "var(--foreground-secondary)", fontSize: "var(--font-size-sm)" }}>
+            {supplier.address?.city || "-"}
           </span>
         ),
       },
@@ -195,7 +250,7 @@ export function ProveedoresList({
         key: "address.country",
         label: "País",
         visibleOn: {
-          desktop: category === "material" ? true : false,
+          desktop: false, // Oculto en desktop según especificación
           tablet: false,
           mobile: false,
         },
@@ -233,34 +288,9 @@ export function ProveedoresList({
           </span>
         ),
       },
-      {
-        key: "total_billed",
-        label: "Facturado",
-        align: "right",
-        visibleOn: {
-          desktop: true,
-          tablet: true,
-          mobile: false,
-        },
-        render: (supplier) => {
-          const total = supplier.total_billed ?? 0;
-          if (total === 0) {
-            return (
-              <span style={{ color: "var(--foreground-tertiary)" }}>
-                €0,00
-              </span>
-            );
-          }
-          return (
-            <span style={{ fontWeight: "var(--font-weight-medium)" }}>
-              {formatCurrency(total)}
-            </span>
-          );
-        },
-      },
     ];
 
-    // Añadir columnas específicas según el tipo de proveedor
+    // Añadir columnas numéricas (no dinero) antes de las de dinero
     if (category === "tecnico_freelance") {
       baseColumns.push({
         key: "total_projects",
@@ -287,47 +317,88 @@ export function ProveedoresList({
       });
     }
 
-    if (category === "material") {
-      // Total productos (requeriría contar desde inventory_items, por ahora mostramos total_expenses)
+    // Columnas específicas para softwares (numéricas, no dinero)
+    if (category === "software") {
       baseColumns.push({
-        key: "total_expenses",
-        label: "Total Gastos",
+        key: "invoices_count",
+        label: "Nº Facturas",
         align: "right",
         visibleOn: {
           desktop: true,
-          tablet: false,
+          tablet: true,
           mobile: false,
         },
         render: (supplier) => {
-          const total = supplier.total_expenses ?? 0;
-          if (total === 0) {
-            return (
-              <span style={{ color: "var(--foreground-tertiary)" }}>
-                €0,00
-              </span>
-            );
-          }
+          const count = supplier.invoices_count ?? 0;
           return (
-            <span style={{ fontWeight: "var(--font-weight-medium)" }}>
-              {formatCurrency(total)}
+            <span
+              style={{
+                fontWeight: "var(--font-weight-medium)",
+                color: count > 0 ? "var(--foreground)" : "var(--foreground-tertiary)",
+              }}
+            >
+              {count}
             </span>
           );
         },
       });
     }
 
-    // Columnas específicas para softwares (por ahora básicas, se pueden extender con datos adicionales)
-    if (category === "software") {
-      // TODO: Añadir columnas específicas cuando haya datos de suscripciones
-      // - Tipo de suscripción
-      // - Coste mensual/anual
-      // - Próxima renovación
+    // Columnas específicas para externos (numéricas, no dinero)
+    if (category === "externo") {
+      baseColumns.push({
+        key: "invoices_count",
+        label: "Nº Facturas",
+        align: "right",
+        visibleOn: {
+          desktop: true,
+          tablet: true,
+          mobile: false,
+        },
+        render: (supplier) => {
+          const count = supplier.invoices_count ?? 0;
+          return (
+            <span
+              style={{
+                fontWeight: "var(--font-weight-medium)",
+                color: count > 0 ? "var(--foreground)" : "var(--foreground-tertiary)",
+              }}
+            >
+              {count}
+            </span>
+          );
+        },
+      });
     }
 
-    // Columnas específicas para externos
-    if (category === "externo") {
-      // TODO: Añadir columna "Tipo de servicio" cuando haya datos adicionales
-    }
+    // COLUMNAS DE DINERO - SIEMPRE AL FINAL (a la derecha)
+    // Facturado (siempre presente)
+    baseColumns.push({
+      key: "total_billing",
+      label: "Facturado",
+      align: "right",
+      visibleOn: {
+        desktop: true,
+        tablet: true,
+        mobile: false,
+      },
+      render: (supplier) => {
+        const total = supplier.total_billing ?? supplier.total_billed ?? 0;
+        if (total === 0) {
+          return (
+            <span style={{ color: "var(--foreground-tertiary)" }}>
+              €0,00
+            </span>
+          );
+        }
+        return (
+          <span style={{ fontWeight: "var(--font-weight-medium)" }}>
+            {formatCurrency(total)}
+          </span>
+        );
+      },
+    });
+
 
     return baseColumns;
   }, [category]);
@@ -347,54 +418,59 @@ export function ProveedoresList({
 
     const count = visibleCols.length;
 
-    if (count >= 8) {
-      // Desktop/Tablet-horizontal: 8+ columnas (con Facturado)
+    // Orden de columnas: Código | Nombre | CIF | Email | Teléfono | Ciudad/País | Estado | [Numéricas] | [Dinero]
+    // Las columnas de dinero siempre al final (a la derecha)
+    
+    // Desktop/Tablet-horizontal: Ajustar según el número de columnas y categoría
+    if (count === 8) {
+      // Técnicos: Código | Nombre | Email | Teléfono | Ciudad | Estado | Proyectos | Facturado
       if (category === "tecnico_freelance") {
-        // Nombre | CIF | Email | Teléfono | Estado | Facturado | Proyectos
-        return "2fr 1.2fr 1.4fr 1.2fr 1fr 1.3fr 0.9fr";
-      } else if (category === "material") {
-        // Nombre | CIF | Email | Teléfono | País | Estado | Facturado | Total Gastos
-        return "2.2fr 1.2fr 1.3fr 1.2fr 1fr 1fr 1.3fr 1.2fr";
-      } else if (category === "externo") {
-        // Nombre | CIF | Email | Teléfono | Estado | Facturado
-        return "2.3fr 1.2fr 1.5fr 1.3fr 1fr 1.3fr";
-      } else {
-        // Fallback genérico
-        return "2.5fr 1.3fr 1.6fr 1.2fr 1fr 1.2fr";
+        return "0.8fr 2.5fr 1.5fr 1.3fr 1.1fr 1fr 0.9fr 1.3fr";
       }
-    } else if (count >= 7) {
-      // Desktop/Tablet-horizontal: 7 columnas
-      if (category === "tecnico_freelance") {
-        // Nombre | CIF | Email | Teléfono | Estado | Facturado | Proyectos
-        return "2fr 1.2fr 1.4fr 1.2fr 1fr 1.3fr 0.9fr";
-      } else if (category === "material") {
-        // Nombre | CIF | Email | Teléfono | País | Estado | Facturado
-        return "2.2fr 1.2fr 1.3fr 1.2fr 1fr 1fr 1.3fr";
-      } else if (category === "software") {
-        // Nombre | Email | Teléfono | Estado | Facturado
-        return "2.5fr 1.8fr 1.5fr 1fr 1.3fr";
-      } else if (category === "externo") {
-        // Nombre | CIF | Email | Teléfono | Estado | Facturado
-        return "2.3fr 1.2fr 1.5fr 1.3fr 1fr 1.3fr";
-      } else {
-        // Fallback genérico
-        return "2.5fr 1.3fr 1.6fr 1.2fr 1fr 1.2fr";
-      }
-    } else if (count === 6) {
+      // Materiales: Código | Nombre | Email | Teléfono | Ciudad | Estado | Pedidos | Facturado
       if (category === "material") {
-        return "2.2fr 1.2fr 1.3fr 1.2fr 1fr 1.3fr";
-      } else if (category === "externo") {
-        return "2.3fr 1.2fr 1.5fr 1.3fr 1fr 1.3fr";
+        return "0.8fr 2.5fr 1.5fr 1.3fr 1.1fr 1fr 0.9fr 1.3fr";
       }
-      return "2.2fr 1.2fr 1.5fr 1fr 1fr 1.2fr";
+    } else if (count === 7) {
+      // Externos: Código | Nombre | Email | Teléfono | Estado | Nº Facturas | Facturado
+      if (category === "externo") {
+        return "0.8fr 2.5fr 1.6fr 1.3fr 1fr 1.1fr 1.3fr";
+      }
+      // Fallback para otros casos
+      return "0.8fr 2.5fr 1.5fr 1.3fr 1fr 1.1fr 1.3fr";
     } else if (count === 5) {
-      return "2.3fr 1.3fr 1.5fr 1fr 1.2fr";
+      // Softwares: Código | Nombre | Estado | Nº Facturas | Facturado
+      if (category === "software") {
+        return "0.8fr 2.8fr 1.2fr 1.1fr 1.3fr";
+      }
+      return "0.8fr 2.5fr 1.1fr 1.4fr 1.3fr";
+    } else if (count >= 9) {
+      // Casos con más columnas (fallback)
+      if (category === "tecnico_freelance") {
+        return "0.8fr 2.5fr 1.1fr 1.4fr 1.2fr 1fr 1fr 0.9fr 1.3fr";
+      } else if (category === "material") {
+        return "0.8fr 2.5fr 1.1fr 1.4fr 1.2fr 1fr 1fr 0.9fr 1.3fr";
+      } else if (category === "software") {
+        return "0.8fr 2.8fr 1.2fr 1.1fr 1.3fr";
+      } else if (category === "externo") {
+        return "0.8fr 2.5fr 1.6fr 1.3fr 1fr 1.1fr 1.3fr";
+      }
+    } else if (count >= 6) {
+      // Casos intermedios
+      if (category === "tecnico_freelance") {
+        return "0.8fr 2.5fr 1.5fr 1.3fr 1fr 1.3fr";
+      } else if (category === "material") {
+        return "0.8fr 2.5fr 1.5fr 1.3fr 1fr 1.3fr";
+      } else if (category === "externo") {
+        return "0.8fr 2.5fr 1.6fr 1.3fr 1fr 1.3fr";
+      }
+      return "0.8fr 2.5fr 1.5fr 1.3fr 1fr 1.3fr";
     } else if (count === 4) {
-      // Tablet portrait: 4 columnas
-      return "2.5fr 1.3fr 1.2fr 1fr";
+      // Tablet portrait: 4 columnas (Código | Nombre | Estado | Facturado)
+      return "0.8fr 2.8fr 1.2fr 1.3fr";
     } else {
-      // Mobile: 3 columnas (Nombre | CIF | Estado)
-      return "2.5fr 1.3fr 1.2fr";
+      // Mobile: 3 columnas (Código | Nombre | Estado)
+      return "0.8fr 2.8fr 1.2fr";
     }
   }, [breakpoint, columns, category]);
 

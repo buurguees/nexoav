@@ -1077,7 +1077,9 @@ Proveedores y suministradores de la empresa.
 | Campo | Tipo | Descripción | Ejemplo |
 |------|------|-------------|---------|
 | `id` | PK (UUID) | Identificador único | UUID |
-| `name` | TEXT | Nombre del proveedor | `"Proveedor XYZ"` |
+| `internal_code` | TEXT | Código interno único (generado automáticamente) | `"PROV-0001"`, `"PROV-0002"` |
+| `fiscal_name` | TEXT | Razón social fiscal | `"PROVEEDOR XYZ SL"` |
+| `commercial_name` | TEXT | Nombre comercial (opcional) | `"Proveedor XYZ"` |
 | `cif` | TEXT | CIF/NIF del proveedor | `"B12345678"` |
 | `category` | ENUM | Categoría del proveedor | `tecnico_freelance`, `material`, `transporte`, `software`, `externo` |
 | `freelance_profile_id` | FK (UUID) | Si es técnico, perfil asociado | UUID → `profiles.id` |

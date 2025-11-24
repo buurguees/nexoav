@@ -52,6 +52,14 @@ export async function fetchSuppliers(category?: SupplierData["category"]): Promi
     return acc;
   }, {} as Record<string, number>);
 
+  // Calcular número de pedidos (expenses) por proveedor
+  const ordersCountBySupplier = (expensesData as any[]).reduce((acc, expense) => {
+    if (expense.supplier_id) {
+      acc[expense.supplier_id] = (acc[expense.supplier_id] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
   // Calcular total facturado/pagado por proveedor (solo gastos con status = 'pagado')
   const billedBySupplier = (expensesData as any[]).reduce((acc, expense) => {
     if (expense.supplier_id && expense.status === 'pagado') {
@@ -60,13 +68,42 @@ export async function fetchSuppliers(category?: SupplierData["category"]): Promi
     return acc;
   }, {} as Record<string, number>);
 
+  // Calcular número de facturas emitidas/pagadas por proveedor (status IN ('aprobado', 'pagado'))
+  const invoicesCountBySupplier = (expensesData as any[]).reduce((acc, expense) => {
+    if (expense.supplier_id && (expense.status === 'aprobado' || expense.status === 'pagado')) {
+      acc[expense.supplier_id] = (acc[expense.supplier_id] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Calcular número de facturas pagadas por proveedor (status = 'pagado')
+  const invoicesPaidCountBySupplier = (expensesData as any[]).reduce((acc, expense) => {
+    if (expense.supplier_id && expense.status === 'pagado') {
+      acc[expense.supplier_id] = (acc[expense.supplier_id] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
   // Enriquecer proveedores con información calculada
-  const enrichedSuppliers = suppliers.map((supplier) => ({
-    ...supplier,
-    total_projects: projectsBySupplier[supplier.id] || 0,
-    total_expenses: expensesBySupplier[supplier.id] || 0,
-    total_billed: billedBySupplier[supplier.id] || 0,
-  })) as SupplierData[];
+  const enrichedSuppliers = suppliers.map((supplier: any) => {
+    // Compatibilidad: si tiene 'name' pero no 'fiscal_name', usar 'name' como 'fiscal_name'
+    const fiscalName = supplier.fiscal_name || supplier.name || "";
+    const commercialName = supplier.commercial_name || undefined;
+    
+    return {
+      ...supplier,
+      fiscal_name: fiscalName,
+      commercial_name: commercialName,
+      name: fiscalName, // Mantener 'name' para compatibilidad
+      total_projects: projectsBySupplier[supplier.id] || 0,
+      total_expenses: expensesBySupplier[supplier.id] || 0,
+      total_billed: billedBySupplier[supplier.id] || 0,
+      total_billing: supplier.total_billing || billedBySupplier[supplier.id] || 0, // Usar total_billing del JSON si existe, sino calcular
+      invoices_count: invoicesCountBySupplier[supplier.id] || 0,
+      invoices_paid_count: invoicesPaidCountBySupplier[supplier.id] || 0,
+      total_orders: ordersCountBySupplier[supplier.id] || 0, // Nº total de pedidos/gastos
+    } as SupplierData;
+  });
 
   return enrichedSuppliers;
 }
@@ -104,15 +141,31 @@ export async function fetchSuppliersByCategory(
  * @returns Promise con el proveedor creado (incluyendo campos automáticos)
  */
 export async function createSupplier(
-  supplierData: Omit<SupplierData, "id" | "created_at" | "updated_at" | "total_projects" | "total_expenses" | "total_billed">
+  supplierData: Omit<SupplierData, "id" | "internal_code" | "created_at" | "updated_at" | "total_projects" | "total_expenses" | "total_billed" | "total_billing" | "invoices_count" | "invoices_paid_count" | "total_orders">
 ): Promise<SupplierData> {
   // Simular delay de red
   await new Promise((resolve) => setTimeout(resolve, 500));
 
+  // Obtener proveedores existentes para generar el siguiente código
+  const existingSuppliers = await fetchSuppliers();
+  const lastCode = existingSuppliers
+    .map((s) => {
+      const code = s.internal_code || "";
+      const match = code.match(/PROV-(\d+)/);
+      return match ? parseInt(match[1]) : 0;
+    })
+    .sort((a, b) => b - a)[0] || 0;
+  
+  const nextCode = `PROV-${String(lastCode + 1).padStart(4, "0")}`;
+
   // Crear nuevo proveedor con campos automáticos
+  const fiscalName = supplierData.fiscal_name || supplierData.name || "";
   const newSupplier: SupplierData = {
     id: crypto.randomUUID(),
-    name: supplierData.name,
+    internal_code: nextCode,
+    fiscal_name: fiscalName,
+    commercial_name: supplierData.commercial_name || undefined,
+    name: fiscalName, // Mantener 'name' para compatibilidad
     cif: supplierData.cif || undefined,
     category: supplierData.category,
     freelance_profile_id: supplierData.freelance_profile_id || undefined,
@@ -127,6 +180,10 @@ export async function createSupplier(
     total_projects: 0,
     total_expenses: 0,
     total_billed: 0,
+    total_billing: 0,
+    invoices_count: 0,
+    invoices_paid_count: 0,
+    total_orders: 0,
   };
 
   // En producción, aquí se haría un POST a la API

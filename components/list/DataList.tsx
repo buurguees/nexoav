@@ -90,11 +90,11 @@ export function DataList<T = any>({
     const isTablet = breakpoint === "tablet"; // Tablet horizontal
     const isTabletPortrait = breakpoint === "tablet-portrait";
     
-    // Desktop y Tablet-horizontal: hasta 8 columnas (para proyectos con Facturación)
+    // Desktop y Tablet-horizontal: hasta 11 columnas (para productos con múltiples precios de alquiler)
     if (isDesktop || isTablet) {
       return columns
         .filter(col => col.visibleOn?.desktop !== false)
-        .slice(0, 8);
+        .slice(0, 11);
     } 
     // Tablet portrait: 4 columnas
     else if (isTabletPortrait) {
