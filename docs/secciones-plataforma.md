@@ -305,7 +305,41 @@ Gestión y cálculo de impuestos aplicables a la empresa, incluyendo IVA, IRPF, 
 
 ---
 
-## 13. Analítica (`/analitica`)
+## 13. Calculadora (`/calculadora`)
+
+**Icono:** Monitor  
+**Ruta:** `/calculadora`
+
+### Descripción
+Herramienta de cálculo estimativo para comerciales que permite calcular el coste del alquiler de pantallas LED basándose en las medidas y necesidades específicas del cliente durante visitas comerciales.
+
+### Utilidad
+- Cálculo rápido y estimativo de costes de alquiler de pantallas LED
+- Herramienta de apoyo para comerciales en visitas a clientes
+- Estimaciones instantáneas sin necesidad de crear presupuestos formales
+- Facilitar la toma de decisiones comerciales en tiempo real
+
+### Funcionalidad
+- **Entrada de medidas**: Introducción de dimensiones de pantalla requeridas (ancho, alto, área total)
+- **Selección de tipo de pantalla**: Elección del modelo y características técnicas (pitch, resolución, indoor/outdoor)
+- **Cálculo de componentes**: Determinación automática de cantidad de módulos, cabinets, procesadores y accesorios necesarios
+- **Cálculo de costes**: Estimación de costes basada en:
+  - Precios de alquiler por tipo de contrato (12 meses, 18 meses, evento diario)
+  - Cantidad de componentes necesarios
+  - Servicios adicionales (instalación, gestión de contenidos, etc.)
+- **Visualización de resultados**: Presentación clara del desglose de costes y total estimado
+- **Exportación/Guardado**: Posibilidad de guardar el cálculo o convertirlo en presupuesto formal
+
+### Notas para Desarrollo Futuro
+- Esta herramienta será especialmente útil para comerciales que necesitan dar estimaciones rápidas a clientes
+- Debe integrarse con el módulo de inventario para obtener precios actualizados de productos de Pantalla LED
+- Los cálculos deben considerar diferentes tipos de contratos (alquiler mensual vs. eventos)
+- La herramienta debe ser intuitiva y rápida para uso en visitas comerciales
+- Posibilidad de guardar cálculos como borradores para posterior conversión a presupuestos formales
+
+---
+
+## 14. Analítica (`/analitica`)
 
 **Icono:** BarChart  
 **Ruta:** `/analitica`
@@ -327,7 +361,7 @@ Módulo de análisis y reporting que proporciona informes, métricas y visualiza
 
 ---
 
-## 14. RRHH (`/rrhh`)
+## 15. RRHH (`/rrhh`)
 
 **Icono:** Briefcase  
 **Ruta:** `/rrhh`
@@ -354,7 +388,7 @@ Módulo de Recursos Humanos que gestiona empleados, nóminas y trabajadores exte
 
 ---
 
-## 15. Empresa (`/empresa`)
+## 16. Empresa (`/empresa`)
 
 **Icono:** Building2  
 **Ruta:** `/empresa`
@@ -400,6 +434,7 @@ Configuración y gestión de datos de la empresa, preferencias del sistema, plan
 4. Clientes
 5. Proyectos
 6. Impuestos
+7. Calculadora
 
 ### Secciones con Subsecciones
 1. **Proveedores** (4 subsecciones)
@@ -413,9 +448,9 @@ Configuración y gestión de datos de la empresa, preferencias del sistema, plan
 9. **Empresa** (5 subsecciones)
 
 ### Total de Rutas
-- **Secciones principales:** 6
+- **Secciones principales:** 7
 - **Subsecciones:** 26
-- **Total de rutas únicas:** 32
+- **Total de rutas únicas:** 33
 
 ---
 

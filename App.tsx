@@ -31,6 +31,7 @@ import { CuadroCuentas } from './pages/contabilidad/cuadro-cuentas';
 import { BalanceSituacion } from './pages/contabilidad/balance-situacion';
 import { Activos } from './pages/contabilidad/activos';
 import { Impuestos } from './pages/impuestos';
+import { Calculadora } from './pages/calculadora';
 import { Analitica } from './pages/analitica';
 import { Informes } from './pages/analitica/informes';
 import { Objetivos } from './pages/analitica/objetivos';
@@ -200,6 +201,11 @@ function AppContent({
     // Impuestos
     if (currentPath === '/impuestos') {
       return <Impuestos />;
+    }
+
+    // Calculadora
+    if (currentPath === '/calculadora') {
+      return <Calculadora />;
     }
 
     // Analítica

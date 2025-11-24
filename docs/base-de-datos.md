@@ -357,6 +357,15 @@ Tareas del calendario y gestión de trabajo.
 
 Gestiona productos y servicios que la empresa ofrece. Corresponde a `/inventario`. Aplica lógica contable y de tipos para los presupuestos.
 
+**Nota sobre Calculadora de Pantallas LED:**
+La sección `/calculadora` utilizará los datos de este módulo (especialmente productos de Pantalla LED) para realizar cálculos estimativos de costes de alquiler. La herramienta consultará:
+- `inventory_items` con `category_id = "Pantalla LED"` para obtener productos disponibles
+- `rental_price_12m`, `rental_price_18m`, `rental_price_daily` para diferentes tipos de contratos
+- Dimensiones y especificaciones técnicas de los productos para calcular componentes necesarios
+- Servicios relacionados (como "Gestión de Contenidos") para incluir en el cálculo total
+
+Esta herramienta será desarrollada en el futuro y permitirá a los comerciales realizar estimaciones rápidas durante visitas a clientes.
+
 ### Tabla: `inventory_categories`
 
 Categorías de inventario con información contable.
