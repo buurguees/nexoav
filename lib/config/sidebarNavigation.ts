@@ -14,6 +14,7 @@ import {
   BarChart,
   Briefcase,
   Building2,
+  TrendingUp,
   LucideIcon,
 } from 'lucide-react';
 
@@ -122,6 +123,11 @@ export const sidebarNavigation: SidebarNavItem[] = [
   {
     label: 'Impuestos',
     path: '/impuestos',
+    icon: TrendingUp,
+  },
+  {
+    label: 'Calculadora',
+    path: '/calculadora',
     icon: Calculator,
   },
   {

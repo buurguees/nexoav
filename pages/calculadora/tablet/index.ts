@@ -1,0 +1,2 @@
+export { CalculadoraTablet } from './Calculadora';
+

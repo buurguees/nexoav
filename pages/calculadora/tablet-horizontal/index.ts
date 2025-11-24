@@ -1,0 +1,2 @@
+export { CalculadoraTabletHorizontal } from './Calculadora';
+
