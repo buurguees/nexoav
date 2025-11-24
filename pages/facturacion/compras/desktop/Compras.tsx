@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ProyectosList } from "../components/ProyectosList";
-import { fetchProjects } from "../../../lib/mocks/projectMocks";
-import { ProjectData } from "../components/ProyectosList";
 
 /**
- * Página de Proyectos - Versión Desktop (> 1024px)
+ * Página de Compras - Versión Desktop (> 1024px)
  * Layout: Listado (60%) + Chart (40%) lado a lado
  * Optimizado para diferentes tamaños de pantalla desktop
  */
@@ -18,10 +15,10 @@ function useDesktopSize() {
   const [size, setSize] = useState<'small' | 'medium' | 'large' | 'xlarge'>(() => {
     if (typeof window === 'undefined') return 'medium';
     const width = window.innerWidth;
-    if (width < 1280) return 'small';      // 1025px - 1279px: Desktop pequeño
-    if (width < 1600) return 'medium';     // 1280px - 1599px: Desktop medio
-    if (width < 1920) return 'large';      // 1600px - 1919px: Desktop grande
-    return 'xlarge';                        // 1920px+: Desktop extra grande
+    if (width < 1280) return 'small';
+    if (width < 1600) return 'medium';
+    if (width < 1920) return 'large';
+    return 'xlarge';
   });
 
   useEffect(() => {
@@ -107,72 +104,9 @@ function SpaceBlock({
   );
 }
 
-// Componente interno para el listado de proyectos
-function ProyectosListContent() {
-  const [projects, setProjects] = useState<ProjectData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Cargar datos de proyectos
-  useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        setIsLoading(true);
-        const data = await fetchProjects();
-        setProjects(data);
-      } catch (error) {
-        console.error("Error al cargar proyectos:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadProjects();
-  }, []);
-
-  // Handler para cuando se hace click en un proyecto
-  const handleProjectClick = (project: ProjectData) => {
-    console.log("Proyecto seleccionado:", project);
-    // TODO: Navegar a la página de detalle del proyecto
-  };
-
-  // Handler para cuando se crea un nuevo proyecto
-  const handleProjectCreated = (newProject: ProjectData) => {
-    // Agregar el nuevo proyecto a la lista
-    setProjects((prev) => [newProject, ...prev]);
-    // TODO: Mostrar mensaje de éxito
-  };
-
-  if (isLoading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100%",
-          color: "var(--foreground-secondary)",
-        }}
-      >
-        Cargando proyectos...
-      </div>
-    );
-  }
-
-  return (
-    <ProyectosList
-      projects={projects}
-      showFilters={true}
-      showTools={true}
-      onProjectClick={handleProjectClick}
-      onProjectCreated={handleProjectCreated}
-    />
-  );
-}
-
-export function ProyectosDesktop() {
+export function ComprasDesktop() {
   const desktopSize = useDesktopSize();
   
-  // Configuración responsive según tamaño de desktop
   const config = {
     small: {
       padding: "var(--spacing-xs)",
@@ -180,8 +114,8 @@ export function ProyectosDesktop() {
       headerHeight: "35px",
       tableHeaderHeight: "35px",
       cardsMinHeight: "140px",
-      cardsGrid: "1fr 1fr 1fr", // 3 columnas
-      cardsRows: "1fr 1fr", // 2 filas
+      cardsGrid: "1fr 1fr 1fr",
+      cardsRows: "1fr 1fr",
       fontSize: "11px",
     },
     medium: {
@@ -190,8 +124,8 @@ export function ProyectosDesktop() {
       headerHeight: "40px",
       tableHeaderHeight: "40px",
       cardsMinHeight: "160px",
-      cardsGrid: "1fr 1fr 1fr", // 3 columnas
-      cardsRows: "1fr 1fr", // 2 filas
+      cardsGrid: "1fr 1fr 1fr",
+      cardsRows: "1fr 1fr",
       fontSize: "12px",
     },
     large: {
@@ -200,8 +134,8 @@ export function ProyectosDesktop() {
       headerHeight: "45px",
       tableHeaderHeight: "45px",
       cardsMinHeight: "180px",
-      cardsGrid: "1fr 1fr 1fr", // 3 columnas
-      cardsRows: "1fr 1fr", // 2 filas
+      cardsGrid: "1fr 1fr 1fr",
+      cardsRows: "1fr 1fr",
       fontSize: "12px",
     },
     xlarge: {
@@ -210,8 +144,8 @@ export function ProyectosDesktop() {
       headerHeight: "50px",
       tableHeaderHeight: "50px",
       cardsMinHeight: "200px",
-      cardsGrid: "1fr 1fr 1fr", // 3 columnas
-      cardsRows: "1fr 1fr", // 2 filas
+      cardsGrid: "1fr 1fr 1fr",
+      cardsRows: "1fr 1fr",
       fontSize: "13px",
     },
   };
@@ -231,18 +165,17 @@ export function ProyectosDesktop() {
         overflow: "hidden",
       }}
     >
-      {/* Contenedor principal: Listado + Resumen */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: desktopSize === 'small' ? "2fr 1fr" : "3fr 2fr", // En desktop pequeño, más espacio para listado
+          gridTemplateColumns: desktopSize === 'small' ? "2fr 1fr" : "3fr 2fr",
           gap: currentConfig.gap,
           flex: 1,
           minHeight: 0,
           height: "100%",
         }}
       >
-        {/* Listado de proyectos - Ocupa 60% del espacio */}
+        {/* Listado de compras */}
         <div
           style={{
             display: "flex",
@@ -253,19 +186,66 @@ export function ProyectosDesktop() {
             overflow: "hidden",
           }}
         >
-          {/* El componente ProyectosList maneja su propio header con filtros, título y herramientas */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              gap: currentConfig.gap,
+              height: currentConfig.headerHeight,
+              flexShrink: 0,
+              minHeight: currentConfig.headerHeight,
+            }}
+          >
+            <SpaceBlock
+              label="Filtros"
+              height="100%"
+              color="rgba(255, 165, 0, 0.15)"
+              description="Filtros: proveedor, fecha, estado, importe, etc."
+              fontSize={currentConfig.fontSize}
+            />
+            <SpaceBlock
+              label="Título: Compras"
+              height="100%"
+              color="var(--background-secondary)"
+              description="Título de la sección"
+              fontSize={currentConfig.fontSize}
+            />
+            <SpaceBlock
+              label="Herramientas"
+              height="100%"
+              color="rgba(67, 83, 255, 0.15)"
+              description="Herramientas: crear, exportar, acciones masivas, etc."
+              fontSize={currentConfig.fontSize}
+            />
+          </div>
+          <div style={{ flexShrink: 0, minHeight: currentConfig.tableHeaderHeight }}>
+            <SpaceBlock
+              label="Cabecera de la Tabla"
+              height={currentConfig.tableHeaderHeight}
+              color="rgba(0, 200, 117, 0.15)"
+              description="Cabecera: número, proveedor, fecha, importe, estado, etc."
+              fontSize={currentConfig.fontSize}
+            />
+          </div>
           <div
             style={{
               flex: 1,
               minHeight: 0,
-              overflow: "hidden",
+              overflowY: "auto",
+              overflowX: "hidden",
             }}
           >
-            <ProyectosListContent />
+            <SpaceBlock
+              label="Listado de Compras"
+              height="100%"
+              color="rgba(0, 200, 117, 0.1)"
+              description="Tabla/Lista con información de cada compra"
+              fontSize={currentConfig.fontSize}
+            />
           </div>
         </div>
 
-        {/* Sección de Charts - Ocupa 40% del espacio */}
+        {/* Sección de Charts */}
         <div
           style={{
             display: "flex",
@@ -276,7 +256,6 @@ export function ProyectosDesktop() {
             overflow: "hidden",
           }}
         >
-          {/* Título de la sección de Charts - Dividido 2/1 (mismo espacio que 2 tarjetas / 1 tarjeta) */}
           <div
             style={{
               display: "grid",
@@ -287,24 +266,21 @@ export function ProyectosDesktop() {
               minHeight: currentConfig.headerHeight,
             }}
           >
-            {/* Título: Resumen (ocupa el espacio de 2 tarjetas) */}
             <SpaceBlock
               label="Resumen"
               height="100%"
               color="var(--background-secondary)"
-              description="Resumen y estadísticas de proyectos"
+              description="Resumen y estadísticas"
               fontSize={currentConfig.fontSize}
             />
-            {/* Filtro (ocupa el espacio de 1 tarjeta) */}
             <SpaceBlock
               label="Filtro"
               height="100%"
               color="rgba(255, 165, 0, 0.15)"
-              description="Filtro para el resumen: período, tipo de datos, etc."
+              description="Filtro para el resumen"
               fontSize={currentConfig.fontSize}
             />
           </div>
-          {/* Fila superior: Tarjetas de Resumen (6 tarjetas) - Optimizadas */}
           <div
             style={{
               display: "grid",
@@ -316,78 +292,64 @@ export function ProyectosDesktop() {
               minHeight: currentConfig.cardsMinHeight,
             }}
           >
-            {/* Tarjeta 1: Total de Proyectos Activos */}
             <SpaceBlock
-              label="Tarjeta 1: Total Proyectos Activos"
+              label="Tarjeta 1: Total Compras"
               height="100%"
               color="rgba(0, 200, 117, 0.2)"
-              description="Número grande. Subtítulo: 'En progreso / aprobados'. Mide carga de trabajo actual."
+              description="Total de compras. Indicador de tendencia."
               borderWidth="2px"
               fontSize={currentConfig.fontSize}
             />
-
-            {/* Tarjeta 2: Volumen Económico Asociado */}
             <SpaceBlock
-              label="Tarjeta 2: Volumen Económico"
+              label="Tarjeta 2: Compras Pagadas"
               height="100%"
               color="rgba(67, 83, 255, 0.2)"
-              description="Importe total de proyectos (presupuestos aceptados). Indicador verde/rojo respecto al mes anterior."
+              description="Número de compras pagadas. Tasa de pago."
               borderWidth="2px"
               fontSize={currentConfig.fontSize}
             />
-
-            {/* Tarjeta 3: Facturación Emitida */}
             <SpaceBlock
-              label="Tarjeta 3: Facturación Emitida"
+              label="Tarjeta 3: Importe Total"
               height="100%"
               color="rgba(255, 165, 0, 0.2)"
-              description="Total facturado. Badge: 'Pagado / Pendiente / Vencido'. Salud financiera."
+              description="Importe total de compras. Comparación con período anterior."
               borderWidth="2px"
               fontSize={currentConfig.fontSize}
             />
-
-            {/* Tarjeta 4: Próximo Hito / Vencimiento */}
             <SpaceBlock
-              label="Tarjeta 4: Próximo Hito / Vencimiento"
+              label="Tarjeta 4: Pendientes"
               height="100%"
               color="rgba(220, 53, 69, 0.2)"
-              description="Fecha del próximo hito estimado. Seguimiento operativo rápido."
+              description="Compras pendientes de pago."
               borderWidth="2px"
               fontSize={currentConfig.fontSize}
             />
-
-            {/* Tarjeta 5: Proyectos por Estado */}
             <SpaceBlock
-              label="Tarjeta 5: Proyectos por Estado"
+              label="Tarjeta 5: Promedio Importe"
               height="100%"
               color="rgba(156, 81, 224, 0.2)"
-              description="Distribución: Aprobados, En progreso, En pausa, Completados."
+              description="Promedio de importe por compra."
               borderWidth="2px"
               fontSize={currentConfig.fontSize}
             />
-
-            {/* Tarjeta 6: Reservada */}
             <SpaceBlock
               label="Tarjeta 6: Reservada"
               height="100%"
               color="rgba(128, 128, 128, 0.2)"
-              description="Espacio reservado para futura funcionalidad o métrica adicional."
+              description="Espacio reservado"
               borderWidth="2px"
               fontSize={currentConfig.fontSize}
             />
           </div>
-
-          {/* Fila inferior: Gráficos - Optimizados para mejor uso del espacio */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: desktopSize === 'small' ? "1fr" : "1fr 1fr", // En desktop pequeño, gráficos apilados
+              gridTemplateColumns: desktopSize === 'small' ? "1fr" : "1fr 1fr",
               gap: currentConfig.gap,
               flex: 1,
               minHeight: 0,
             }}
           >
-            {/* Columna izquierda: Gráfico de Barras + Gráfico de Líneas */}
             <div
               style={{
                 display: "flex",
@@ -397,56 +359,31 @@ export function ProyectosDesktop() {
                 minHeight: 0,
               }}
             >
-              {/* Gráfico de Barras: Proyectos por Estado */}
-              <div
-                style={{
-                  width: "100%",
-                  flex: "1 1 50%",
-                  minHeight: 0,
-                }}
-              >
+              <div style={{ width: "100%", flex: "1 1 50%", minHeight: 0 }}>
                 <SpaceBlock
-                  label="Gráfico Barras: Proyectos por Estado"
+                  label="Gráfico Barras: Compras por Estado"
                   height="100%"
                   color="rgba(67, 83, 255, 0.15)"
-                  description="Barras: Aprobados, En progreso, En pausa, Completados. Visual para saber el estado general."
+                  description="Distribución de compras por estado"
                   fontSize={currentConfig.fontSize}
                 />
               </div>
-
-              {/* Gráfico de Líneas: Evolución de Proyectos en el Tiempo */}
-              <div
-                style={{
-                  width: "100%",
-                  flex: "1 1 50%",
-                  minHeight: 0,
-                }}
-              >
+              <div style={{ width: "100%", flex: "1 1 50%", minHeight: 0 }}>
                 <SpaceBlock
-                  label="Gráfico Líneas: Evolución Proyectos"
+                  label="Gráfico Líneas: Evolución Temporal"
                   height="100%"
                   color="rgba(0, 200, 117, 0.15)"
-                  description="Eje X: meses. Eje Y: nº de proyectos creados / cerrados. Muestra la evolución temporal."
+                  description="Evolución de compras en el tiempo"
                   fontSize={currentConfig.fontSize}
                 />
               </div>
             </div>
-
-            {/* Columna derecha: Pie Chart - Optimizado */}
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                minHeight: 0,
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+            <div style={{ width: "100%", height: "100%", minHeight: 0, display: "flex", flexDirection: "column" }}>
               <SpaceBlock
-                label="Pie Chart: Distribución Tipos de Proyecto"
+                label="Pie Chart: Distribución por Proveedor"
                 height="100%"
                 color="rgba(156, 81, 224, 0.15)"
-                description="Instalación, Mantenimiento, Pantallas LED, Audio, Otros. Ayuda a entender qué tipos de proyectos se realizan más."
+                description="Distribución porcentual por proveedor"
                 fontSize={currentConfig.fontSize}
               />
             </div>

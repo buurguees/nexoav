@@ -89,6 +89,7 @@ export const sidebarNavigation: SidebarNavItem[] = [
       { label: 'Proformas', path: '/facturacion/proformas' },
       { label: 'Facturas', path: '/facturacion/facturas' },
       { label: 'Rectificativas', path: '/facturacion/rectificativas' },
+      { label: 'Compras', path: '/facturacion/compras' },
     ],
   },
   {

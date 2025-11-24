@@ -1,0 +1,2 @@
+export { ComprasMobile } from './Compras';
+

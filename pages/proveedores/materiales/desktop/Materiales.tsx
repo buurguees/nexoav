@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { ProveedoresList, SupplierData } from "../../components/ProveedoresList";
+import { fetchSuppliers } from "../../../../lib/mocks/supplierMocks";
 
 /**
  * Página de Materiales - Versión Desktop (> 1024px)
@@ -153,6 +155,61 @@ export function MaterialesDesktop() {
 
   const currentConfig = config[desktopSize];
 
+  // Componente interno para el listado de materiales
+  function MaterialesListContent() {
+    const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Cargar datos de proveedores de materiales
+    useEffect(() => {
+      const loadSuppliers = async () => {
+        try {
+          setIsLoading(true);
+          const data = await fetchSuppliers("material");
+          setSuppliers(data);
+        } catch (error) {
+          console.error("Error al cargar proveedores de materiales:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      loadSuppliers();
+    }, []);
+
+    // Handler para cuando se hace click en un proveedor
+    const handleSupplierClick = (supplier: SupplierData) => {
+      console.log("Proveedor seleccionado:", supplier);
+      // TODO: Navegar a la página de detalle del proveedor
+    };
+
+    if (isLoading) {
+      return (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+            color: "var(--foreground-secondary)",
+          }}
+        >
+          Cargando proveedores...
+        </div>
+      );
+    }
+
+    return (
+      <ProveedoresList
+        suppliers={suppliers}
+        category="material"
+        showFilters={true}
+        showTools={true}
+        onSupplierClick={handleSupplierClick}
+      />
+    );
+  }
+
   return (
     <div
       style={{
@@ -177,7 +234,7 @@ export function MaterialesDesktop() {
           height: "100%",
         }}
       >
-        {/* Listado de técnicos - Ocupa 60% del espacio */}
+        {/* Listado de proveedores de materiales - Ocupa 60% del espacio */}
         <div
           style={{
             display: "flex",
@@ -188,114 +245,15 @@ export function MaterialesDesktop() {
             overflow: "hidden",
           }}
         >
-          {/* Encabezado del Listado - Fijo - 3 Bloques */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: currentConfig.gap,
-              height: currentConfig.headerHeight,
-              flexShrink: 0,
-              minHeight: currentConfig.headerHeight,
-            }}
-          >
-            {/* Bloque 1: Filtros */}
-            <SpaceBlock
-              label="Filtros"
-              height="100%"
-              color="rgba(255, 165, 0, 0.15)"
-              description="Filtros de búsqueda y filtrado: búsqueda, estado, tipo, especialidad, etc."
-              fontSize={currentConfig.fontSize}
-            />
-            {/* Bloque 2: Título */}
-            <SpaceBlock
-              label="Título: Técnicos"
-              height="100%"
-              color="var(--background-secondary)"
-              description="Título de la sección de técnicos"
-              fontSize={currentConfig.fontSize}
-            />
-            {/* Bloque 3: Herramientas */}
-            <SpaceBlock
-              label="Herramientas"
-              height="100%"
-              color="rgba(67, 83, 255, 0.15)"
-              description="Herramientas de gestión: añadir, exportar, acciones masivas, etc."
-              fontSize={currentConfig.fontSize}
-            />
-          </div>
-          {/* Cabecera de la Tabla - Fija con mínimo 5 columnas */}
-          <div 
-            style={{ 
-              flexShrink: 0, 
-              minHeight: currentConfig.tableHeaderHeight,
-              display: "grid",
-              gridTemplateColumns: desktopSize === 'small' 
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr"
-                : desktopSize === 'medium'
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr"
-                : desktopSize === 'large'
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr 0.8fr"
-                : "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr 0.8fr 0.7fr",
-              gap: "2px",
-            }}
-          >
-            {desktopSize === 'small' ? (
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Tipo" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Stock" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : desktopSize === 'medium' ? (
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Tipo" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Stock" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Proveedor" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : desktopSize === 'large' ? (
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Tipo" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Stock" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Proveedor" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Precio" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : (
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Tipo" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Stock" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Proveedor" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Precio" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Acciones" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            )}
-          </div>
-          {/* Contenido del Listado - Con scroll */}
+          {/* El componente ProveedoresList maneja su propio header con filtros, título y herramientas */}
           <div
             style={{
               flex: 1,
               minHeight: 0,
-              overflowY: "auto",
-              overflowX: "hidden",
+              overflow: "hidden",
             }}
           >
-            <SpaceBlock
-              label="Listado de Técnicos"
-              height="100%"
-              color="rgba(0, 200, 117, 0.1)"
-              description="Tabla/Lista con información de cada técnico (código, nombre, especialidad, estado, proyectos, facturación, etc.)"
-              fontSize={currentConfig.fontSize}
-            />
+            <MaterialesListContent />
           </div>
         </div>
 

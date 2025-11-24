@@ -1,6 +1,10 @@
 "use client";
 
 import { useDesktopSize } from "../../../hooks/useDesktopSize";
+import { ClientesList } from "../components/ClientesList";
+import { fetchClients } from "../../../lib/mocks/clientMocks";
+import { useEffect, useState } from "react";
+import { ClientData } from "../components/ClientesList";
 
 /**
  * Página de Clientes - Versión Desktop (> 1024px)
@@ -77,6 +81,38 @@ function SpaceBlock({
 
 export function ClientesDesktop() {
   const desktopSize = useDesktopSize();
+  const [clients, setClients] = useState<ClientData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Cargar datos de clientes
+  useEffect(() => {
+    const loadClients = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchClients();
+        setClients(data);
+      } catch (error) {
+        console.error("Error al cargar clientes:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadClients();
+  }, []);
+
+  // Handler para cuando se hace click en un cliente
+  const handleClientClick = (client: ClientData) => {
+    console.log("Cliente seleccionado:", client);
+    // TODO: Navegar a la página de detalle del cliente
+  };
+
+  // Handler para cuando se crea un nuevo cliente
+  const handleClientCreated = (newClient: ClientData) => {
+    // Agregar el nuevo cliente a la lista
+    setClients((prev) => [newClient, ...prev]);
+    // TODO: Mostrar mensaje de éxito
+  };
   
   // Configuración responsive según tamaño de desktop
   const config = {
@@ -151,127 +187,18 @@ export function ClientesDesktop() {
         {/* Listado de clientes - Ocupa 60% del espacio */}
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: currentConfig.gap,
             height: "100%",
             minHeight: 0,
             overflow: "hidden",
           }}
         >
-          {/* Encabezado del Listado - Fijo - 3 Bloques */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: currentConfig.gap,
-              height: currentConfig.headerHeight,
-              flexShrink: 0,
-              minHeight: currentConfig.headerHeight,
-            }}
-          >
-            {/* Bloque 1: Filtros */}
-            <SpaceBlock
-              label="Filtros"
-              height="100%"
-              color="rgba(255, 165, 0, 0.15)"
-              description="Filtros de búsqueda y filtrado: búsqueda, estado, tipo, etc."
-              fontSize={currentConfig.fontSize}
-            />
-            {/* Bloque 2: Título */}
-            <SpaceBlock
-              label="Título: Clientes"
-              height="100%"
-              color="var(--background-secondary)"
-              description="Título de la sección de clientes"
-              fontSize={currentConfig.fontSize}
-            />
-            {/* Bloque 3: Herramientas */}
-            <SpaceBlock
-              label="Herramientas"
-              height="100%"
-              color="rgba(67, 83, 255, 0.15)"
-              description="Herramientas de gestión: añadir, exportar, acciones masivas, etc."
-              fontSize={currentConfig.fontSize}
-            />
-          </div>
-          {/* Cabecera de la Tabla - Fija con mínimo 5 columnas */}
-          <div 
-            style={{ 
-              flexShrink: 0, 
-              minHeight: currentConfig.tableHeaderHeight,
-              display: "grid",
-              gridTemplateColumns: desktopSize === 'small' 
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr"  // 5 columnas para small
-                : desktopSize === 'medium'
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr"  // 6 columnas para medium
-                : desktopSize === 'large'
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr 0.8fr"  // 7 columnas para large
-                : "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr 0.8fr 0.7fr",  // 8 columnas para xlarge
-              gap: "2px",
-            }}
-          >
-            {desktopSize === 'small' ? (
-              // 5 columnas para small
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Proyectos" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Facturación" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : desktopSize === 'medium' ? (
-              // 6 columnas para medium
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Proyectos" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Facturación" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Contacto" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : desktopSize === 'large' ? (
-              // 7 columnas para large
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Proyectos" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Facturación" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Contacto" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha Alta" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : (
-              // 8 columnas para xlarge
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Proyectos" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Facturación" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Contacto" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha Alta" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Acciones" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            )}
-          </div>
-          {/* Contenido del Listado - Con scroll */}
-          <div
-            style={{
-              flex: 1,
-              minHeight: 0,
-              overflowY: "auto",
-              overflowX: "hidden",
-            }}
-          >
-            <SpaceBlock
-              label="Listado de Clientes"
-              height="100%"
-              color="rgba(0, 200, 117, 0.1)"
-              description="Tabla/Lista con información de cada cliente (código, nombre, estado, proyectos, facturación, etc.)"
-              fontSize={currentConfig.fontSize}
-            />
-          </div>
+          <ClientesList
+            clients={clients}
+            showFilters={true}
+            showTools={true}
+            onClientClick={handleClientClick}
+            onClientCreated={handleClientCreated}
+          />
         </div>
 
         {/* Sección de Charts - Ocupa 40% del espacio */}

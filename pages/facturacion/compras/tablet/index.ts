@@ -1,0 +1,2 @@
+export { ComprasTablet } from './Compras';
+

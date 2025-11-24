@@ -19,6 +19,7 @@ import { Presupuestos } from './pages/facturacion/presupuestos';
 import { Proformas } from './pages/facturacion/proformas';
 import { Facturas } from './pages/facturacion/facturas';
 import { Rectificativas } from './pages/facturacion/rectificativas';
+import { Compras } from './pages/facturacion/compras';
 import { Inventario } from './pages/inventario';
 import { Productos } from './pages/inventario/productos';
 import { Servicios } from './pages/inventario/servicios';
@@ -151,6 +152,9 @@ function AppContent({
     }
     if (currentPath === '/facturacion/rectificativas') {
       return <Rectificativas />;
+    }
+    if (currentPath === '/facturacion/compras') {
+      return <Compras />;
     }
 
     // Inventario
