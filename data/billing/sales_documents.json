@@ -1,2 +1,234 @@
-[]
-
+[
+  {
+    "id": "e10e8400-e29b-41d4-a716-446655440800",
+    "type": "presupuesto",
+    "document_number": "E250001",
+    "project_id": "a40e8400-e29b-41d4-a716-446655440230",
+    "client_id": "880e8400-e29b-41d4-a716-446655440010",
+    "client_snapshot": {
+      "fiscal_name": "CBCN SOLUCIONES Y EQUIPOS MULTIFUNCIONALES SL",
+      "commercial_name": "CANON BCN 22",
+      "vat_number": "B65595621",
+      "address": {
+        "street": "Calle espronceda, 333 - 333",
+        "city": "Barcelona",
+        "zip": "08027",
+        "province": "Barcelona",
+        "country": "España"
+      },
+      "phone": null,
+      "email": null
+    },
+    "date_issued": "2025-01-15",
+    "date_due": "2025-02-15",
+    "status": "aceptado",
+    "notes_internal": "Presupuesto para instalación de pantalla LED en Paseig de Gracia. Cliente interesado en alquiler a 18 meses.",
+    "notes_public": "Instalación Adicional Audio",
+    "totals_data": {
+      "vat_breakdown": {
+        "21": {
+          "base": 3910.02,
+          "vat": 821.10,
+          "total": 4731.12
+        },
+        "10": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        },
+        "4": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        },
+        "0": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        }
+      },
+      "total_discount": 248.00,
+      "base_imponible": 3910.02,
+      "total_vat": 821.10,
+      "total": 4731.12
+    },
+    "template_id": null,
+    "rectifies_document_id": null,
+    "created_at": "2025-01-15T10:00:00Z",
+    "updated_at": "2025-01-20T14:00:00Z"
+  },
+  {
+    "id": "e20e8400-e29b-41d4-a716-446655440801",
+    "type": "proforma",
+    "document_number": "FP250001",
+    "project_id": "a40e8400-e29b-41d4-a716-446655440230",
+    "client_id": "880e8400-e29b-41d4-a716-446655440010",
+    "client_snapshot": {
+      "fiscal_name": "CBCN SOLUCIONES Y EQUIPOS MULTIFUNCIONALES SL",
+      "commercial_name": "CANON BCN 22",
+      "vat_number": "B65595621",
+      "address": {
+        "street": "Calle espronceda, 333 - 333",
+        "city": "Barcelona",
+        "zip": "08027",
+        "province": "Barcelona",
+        "country": "España"
+      },
+      "phone": null,
+      "email": null
+    },
+    "date_issued": "2025-01-20",
+    "date_due": "2025-02-20",
+    "status": "enviado",
+    "notes_internal": "Proforma generada desde presupuesto E250001 (aceptado). Instalación de pantalla LED en Paseig de Gracia.",
+    "notes_public": "Instalación Adicional Audio",
+    "totals_data": {
+      "vat_breakdown": {
+        "21": {
+          "base": 3910.02,
+          "vat": 821.10,
+          "total": 4731.12
+        },
+        "10": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        },
+        "4": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        },
+        "0": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        }
+      },
+      "total_discount": 248.00,
+      "base_imponible": 3910.02,
+      "total_vat": 821.10,
+      "total": 4731.12
+    },
+    "template_id": null,
+    "rectifies_document_id": null,
+    "created_at": "2025-01-20T14:00:00Z",
+    "updated_at": "2025-01-20T14:00:00Z"
+  },
+  {
+    "id": "e30e8400-e29b-41d4-a716-446655440802",
+    "type": "factura",
+    "document_number": "F-250001",
+    "project_id": "a40e8400-e29b-41d4-a716-446655440230",
+    "client_id": "880e8400-e29b-41d4-a716-446655440010",
+    "client_snapshot": {
+      "fiscal_name": "CBCN SOLUCIONES Y EQUIPOS MULTIFUNCIONALES SL",
+      "commercial_name": "CANON BCN 22",
+      "vat_number": "B65595621",
+      "address": {
+        "street": "Calle espronceda, 333 - 333",
+        "city": "Barcelona",
+        "zip": "08027",
+        "province": "Barcelona",
+        "country": "España"
+      },
+      "phone": null,
+      "email": null
+    },
+    "date_issued": "2025-01-25",
+    "date_due": "2025-02-25",
+    "status": "cobrada",
+    "notes_internal": "Factura generada desde proforma FP250001. Se han ajustado algunas cantidades respecto a la proforma original.",
+    "notes_public": "Instalación Adicional Audio",
+    "totals_data": {
+      "vat_breakdown": {
+        "21": {
+          "base": 4734.95,
+          "vat": 994.34,
+          "total": 5729.29
+        },
+        "10": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        },
+        "4": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        },
+        "0": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        }
+      },
+      "total_discount": 290.90,
+      "base_imponible": 4734.95,
+      "total_vat": 994.34,
+      "total": 5729.29
+    },
+    "template_id": null,
+    "rectifies_document_id": null,
+    "created_at": "2025-01-25T10:00:00Z",
+    "updated_at": "2025-01-25T10:00:00Z"
+  },
+  {
+    "id": "e40e8400-e29b-41d4-a716-446655440803",
+    "type": "rectificativa",
+    "document_number": "RT-250001",
+    "project_id": "a40e8400-e29b-41d4-a716-446655440230",
+    "client_id": "880e8400-e29b-41d4-a716-446655440010",
+    "client_snapshot": {
+      "fiscal_name": "CBCN SOLUCIONES Y EQUIPOS MULTIFUNCIONALES SL",
+      "commercial_name": "CANON BCN 22",
+      "vat_number": "B65595621",
+      "address": {
+        "street": "Calle espronceda, 333 - 333",
+        "city": "Barcelona",
+        "zip": "08027",
+        "province": "Barcelona",
+        "country": "España"
+      },
+      "phone": null,
+      "email": null
+    },
+    "date_issued": "2025-01-28",
+    "date_due": "2025-02-28",
+    "status": "enviado",
+    "notes_internal": "Rectificativa de factura F-250001. Anulación de 1 jornada de técnico general por error en la facturación original.",
+    "notes_public": "Rectificación de factura F-250001",
+    "totals_data": {
+      "vat_breakdown": {
+        "21": {
+          "base": -280.00,
+          "vat": -58.80,
+          "total": -338.80
+        },
+        "10": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        },
+        "4": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        },
+        "0": {
+          "base": 0,
+          "vat": 0,
+          "total": 0
+        }
+      },
+      "total_discount": 0.00,
+      "base_imponible": -280.00,
+      "total_vat": -58.80,
+      "total": -338.80
+    },
+    "template_id": null,
+    "rectifies_document_id": "e30e8400-e29b-41d4-a716-446655440802",
+    "created_at": "2025-01-28T10:00:00Z",
+    "updated_at": "2025-01-28T10:00:00Z"
+  }
+]

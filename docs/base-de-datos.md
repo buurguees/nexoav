@@ -950,7 +950,7 @@ Documentos de venta (presupuestos, proformas, facturas, rectificativas). **Versi
 |------|------|-------------|---------|
 | `id` | PK (UUID) | Identificador único | UUID |
 | `type` | ENUM | Tipo de documento | `presupuesto`, `proforma`, `factura`, `rectificativa` |
-| `document_number` | TEXT | Número de documento | `"E250061"`, `"FV-2025-001"` |
+| `document_number` | TEXT | Número de documento | `"E250061"` (presupuesto), `"FP250061"` (proforma), `"F-250061"` (factura) |
 | `project_id` | FK (UUID) | Proyecto asociado (opcional) | UUID → `projects.id` |
 | `client_id` | FK (UUID) | Cliente asociado (relación viva para estadísticas) | UUID → `clients.id` |
 | `client_snapshot` | JSONB | **Datos fiscales congelados al emitir** (para PDF legal histórico) | `{"fiscal_name": "CBCN SOLUCIONES...", "address": "Calle Espronceda...", "cif": "B655..."}` |
@@ -964,6 +964,12 @@ Documentos de venta (presupuestos, proformas, facturas, rectificativas). **Versi
 | `rectifies_document_id` | FK (UUID) | Si es rectificativa, documento original | UUID → `sales_documents.id` |
 | `created_at` | TIMESTAMPTZ | Fecha de creación | Auto |
 | `updated_at` | TIMESTAMPTZ | Fecha de última actualización | Auto |
+
+**Notas sobre campos de fecha:**
+- `date_issued`: Fecha de emisión del documento (visible en PDF y listados)
+- `date_due`: Fecha de vencimiento del documento (visible en PDF y listados)
+- `created_at`: Fecha de creación del registro (auditoría interna)
+- `updated_at`: **Fecha de última actualización** - Se muestra en los listados de Presupuestos, Proformas, Facturas y Rectificativas para indicar cuándo fue la última modificación del documento
 
 **Estructura de `client_snapshot` (JSONB):**
 ```json
@@ -1008,7 +1014,11 @@ Documentos de venta (presupuestos, proformas, facturas, rectificativas). **Versi
 - **Para renderizar el PDF legal, usar `client_snapshot` (inmutable)**
 - `document_number` debe ser único por tipo
 - `rectifies_document_id` solo se usa cuando `type = 'rectificativa'`
+  - **CRÍTICO**: Las rectificativas SOLO pueden crearse desde facturas (`type = 'factura'`)
+  - No se pueden crear rectificativas desde presupuestos ni proformas
+  - Validar que el documento referenciado sea una factura antes de guardar
 - Los totales en `totals_data` se calculan automáticamente desde las líneas
+- Las rectificativas pueden tener totales negativos (para anular conceptos)
 
 ---
 
@@ -1233,7 +1243,7 @@ inventory_categories (1) ──> inventory_items (N)
    - Se puede generar con trigger o secuencia PostgreSQL
 
 2. **Documentos de Venta (`sales_documents.document_number`)**
-   - Formato: `"E250061"` (presupuestos), `"FV-2025-001"` (facturas)
+   - Formato: `"E250061"` (presupuestos), `"FP250061"` (proformas), `"F-250061"` (facturas), `"RT-250061"` (rectificativas)
    - Único por tipo de documento
    - Se puede generar automáticamente según el tipo
 

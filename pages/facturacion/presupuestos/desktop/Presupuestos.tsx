@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { PresupuestosList } from "../components/PresupuestosList";
+import { fetchPresupuestos } from "../../../../lib/mocks/salesDocumentsMocks";
+import { SalesDocumentData } from "../../../../lib/mocks/salesDocumentsMocks";
 
 /**
  * Página de Presupuestos - Versión Desktop (> 1024px)
@@ -106,6 +109,30 @@ function SpaceBlock({
 
 export function PresupuestosDesktop() {
   const desktopSize = useDesktopSize();
+  const [presupuestos, setPresupuestos] = useState<SalesDocumentData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Cargar presupuestos al montar el componente
+  useEffect(() => {
+    async function loadPresupuestos() {
+      try {
+        setIsLoading(true);
+        const data = await fetchPresupuestos();
+        setPresupuestos(data);
+      } catch (error) {
+        console.error("Error al cargar presupuestos:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadPresupuestos();
+  }, []);
+
+  // Handler para cuando se hace clic en un presupuesto
+  const handlePresupuestoClick = (presupuesto: SalesDocumentData) => {
+    // TODO: Implementar navegación al detalle del presupuesto
+    console.log("Presupuesto seleccionado:", presupuesto);
+  };
   
   const config = {
     small: {
@@ -186,110 +213,26 @@ export function PresupuestosDesktop() {
             overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: currentConfig.gap,
-              height: currentConfig.headerHeight,
-              flexShrink: 0,
-              minHeight: currentConfig.headerHeight,
-            }}
-          >
-            <SpaceBlock
-              label="Filtros"
-              height="100%"
-              color="rgba(255, 165, 0, 0.15)"
-              description="Filtros: cliente, fecha, estado, importe, etc."
-              fontSize={currentConfig.fontSize}
+          {isLoading ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
+                color: "var(--foreground-secondary)",
+              }}
+            >
+              Cargando presupuestos...
+            </div>
+          ) : (
+            <PresupuestosList
+              presupuestos={presupuestos}
+              showFilters={true}
+              showTools={true}
+              onPresupuestoClick={handlePresupuestoClick}
             />
-            <SpaceBlock
-              label="Título: Presupuestos"
-              height="100%"
-              color="var(--background-secondary)"
-              description="Título de la sección"
-              fontSize={currentConfig.fontSize}
-            />
-            <SpaceBlock
-              label="Herramientas"
-              height="100%"
-              color="rgba(67, 83, 255, 0.15)"
-              description="Herramientas: crear, exportar, acciones masivas, etc."
-              fontSize={currentConfig.fontSize}
-            />
-          </div>
-          {/* Cabecera de la Tabla - Fija con mínimo 5 columnas */}
-          <div 
-            style={{ 
-              flexShrink: 0, 
-              minHeight: currentConfig.tableHeaderHeight,
-              display: "grid",
-              gridTemplateColumns: desktopSize === 'small' 
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr"
-                : desktopSize === 'medium'
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr"
-                : desktopSize === 'large'
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr 0.8fr"
-                : "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr 0.8fr 0.7fr",
-              gap: "2px",
-            }}
-          >
-            {desktopSize === 'small' ? (
-              <>
-                <SpaceBlock label="Número" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Cliente" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Importe" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : desktopSize === 'medium' ? (
-              <>
-                <SpaceBlock label="Número" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Cliente" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Importe" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Válido Hasta" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : desktopSize === 'large' ? (
-              <>
-                <SpaceBlock label="Número" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Cliente" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Importe" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Válido Hasta" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Proyecto" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : (
-              <>
-                <SpaceBlock label="Número" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Cliente" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Importe" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Válido Hasta" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Proyecto" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Acciones" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            )}
-          </div>
-          <div
-            style={{
-              flex: 1,
-              minHeight: 0,
-              overflowY: "auto",
-              overflowX: "hidden",
-            }}
-          >
-            <SpaceBlock
-              label="Listado de Presupuestos"
-              height="100%"
-              color="rgba(0, 200, 117, 0.1)"
-              description="Tabla/Lista con información de cada presupuesto"
-              fontSize={currentConfig.fontSize}
-            />
-          </div>
+          )}
         </div>
 
         {/* Sección de Charts */}

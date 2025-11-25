@@ -2,25 +2,49 @@
 
 import { DataList, DataListColumn } from "../../../components/list";
 import { useState, useMemo, useRef, useEffect } from "react";
-import { InventoryItemData } from "../../../lib/mocks/inventoryMocks";
+import { SalesDocumentData } from "../../../lib/mocks/salesDocumentsMocks";
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
 import { motion, AnimatePresence } from "framer-motion";
 
 /**
- * Componente de listado de servicios usando el componente reutilizable DataList
- * 
- * Basado en el schema de la tabla `inventory_items` de la base de datos (docs/base-de-datos.md)
+ * Componente genérico para listados de documentos de venta (presupuestos, proformas, etc.)
+ * usando el componente reutilizable DataList.
  */
 
-interface ServiciosListProps {
-  services: InventoryItemData[];
-  showFilters?: boolean;
-  showTools?: boolean;
-  onServiceClick?: (service: InventoryItemData) => void;
+export interface SalesDocumentsListLabels {
+  title: string;
+  searchPlaceholder: string;
+  newButtonLabel: string;
+  emptyMessage: string;
+  documentSingular: string; // usado para logs/acciones
 }
 
+export interface SalesDocumentsListProps {
+  documents: SalesDocumentData[];
+  showFilters?: boolean;
+  showTools?: boolean;
+  onDocumentClick?: (document: SalesDocumentData) => void;
+  labels: SalesDocumentsListLabels;
+}
+
+// Función para formatear fecha
+const formatDate = (dateString?: string | null): string => {
+  if (!dateString) return "-";
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  } catch {
+    return "-";
+  }
+};
+
 // Función para formatear moneda
-const formatCurrency = (amount: number): string => {
+const formatCurrency = (amount?: number): string => {
+  if (amount === undefined || amount === null) return "-";
   return new Intl.NumberFormat("es-ES", {
     style: "currency",
     currency: "EUR",
@@ -29,15 +53,65 @@ const formatCurrency = (amount: number): string => {
   }).format(amount);
 };
 
+// Función para obtener el color del estado
+const getStatusColor = (
+  status: SalesDocumentData["status"]
+): { bg: string; text: string } => {
+  const colors: Record<
+    SalesDocumentData["status"],
+    { bg: string; text: string }
+  > = {
+    borrador: {
+      bg: "rgba(128, 128, 128, 0.1)",
+      text: "rgb(128, 128, 128)",
+    },
+    enviado: {
+      bg: "rgba(67, 83, 255, 0.1)",
+      text: "rgb(67, 83, 255)",
+    },
+    aceptado: {
+      bg: "rgba(0, 200, 117, 0.1)",
+      text: "rgb(0, 200, 117)",
+    },
+    cobrada: {
+      bg: "rgba(0, 200, 117, 0.1)",
+      text: "rgb(0, 200, 117)",
+    },
+    rechazado: {
+      bg: "rgba(220, 53, 69, 0.1)",
+      text: "rgb(220, 53, 69)",
+    },
+    vencida: {
+      bg: "rgba(255, 165, 0, 0.1)",
+      text: "rgb(255, 165, 0)",
+    },
+  };
+  return colors[status] || { bg: "rgba(128, 128, 128, 0.1)", text: "rgb(128, 128, 128)" };
+};
+
+// Función para formatear el estado
+const formatStatus = (status: SalesDocumentData["status"]): string => {
+  const labels: Record<SalesDocumentData["status"], string> = {
+    borrador: "Borrador",
+    enviado: "Enviado",
+    aceptado: "Aceptado",
+    cobrada: "Cobrada",
+    rechazado: "Rechazado",
+    vencida: "Vencida",
+  };
+  return labels[status] || status;
+};
+
 // Componente de menú de acciones
 interface ActionMenuProps {
-  service: InventoryItemData;
+  document: SalesDocumentData;
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
+  labels: SalesDocumentsListLabels;
 }
 
-function ActionMenu({ service, isOpen, onToggle, onClose }: ActionMenuProps) {
+function ActionMenu({ document, isOpen, onToggle, onClose, labels }: ActionMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [menuPosition, setMenuPosition] = useState<{ top: number; right: number; showAbove: boolean } | null>(null);
@@ -87,16 +161,16 @@ function ActionMenu({ service, isOpen, onToggle, onClose }: ActionMenuProps) {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
+    window.document.addEventListener("mousedown", handleClickOutside);
+    window.document.addEventListener("keydown", handleEscape);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
+      window.document.removeEventListener("mousedown", handleClickOutside);
+      window.document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen, onClose]);
 
   const handleAction = (action: string) => {
-    console.log(`${action} servicio:`, service.internal_code);
+    console.log(`${action} ${labels.documentSingular}:`, document.document_number);
     // TODO: Implementar acciones
     onClose();
   };
@@ -354,245 +428,179 @@ function ActionMenu({ service, isOpen, onToggle, onClose }: ActionMenuProps) {
   );
 }
 
-export function ServiciosList({
-  services,
+export function SalesDocumentsList({
+  documents,
   showFilters = true,
   showTools = true,
-  onServiceClick,
-}: ServiciosListProps) {
+  onDocumentClick,
+  labels,
+}: SalesDocumentsListProps) {
   const breakpoint = useBreakpoint();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState<string>("");
-  const [filterSubtype, setFilterSubtype] = useState<string>("");
-  const [filterActive, setFilterActive] = useState<boolean | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string>("");
+  const [filterClient, setFilterClient] = useState<string>("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  // Obtener categorías únicas
-  const categories = useMemo(() => {
-    const cats = new Set(services.map((s) => s.category_name || "Sin categoría"));
-    return Array.from(cats).sort();
-  }, [services]);
-
-  // Obtener subtipos únicos
-  const subtypes = useMemo(() => {
-    const subs = new Set(
-      services
-        .map((s) => s.subtype)
-        .filter((sub): sub is string => sub !== undefined && sub !== null)
+  // Obtener clientes únicos para el filtro
+  const clients = useMemo(() => {
+    const clientSet = new Set(
+      documents
+        .map((p) => p.client_name)
+        .filter((name): name is string => !!name)
     );
-    return Array.from(subs).sort();
-  }, [services]);
+    return Array.from(clientSet).sort();
+  }, [documents]);
 
-  // Filtrar servicios según los filtros aplicados
-  const filteredServices = useMemo(() => {
-    return services.filter((service) => {
+  // Filtrar documentos según los filtros aplicados
+  const filteredDocuments = useMemo(() => {
+    return documents.filter((document) => {
       // Filtro de búsqueda
       const matchesSearch =
         searchTerm === "" ||
-        service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.internal_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        document.document_number
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        document.client_name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        document.project_name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
-      // Filtro de categoría
-      const matchesCategory =
-        filterCategory === "" || service.category_name === filterCategory;
+      // Filtro de estado
+      const matchesStatus =
+        filterStatus === "" || document.status === filterStatus;
 
-      // Filtro de subtipo
-      const matchesSubtype =
-        filterSubtype === "" || service.subtype === filterSubtype;
+      // Filtro de cliente
+      const matchesClient =
+        filterClient === "" || document.client_name === filterClient;
 
-      // Filtro de estado activo
-      const matchesActive =
-        filterActive === null || service.is_active === filterActive;
-
-      return matchesSearch && matchesCategory && matchesSubtype && matchesActive;
+      return matchesSearch && matchesStatus && matchesClient;
     });
-  }, [services, searchTerm, filterCategory, filterSubtype, filterActive]);
+  }, [documents, searchTerm, filterStatus, filterClient]);
 
   // Definir las columnas del listado
-  const columns: DataListColumn<InventoryItemData>[] = useMemo(() => {
+  const columns: DataListColumn<SalesDocumentData>[] = useMemo(() => {
     return [
       {
-        key: "internal_code",
-        label: "Código",
-        align: "left",
-        visibleOn: {
-          desktop: true,
-          tablet: true,
-          mobile: true,
-        },
-        render: (service) => (
-          <span style={{ fontWeight: "var(--font-weight-medium)", color: "var(--foreground)" }}>
-            {service.internal_code || "-"}
-          </span>
-        ),
-      },
-      {
-        key: "name",
-        label: "Nombre",
-        align: "left",
-        visibleOn: {
-          desktop: true,
-          tablet: true,
-          mobile: true,
-        },
-        render: (service) => (
-          <div>
-            <div style={{ fontWeight: "var(--font-weight-medium)" }}>
-              {service.name}
-            </div>
-            {service.description && (
-              <div
-                style={{
-                  fontSize: "var(--font-size-xs)",
-                  color: "var(--foreground-tertiary)",
-                  marginTop: "2px",
-                }}
-              >
-                {service.description.length > 60
-                  ? `${service.description.substring(0, 60)}...`
-                  : service.description}
-              </div>
-            )}
-          </div>
-        ),
-      },
-      {
-        key: "category_name",
-        label: "Categoría",
-        align: "left",
+        key: "date_issued",
+        label: "Fecha",
+        align: "center",
         visibleOn: {
           desktop: true,
           tablet: true,
           mobile: false,
         },
-        render: (service) => (
+        render: (presupuesto) => (
           <span style={{ color: "var(--foreground-secondary)", fontSize: "var(--font-size-sm)" }}>
-            {service.category_name || "Sin categoría"}
+            {formatDate(presupuesto.date_issued)}
           </span>
         ),
       },
       {
-        key: "subtype",
-        label: "Subtipo",
-        align: "left",
+        key: "document_number",
+        label: "Num",
+        align: "center",
         visibleOn: {
           desktop: true,
-          tablet: false,
+          tablet: true,
+          mobile: true,
+        },
+        render: (presupuesto) => (
+          <span style={{ fontWeight: "var(--font-weight-medium)", color: "var(--foreground)" }}>
+            {presupuesto.document_number || "-"}
+          </span>
+        ),
+      },
+      {
+        key: "client_name",
+        label: "Cliente",
+        align: "center",
+        visibleOn: {
+          desktop: true,
+          tablet: true,
+          mobile: true,
+        },
+        render: (presupuesto) => (
+          <span style={{ color: "var(--foreground)" }}>
+            {presupuesto.client_name || "-"}
+          </span>
+        ),
+      },
+      {
+        key: "project_name",
+        label: "Proyecto",
+        align: "center",
+        visibleOn: {
+          desktop: true,
+          tablet: true,
           mobile: false,
         },
-        render: (service) => {
-          if (!service.subtype) {
+        render: (presupuesto) => {
+          if (!presupuesto.project_name) {
             return (
               <span style={{ color: "var(--foreground-tertiary)" }}>-</span>
             );
           }
-          // Convertir snake_case a título
-          const subtypeLabel = service.subtype
-            .split("_")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ");
+          const projectRef = (presupuesto as any).project_ref;
           return (
-            <span style={{ color: "var(--foreground-secondary)", fontSize: "var(--font-size-sm)" }}>
-              {subtypeLabel}
-            </span>
+            <div>
+              {projectRef && (
+                <span
+                  style={{
+                    fontWeight: "var(--font-weight-medium)",
+                    color: "var(--foreground-secondary)",
+                    fontSize: "var(--font-size-sm)",
+                    marginRight: "var(--spacing-xs)",
+                  }}
+                >
+                  {projectRef}
+                </span>
+              )}
+              <span style={{ color: "var(--foreground-secondary)", fontSize: "var(--font-size-sm)" }}>
+                {presupuesto.project_name}
+              </span>
+            </div>
           );
         },
       },
       {
-        key: "average_cost",
-        label: "Coste",
+        key: "subtotal",
+        label: "Subtotal",
         align: "center",
         visibleOn: {
           desktop: true,
-          tablet: false,
+          tablet: true,
           mobile: false,
         },
-        render: (service) => {
-          const cost = service.average_cost ?? service.cost_price ?? 0;
-          if (cost === 0) {
+        render: (presupuesto) => {
+          const subtotal = presupuesto.totals_data?.base_imponible ?? presupuesto.totals_data?.base ?? 0;
+          if (subtotal === 0) {
             return (
-              <span style={{ color: "var(--foreground-tertiary)" }}>
-                €0,00
-              </span>
+              <span style={{ color: "var(--foreground-tertiary)" }}>-</span>
             );
           }
           return (
             <span style={{ color: "var(--foreground-secondary)", fontSize: "var(--font-size-sm)" }}>
-              {formatCurrency(cost)}
+              {formatCurrency(subtotal)}
             </span>
           );
         },
       },
       {
-        key: "base_price",
-        label: "Precio",
+        key: "total",
+        label: "Total",
         align: "center",
         visibleOn: {
           desktop: true,
           tablet: true,
           mobile: false,
         },
-        render: (service) => (
-          <span style={{ fontWeight: "var(--font-weight-medium)" }}>
-            {formatCurrency(service.base_price)}
-          </span>
-        ),
-      },
-      {
-        key: "unit",
-        label: "Unidad",
-        align: "left",
-        visibleOn: {
-          desktop: true,
-          tablet: false,
-          mobile: false,
-        },
-        render: (service) => (
-          <span style={{ color: "var(--foreground-secondary)", fontSize: "var(--font-size-sm)" }}>
-            {service.unit || "-"}
-          </span>
-        ),
-      },
-      {
-        key: "units_sold",
-        label: "Unidades Vendidas",
-          align: "right",
-        visibleOn: {
-          desktop: true,
-          tablet: true,
-          mobile: false,
-        },
-        render: (service) => {
-          const units = service.units_sold ?? 0;
-          return (
-            <span
-              style={{
-                fontWeight: "var(--font-weight-medium)",
-                color: units > 0 ? "var(--foreground)" : "var(--foreground-tertiary)",
-              }}
-            >
-              {units.toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-            </span>
-          );
-        },
-      },
-      {
-        key: "total_billing",
-        label: "Facturado",
-        align: "center",
-        visibleOn: {
-          desktop: true,
-          tablet: true,
-          mobile: false,
-        },
-        render: (service) => {
-          const total = service.total_billing ?? 0;
+        render: (presupuesto) => {
+          const total = presupuesto.totals_data?.total ?? 0;
           if (total === 0) {
             return (
-              <span style={{ color: "var(--foreground-tertiary)" }}>
-                €0,00
-              </span>
+              <span style={{ color: "var(--foreground-tertiary)" }}>-</span>
             );
           }
           return (
@@ -603,33 +611,64 @@ export function ServiciosList({
         },
       },
       {
-        key: "is_active",
+        key: "status",
         label: "Estado",
-        align: "right",
+        align: "center",
         visibleOn: {
           desktop: true,
           tablet: true,
           mobile: true,
         },
-        render: (service) => (
-          <span
-            style={{
-              display: "inline-block",
-              padding: "2px 8px",
-              borderRadius: "var(--radius-sm)",
-              fontSize: "var(--font-size-xs)",
-              fontWeight: "var(--font-weight-medium)",
-              backgroundColor: service.is_active
-                ? "rgba(0, 200, 117, 0.1)"
-                : "rgba(220, 53, 69, 0.1)",
-              color: service.is_active
-                ? "rgb(0, 200, 117)"
-                : "rgb(220, 53, 69)",
-            }}
-          >
-            {service.is_active ? "Activo" : "Inactivo"}
-          </span>
-        ),
+        render: (presupuesto) => {
+          const statusColors = getStatusColor(presupuesto.status);
+          return (
+            <span
+              style={{
+                display: "inline-block",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-sm)",
+                fontSize: "var(--font-size-xs)",
+                fontWeight: "var(--font-weight-medium)",
+                backgroundColor: statusColors.bg,
+                color: statusColors.text,
+              }}
+            >
+              {formatStatus(presupuesto.status)}
+            </span>
+          );
+        },
+      },
+      {
+        key: "is_invoiced",
+        label: "Facturado",
+        align: "center",
+        visibleOn: {
+          desktop: true,
+          tablet: true,
+          mobile: false,
+        },
+        render: (presupuesto) => {
+          const isInvoiced = (presupuesto as any).is_invoiced ?? false;
+          return (
+            <span
+              style={{
+                display: "inline-block",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-sm)",
+                fontSize: "var(--font-size-xs)",
+                fontWeight: "var(--font-weight-medium)",
+                backgroundColor: isInvoiced
+                  ? "rgba(0, 200, 117, 0.1)"
+                  : "rgba(255, 165, 0, 0.1)",
+                color: isInvoiced
+                  ? "rgb(0, 200, 117)"
+                  : "rgb(255, 165, 0)",
+              }}
+            >
+              {isInvoiced ? "Facturado" : "Pendiente"}
+            </span>
+          );
+        },
       },
       {
         key: "actions",
@@ -640,25 +679,43 @@ export function ServiciosList({
           tablet: true,
           mobile: false,
         },
-        render: (service) => {
+        render: (document) => {
           return (
             <ActionMenu
-              service={service}
-              isOpen={openMenuId === service.id}
+              document={document}
+              isOpen={openMenuId === document.id}
               onToggle={() => {
-                setOpenMenuId(openMenuId === service.id ? null : service.id);
+                setOpenMenuId(openMenuId === document.id ? null : document.id);
               }}
               onClose={() => setOpenMenuId(null)}
+              labels={labels}
             />
+          );
+        },
+      },
+      {
+        key: "last_modified",
+        label: "Modificado",
+        align: "center",
+        visibleOn: {
+          desktop: true,
+          tablet: true,
+          mobile: false,
+        },
+        render: (presupuesto) => {
+          const lastModified = (presupuesto as any).last_modified || (presupuesto as any).updated_at || presupuesto.date_issued;
+          return (
+            <span style={{ color: "var(--foreground-secondary)", fontSize: "var(--font-size-sm)" }}>
+              {formatDate(lastModified)}
+            </span>
           );
         },
       },
     ];
   }, [openMenuId]);
 
-  // Calcular grid columns personalizado para servicios
-  // Optimizado para 10 columnas: Código | Nombre | Categoría | Subtipo | Precio Base | Unidad | Unidades Vendidas | Facturado | Coste Medio | Estado
-  const serviciosGridColumns = useMemo(() => {
+  // Calcular grid columns personalizado para documentos
+  const documentsGridColumns = useMemo(() => {
     const isDesktop = breakpoint === "desktop";
     const isTablet = breakpoint === "tablet"; // Tablet horizontal
     const isTabletPortrait = breakpoint === "tablet-portrait";
@@ -672,34 +729,39 @@ export function ServiciosList({
     
     const count = visibleCols.length;
     
-    if (count >= 11) {
-      // Desktop/Tablet-horizontal: 11 columnas (con Acciones)
-      // Orden: Código | Nombre | Categoría | Subtipo | Coste | Precio | Unidad | Unidades Vendidas | Facturado | Estado | Acciones
-      return "0.7fr 2.2fr 1fr 0.8fr 0.8fr 0.8fr 0.7fr 0.8fr 0.8fr 1fr 0.4fr";
-    } else if (count === 10) {
-      // Desktop/Tablet-horizontal: 10 columnas (sin Subtipo, con Acciones)
-      return "0.7fr 2.3fr 1fr 0.9fr 0.9fr 0.75fr 0.9fr 0.9fr 1fr 0.4fr";
+    if (count >= 10) {
+      // Desktop/Tablet-horizontal: 10 columnas
+      // Orden: Fecha | Nº Documento | Cliente | Proyecto | Subtotal | Total | Estado | Facturado | Acciones | Modificado
+      // Optimizado: Cliente y Proyecto con espacio suficiente, Estado y Facturado juntos, Acciones compacto
+      return "0.5fr 0.5fr 1.3fr 1.5fr 0.9fr 0.9fr 0.7fr 0.7fr 0.4fr 0.7fr";
     } else if (count === 9) {
-      // Si hay 9 columnas (sin Subtipo ni Coste, con Acciones)
-      return "0.7fr 2.4fr 1.1fr 1fr 0.8fr 1fr 1fr 1fr 0.4fr";
+      // Desktop/Tablet-horizontal: 9 columnas (sin Proyecto)
+      // Orden: Fecha | Nº Documento | Cliente | Subtotal | Total | Estado | Facturado | Acciones | Modificado
+      // Optimizado: Cliente con más espacio al no tener Proyecto
+      return "0.5fr 0.5fr 1.6fr 0.9fr 0.9fr 0.7fr 0.7fr 0.4fr 0.7fr";
     } else if (count === 8) {
-      // Si hay 8 columnas (sin Subtipo, Coste ni Unidad, con Acciones)
-      return "0.8fr 2.5fr 1.2fr 1.1fr 1.2fr 1.2fr 1.2fr 0.4fr";
+      // Tablet: 8 columnas (con Proyecto, sin Modificado)
+      // Orden: Fecha | Nº Documento | Cliente | Proyecto | Subtotal | Total | Estado | Facturado | Acciones
+      return "0.6fr 0.6fr 1.4fr 1.1fr 0.9fr 0.9fr 0.7fr 0.7fr 0.4fr";
     } else if (count === 7) {
-      // Si hay 7 columnas (sin Acciones)
-      return "0.8fr 2.5fr 1.2fr 1.1fr 1.2fr 1.1fr 1.2fr";
+      // Tablet: 7 columnas (sin Proyecto, sin Modificado)
+      // Orden: Fecha | Nº Documento | Cliente | Subtotal | Total | Estado | Facturado | Acciones
+      return "0.7fr 0.7fr 1.6fr 0.9fr 0.9fr 0.7fr 0.7fr 0.4fr";
     } else if (count === 6) {
-      // Si hay 6 columnas
-      return "0.8fr 2.7fr 1.3fr 1.2fr 1.3fr 1.2fr";
+      // Tablet: 6 columnas (sin Proyecto, sin Acciones, sin Modificado)
+      // Orden: Fecha | Nº Documento | Cliente | Subtotal | Total | Estado | Facturado
+      return "0.8fr 0.8fr 1.9fr 0.9fr 0.9fr 0.7fr 0.7fr";
     } else if (count === 5) {
-      // Si hay 5 columnas
-      return "0.9fr 3fr 1.4fr 1.3fr 1.4fr";
+      // Tablet portrait: 5 columnas
+      // Orden: Fecha | Nº Documento | Cliente | Total | Estado
+      return "1fr 1.2fr 2.5fr 1.1fr 1.1fr";
     } else if (count === 4) {
-      // Tablet portrait: 4 columnas
-      return "0.9fr 3.2fr 1.5fr 1.4fr";
+      // Mobile: 4 columnas
+      // Orden: Nº Documento | Cliente | Total | Estado
+      return "1fr 1.2fr 2.5fr 1fr";
     } else {
-      // Mobile: 3 columnas (Código | Nombre | Estado)
-      return "0.9fr 3.5fr 1.1fr";
+      // Mobile: 3 columnas (Nº Documento | Cliente | Estado)
+      return "1.2fr 2.5fr 1fr";
     }
   }, [breakpoint, columns]);
 
@@ -715,7 +777,7 @@ export function ServiciosList({
     >
       <input
         type="text"
-        placeholder="Buscar servicio..."
+        placeholder={labels.searchPlaceholder}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{
@@ -730,8 +792,8 @@ export function ServiciosList({
         }}
       />
       <select
-        value={filterCategory}
-        onChange={(e) => setFilterCategory(e.target.value)}
+        value={filterStatus}
+        onChange={(e) => setFilterStatus(e.target.value)}
         style={{
           padding: "var(--spacing-sm) var(--spacing-md)",
           borderRadius: "var(--radius-md)",
@@ -742,16 +804,16 @@ export function ServiciosList({
           minWidth: "150px",
         }}
       >
-        <option value="">Todas las categorías</option>
-        {categories.map((cat) => (
-          <option key={cat} value={cat}>
-            {cat}
-          </option>
-        ))}
+        <option value="">Todos los estados</option>
+        <option value="borrador">Borrador</option>
+        <option value="enviado">Enviado</option>
+        <option value="aceptado">Aceptado</option>
+        <option value="rechazado">Rechazado</option>
+        <option value="vencida">Vencida</option>
       </select>
       <select
-        value={filterSubtype}
-        onChange={(e) => setFilterSubtype(e.target.value)}
+        value={filterClient}
+        onChange={(e) => setFilterClient(e.target.value)}
         style={{
           padding: "var(--spacing-sm) var(--spacing-md)",
           borderRadius: "var(--radius-md)",
@@ -762,35 +824,12 @@ export function ServiciosList({
           minWidth: "150px",
         }}
       >
-        <option value="">Todos los subtipos</option>
-        {subtypes.map((sub) => (
-          <option key={sub} value={sub}>
-            {sub
-              .split("_")
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" ")}
+        <option value="">Todos los clientes</option>
+        {clients.map((client) => (
+          <option key={client} value={client}>
+            {client}
           </option>
         ))}
-      </select>
-      <select
-        value={filterActive === null ? "" : filterActive ? "active" : "inactive"}
-        onChange={(e) => {
-          if (e.target.value === "") setFilterActive(null);
-          else setFilterActive(e.target.value === "active");
-        }}
-        style={{
-          padding: "var(--spacing-sm) var(--spacing-md)",
-          borderRadius: "var(--radius-md)",
-          border: "1px solid var(--border-medium)",
-          backgroundColor: "var(--background)",
-          color: "var(--foreground)",
-          fontSize: "var(--font-size-sm)",
-          minWidth: "120px",
-        }}
-      >
-        <option value="">Todos</option>
-        <option value="active">Activos</option>
-        <option value="inactive">Inactivos</option>
       </select>
     </div>
   );
@@ -806,8 +845,8 @@ export function ServiciosList({
     >
       <button
         onClick={() => {
-          // TODO: Implementar modal de nuevo servicio
-          console.log("Nuevo servicio");
+          // TODO: Implementar acción para crear nuevo documento
+          console.log(`Nuevo ${labels.documentSingular}`);
         }}
         style={{
           padding: "var(--spacing-sm) var(--spacing-md)",
@@ -820,7 +859,7 @@ export function ServiciosList({
           cursor: "pointer",
         }}
       >
-        + Nuevo Servicio
+        {labels.newButtonLabel}
       </button>
       <button
         onClick={() => {
@@ -845,16 +884,16 @@ export function ServiciosList({
 
   return (
     <DataList
-      title="Servicios"
-      data={filteredServices}
+      title={labels.title}
+      data={filteredDocuments}
       columns={columns}
       showFilters={showFilters}
       showTools={showTools}
       renderFilters={renderFilters}
       renderTools={renderTools}
-      onRowClick={onServiceClick}
-      emptyMessage="No hay servicios disponibles"
-      customGridColumns={serviciosGridColumns}
+      onRowClick={onDocumentClick}
+      emptyMessage={labels.emptyMessage}
+      customGridColumns={documentsGridColumns}
     />
   );
 }

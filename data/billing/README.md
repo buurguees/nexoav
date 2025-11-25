@@ -17,8 +17,16 @@ Documentos de venta principales.
 - `status`: Estado del documento
 - `date_issued`: Fecha de emisión
 - `date_due`: Fecha de vencimiento
+- `created_at`: Fecha de creación del registro (TIMESTAMPTZ)
+- `updated_at`: **Fecha de última actualización** (TIMESTAMPTZ) - Se muestra en los listados
 
 **Nota importante:** `client_snapshot` se rellena automáticamente al emitir el documento para garantizar inmutabilidad fiscal.
+
+**Nota sobre `updated_at`:**
+- Se actualiza automáticamente cada vez que se modifica el documento
+- Se muestra en los listados de Presupuestos, Proformas, Facturas y Rectificativas
+- Formato de visualización: `DD/MM/YYYY HH:MM` (fecha y hora)
+- Útil para auditoría y seguimiento de cambios en documentos
 
 ### `sales_document_lines.json`
 Líneas individuales de cada documento de venta (las filas del PDF). **Organizadas en dos apartados: Productos y Servicios.**

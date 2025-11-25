@@ -1,120 +1,64 @@
 "use client";
 
-/**
- * Página de Proformas - Versión Mobile (< 768px)
- */
-
-interface SpaceBlockProps {
-  label: string;
-  width?: number | string;
-  height?: number | string;
-  color?: string;
-  description?: string;
-  borderStyle?: "dashed" | "solid";
-  borderWidth?: string;
-}
-
-function SpaceBlock({
-  label,
-  width = "100%",
-  height = "200px",
-  color = "var(--background-secondary)",
-  description,
-  borderStyle = "dashed",
-  borderWidth = "2px"
-}: SpaceBlockProps) {
-  return (
-    <div
-      style={{
-        width,
-        height,
-        backgroundColor: color,
-        border: `${borderWidth} ${borderStyle} var(--border-medium)`,
-        borderRadius: "var(--radius-md)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "var(--spacing-xs)",
-        position: "relative",
-        minHeight: typeof height === "number" ? `${height}px` : height,
-        boxSizing: "border-box",
-      }}
-    >
-      <div
-        style={{
-          fontSize: "10px",
-          fontWeight: "var(--font-weight-semibold)",
-          color: "var(--foreground-secondary)",
-          textAlign: "center",
-          textTransform: "uppercase",
-          letterSpacing: "0.5px",
-        }}
-      >
-        {label}
-      </div>
-      {description && (
-        <div
-          style={{
-            fontSize: "8px",
-            color: "var(--foreground-tertiary)",
-            textAlign: "center",
-            marginTop: "var(--spacing-xs)",
-            maxWidth: "80%",
-          }}
-        >
-          {description}
-        </div>
-      )}
-    </div>
-  );
-}
+import { useEffect, useState } from "react";
+import { ProformasList } from "../components/ProformasList";
+import { fetchProformas, SalesDocumentData } from "../../../../lib/mocks/salesDocumentsMocks";
 
 export function ProformasMobile() {
+  const [proformas, setProformas] = useState<SalesDocumentData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProformas() {
+      try {
+        setIsLoading(true);
+        const data = await fetchProformas();
+        setProformas(data);
+      } catch (error) {
+        console.error("Error al cargar proformas:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadProformas();
+  }, []);
+
+  const handleProformaClick = (proforma: SalesDocumentData) => {
+    console.log("Proforma seleccionada:", proforma);
+  };
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "var(--spacing-xs)",
-        padding: "var(--spacing-xs)",
         height: "100%",
         width: "100%",
         boxSizing: "border-box",
+        padding: "var(--spacing-sm)",
         overflow: "hidden",
       }}
     >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows: "1fr 1fr",
-          gap: "var(--spacing-xs)",
-          height: "100px",
-          flexShrink: 0,
-          minHeight: "100px",
-        }}
-      >
-        <SpaceBlock label="Total Proformas" height="100%" color="rgba(0, 200, 117, 0.2)" borderWidth="2px" />
-        <SpaceBlock label="Aceptados" height="100%" color="rgba(67, 83, 255, 0.2)" borderWidth="2px" />
-        <SpaceBlock label="Importe Total" height="100%" color="rgba(255, 165, 0, 0.2)" borderWidth="2px" />
-        <SpaceBlock label="Pendientes" height="100%" color="rgba(220, 53, 69, 0.2)" borderWidth="2px" />
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-xs)", flex: 1, minHeight: 0, overflow: "hidden" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-xs)", flexShrink: 0 }}>
-          <SpaceBlock label="Título: Proformas" height="30px" color="var(--background-secondary)" />
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--spacing-xs)", height: "30px" }}>
-            <SpaceBlock label="Filtros" height="100%" color="rgba(255, 165, 0, 0.15)" />
-            <SpaceBlock label="Herramientas" height="100%" color="rgba(67, 83, 255, 0.15)" />
-          </div>
+      {isLoading ? (
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--foreground-secondary)",
+          }}
+        >
+          Cargando proformas...
         </div>
-        <div style={{ flexShrink: 0, minHeight: "30px" }}>
-          <SpaceBlock label="Cabecera de la Tabla" height="30px" color="rgba(0, 200, 117, 0.15)" />
-        </div>
-        <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden" }}>
-          <SpaceBlock label="Listado de Proformas" height="100%" color="rgba(0, 200, 117, 0.1)" />
-        </div>
-      </div>
+      ) : (
+        <ProformasList
+          proformas={proformas}
+          showFilters={true}
+          showTools={true}
+          onProformaClick={handleProformaClick}
+        />
+      )}
     </div>
   );
 }

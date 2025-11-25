@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { FacturasList } from "../components/FacturasList";
+import { fetchFacturas, SalesDocumentData } from "../../../../lib/mocks/salesDocumentsMocks";
 
 /**
  * Página de Facturas - Versión Desktop (> 1024px)
@@ -106,6 +108,28 @@ function SpaceBlock({
 
 export function FacturasDesktop() {
   const desktopSize = useDesktopSize();
+  const [facturas, setFacturas] = useState<SalesDocumentData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    async function loadFacturas() {
+      try {
+        setIsLoading(true);
+        const data = await fetchFacturas();
+        setFacturas(data);
+      } catch (error) {
+        console.error("Error al cargar facturas:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadFacturas();
+  }, []);
+
+  const handleFacturaClick = (factura: SalesDocumentData) => {
+    // TODO: Implementar navegación al detalle de la factura
+    console.log("Factura seleccionada:", factura);
+  };
   
   const config = {
     small: {
@@ -186,63 +210,26 @@ export function FacturasDesktop() {
             overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: currentConfig.gap,
-              height: currentConfig.headerHeight,
-              flexShrink: 0,
-              minHeight: currentConfig.headerHeight,
-            }}
-          >
-            <SpaceBlock
-              label="Filtros"
-              height="100%"
-              color="rgba(255, 165, 0, 0.15)"
-              description="Filtros: cliente, fecha, estado, importe, etc."
-              fontSize={currentConfig.fontSize}
+          {isLoading ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
+                color: "var(--foreground-secondary)",
+              }}
+            >
+              Cargando facturas...
+            </div>
+          ) : (
+            <FacturasList
+              facturas={facturas}
+              showFilters={true}
+              showTools={true}
+              onFacturaClick={handleFacturaClick}
             />
-            <SpaceBlock
-              label="Título: Facturas"
-              height="100%"
-              color="var(--background-secondary)"
-              description="Título de la sección"
-              fontSize={currentConfig.fontSize}
-            />
-            <SpaceBlock
-              label="Herramientas"
-              height="100%"
-              color="rgba(67, 83, 255, 0.15)"
-              description="Herramientas: crear, exportar, acciones masivas, etc."
-              fontSize={currentConfig.fontSize}
-            />
-          </div>
-          <div style={{ flexShrink: 0, minHeight: currentConfig.tableHeaderHeight }}>
-            <SpaceBlock
-              label="Cabecera de la Tabla"
-              height={currentConfig.tableHeaderHeight}
-              color="rgba(0, 200, 117, 0.15)"
-              description="Cabecera: número, cliente, fecha, importe, estado, etc."
-              fontSize={currentConfig.fontSize}
-            />
-          </div>
-          <div
-            style={{
-              flex: 1,
-              minHeight: 0,
-              overflowY: "auto",
-              overflowX: "hidden",
-            }}
-          >
-            <SpaceBlock
-              label="Listado de Facturas"
-              height="100%"
-              color="rgba(0, 200, 117, 0.1)"
-              description="Tabla/Lista con información de cada factura"
-              fontSize={currentConfig.fontSize}
-            />
-          </div>
+          )}
         </div>
 
         {/* Sección de Charts */}

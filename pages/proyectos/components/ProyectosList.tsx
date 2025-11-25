@@ -468,16 +468,16 @@ export function ProyectosList({
 
   return (
     <>
-      <DataList
-        title="Proyectos"
-        data={filteredProjects}
-        columns={columns}
-        showFilters={showFilters}
-        showTools={showTools}
-        renderFilters={renderFilters}
-        renderTools={renderTools}
-        onRowClick={onProjectClick}
-        emptyMessage="No se encontraron proyectos"
+    <DataList
+      title="Proyectos"
+      data={filteredProjects}
+      columns={columns}
+      showFilters={showFilters}
+      showTools={showTools}
+      renderFilters={renderFilters}
+      renderTools={renderTools}
+      onRowClick={onProjectClick}
+      emptyMessage="No se encontraron proyectos"
         customGridColumns={projectsGridColumns}
       />
       <NewProjectModal
