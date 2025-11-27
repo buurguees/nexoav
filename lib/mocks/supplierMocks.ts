@@ -11,6 +11,9 @@
 
 import { SupplierData } from "../../pages/proveedores/components/ProveedoresList";
 
+// Re-exportar SupplierData para uso en otros componentes
+export type { SupplierData };
+
 // Importar datos JSON (en producción esto vendría del backend)
 import suppliersData from "../../data/expenses/suppliers.json";
 import projectsData from "../../data/operations/projects.json";
@@ -191,5 +194,69 @@ export async function createSupplier(
   // TODO: Implementar guardado real en Supabase cuando esté listo
 
   return newSupplier;
+}
+
+/**
+ * Simula una llamada al backend para actualizar un proveedor existente
+ * 
+ * @param supplierId - ID del proveedor a actualizar
+ * @param supplierData - Datos a actualizar (parciales)
+ * @returns Promise con el proveedor actualizado
+ */
+export async function updateSupplier(
+  supplierId: string,
+  supplierData: Partial<Omit<SupplierData, "id" | "internal_code" | "created_at" | "updated_at" | "total_projects" | "total_expenses" | "total_billed" | "total_billing" | "invoices_count" | "invoices_paid_count" | "total_orders">>
+): Promise<SupplierData> {
+  // Simular delay de red
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  // Obtener proveedor existente
+  const existing = await fetchSupplierById(supplierId);
+  if (!existing) {
+    throw new Error("Proveedor no encontrado");
+  }
+
+  // Actualizar campos
+  const updated: SupplierData = {
+    ...existing,
+    ...supplierData,
+    fiscal_name: supplierData.fiscal_name || existing.fiscal_name,
+    name: supplierData.fiscal_name || existing.fiscal_name, // Mantener compatibilidad
+    updated_at: new Date().toISOString(),
+  };
+
+  // En producción, aquí se haría un PATCH/PUT a la API
+  // TODO: Implementar actualización real en Supabase cuando esté listo
+
+  return updated;
+}
+
+/**
+ * Simula una llamada al backend para eliminar (desactivar) un proveedor
+ * 
+ * @param supplierId - ID del proveedor a eliminar
+ * @returns Promise con el proveedor desactivado
+ */
+export async function deleteSupplier(supplierId: string): Promise<SupplierData> {
+  // Simular delay de red
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  // Obtener proveedor existente
+  const existing = await fetchSupplierById(supplierId);
+  if (!existing) {
+    throw new Error("Proveedor no encontrado");
+  }
+
+  // Soft delete: marcar como inactivo
+  const deleted: SupplierData = {
+    ...existing,
+    is_active: false,
+    updated_at: new Date().toISOString(),
+  };
+
+  // En producción, aquí se haría un DELETE o PATCH a la API
+  // TODO: Implementar eliminación real en Supabase cuando esté listo
+
+  return deleted;
 }
 

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "g10e8400-e29b-41d4-a716-446655440800",
+    "project_id": "a40e8400-e29b-41d4-a716-446655440230",
+    "supplier_id": "220e8400-e29b-41d4-a716-446655440060",
+    "document_number": "PO-25001",
+    "description": "Servicio Técnico Sonido Evento Paseig de Gracia",
+    "estimated_amount": 500.00,
+    "status": "fulfilled",
+    "created_at": "2025-01-10T10:00:00Z",
+    "updated_at": "2025-01-15T14:00:00Z"
+  },
+  {
+    "id": "g20e8400-e29b-41d4-a716-446655440810",
+    "project_id": "a10e8400-e29b-41d4-a716-446655440200",
+    "supplier_id": "220e8400-e29b-41d4-a716-446655440060",
+    "document_number": "PO-25002",
+    "description": "Compra de cableado y conectores para instalación LED",
+    "estimated_amount": 350.00,
+    "status": "pending",
+    "created_at": "2025-01-18T09:00:00Z",
+    "updated_at": "2025-01-18T09:00:00Z"
+  },
+  {
+    "id": "g30e8400-e29b-41d4-a716-446655440820",
+    "project_id": "a20e8400-e29b-41d4-a716-446655440210",
+    "supplier_id": "330e8400-e29b-41d4-a716-446655440070",
+    "document_number": "PO-25003",
+    "description": "Alquiler de equipos de iluminación adicionales",
+    "estimated_amount": 800.00,
+    "status": "cancelled",
+    "created_at": "2025-01-12T11:00:00Z",
+    "updated_at": "2025-01-14T15:00:00Z"
+  },
+  {
+    "id": "g40e8400-e29b-41d4-a716-446655440830",
+    "project_id": "a40e8400-e29b-41d4-a716-446655440230",
+    "supplier_id": null,
+    "document_number": "PO-25004",
+    "description": "Transporte y logística para entrega de material",
+    "estimated_amount": 150.00,
+    "status": "pending",
+    "created_at": "2025-01-16T08:00:00Z",
+    "updated_at": "2025-01-16T08:00:00Z"
+  },
+  {
+    "id": "g50e8400-e29b-41d4-a716-446655440840",
+    "project_id": "a10e8400-e29b-41d4-a716-446655440200",
+    "supplier_id": "330e8400-e29b-41d4-a716-446655440070",
+    "document_number": "PO-25005",
+    "description": "Compra de material extra no previsto para refuerzos LED",
+    "estimated_amount": 450.00,
+    "status": "fulfilled",
+    "created_at": "2025-01-22T09:30:00Z",
+    "updated_at": "2025-01-25T12:15:00Z"
+  },
+  {
+    "id": "g60e8400-e29b-41d4-a716-446655440850",
+    "project_id": "a20e8400-e29b-41d4-a716-446655440210",
+    "supplier_id": "220e8400-e29b-41d4-a716-446655440060",
+    "document_number": "PO-25006",
+    "description": "Servicio técnico adicional para pruebas y ajustes",
+    "estimated_amount": 1000.00,
+    "status": "fulfilled",
+    "created_at": "2025-01-23T10:00:00Z",
+    "updated_at": "2025-01-27T17:45:00Z"
+  },
+  {
+    "id": "g70e8400-e29b-41d4-a716-446655440860",
+    "project_id": "a30e8400-e29b-41d4-a716-446655440220",
+    "supplier_id": "440e8400-e29b-41d4-a716-446655440080",
+    "document_number": "PO-25007",
+    "description": "Equipo externo de soporte audiovisual para arranque de proyecto",
+    "estimated_amount": 1200.00,
+    "status": "pending",
+    "created_at": "2025-01-24T16:20:00Z",
+    "updated_at": "2025-01-24T16:20:00Z"
+  }
+]
+

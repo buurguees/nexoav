@@ -890,7 +890,9 @@ Items del inventario (productos y servicios). **Versión mejorada con `is_stocka
 | `rental_price_18m` | NUMERIC(10,2) | **Precio de alquiler mensual a 18 meses** (opcional, solo alquiler) | `14.98` |
 | `rental_price_daily` | NUMERIC(10,2) | **Precio de alquiler diario para eventos** (opcional, solo alquiler) | `10.70` |
 | `is_stockable` | BOOLEAN | Si es stockable (producto físico vs servicio) | `true` para productos, `false` para servicios |
-| `stock_current` | INTEGER | Stock actual (solo si `is_stockable = true`) | `0` (inicial) |
+| `stock_warehouse` | INTEGER | **Cantidad física en almacén** (solo si `is_stockable = true`) | `50` |
+| `stock_rented` | INTEGER | **Cantidad actualmente en proyectos** (calculado vía albaranes no devueltos) | `10` |
+| `stock_committed` | INTEGER | **Cantidad reservada en presupuestos aceptados pero no entregados** | `5` |
 | `stock_min` | INTEGER | Stock mínimo (alertas, solo si `is_stockable = true`) | `10` |
 | `unit` | TEXT | Unidad de medida | `"unidad"`, `"hora"`, `"día"` |
 | `is_active` | BOOLEAN | Si el item está activo | `true` |
@@ -915,7 +917,11 @@ Items del inventario (productos y servicios). **Versión mejorada con `is_stocka
   - Opcional: algunos productos pueden no tener proveedor asignado
 - `is_stockable` diferencia rápidamente un cable (`true`) de una hora de técnico (`false`)
 - `base_price` es solo una sugerencia; el precio real se guarda en `sales_document_lines.unit_price`
-- `stock_current` solo tiene sentido cuando `is_stockable = true` (inicializado en 0 para productos nuevos)
+- **Gestión de Stock para Alquileres:**
+  - `stock_warehouse`: Cantidad física disponible en almacén (se actualiza con albaranes de entrada/salida)
+  - `stock_rented`: Cantidad actualmente en proyectos (calculado automáticamente desde `delivery_notes` con `type = 'outbound'` y `status = 'confirmed'` que no tienen albarán de retorno correspondiente)
+  - `stock_committed`: Cantidad reservada en presupuestos aceptados pero aún no entregados (calculado desde `sales_documents` con `type = 'presupuesto'` y `status = 'aceptado'` que no tienen albarán de salida)
+  - Estos campos permiten gestionar alquileres y saber qué stock está disponible vs. comprometido vs. en uso
 - `cost_price` permite calcular márgenes en proyectos
 - `margin_percentage` se calcula automáticamente: `((base_price - cost_price) / cost_price) * 100`
   - Permite mantener concordancia de márgenes entre todos los productos
@@ -961,6 +967,7 @@ Documentos de venta (presupuestos, proformas, facturas, rectificativas). **Versi
 | `notes_public` | TEXT | Observaciones visibles en PDF | `"Pago a 30 días"` |
 | `totals_data` | JSONB | Totales del documento (estructurado) | `{"base": 592.00, "vat": 124.32, "total": 716.32}` |
 | `template_id` | FK (UUID) | Plantilla usada | UUID → `document_templates.id` |
+| `related_document_id` | FK (UUID) | Documento relacionado (ej: Factura vinculada a su Proforma/Presupuesto de origen) | UUID → `sales_documents.id` |
 | `rectifies_document_id` | FK (UUID) | Si es rectificativa, documento original | UUID → `sales_documents.id` |
 | `created_at` | TIMESTAMPTZ | Fecha de creación | Auto |
 | `updated_at` | TIMESTAMPTZ | Fecha de última actualización | Auto |
@@ -1013,6 +1020,9 @@ Documentos de venta (presupuestos, proformas, facturas, rectificativas). **Versi
 - `client_id` se mantiene para estadísticas y relaciones actuales
 - **Para renderizar el PDF legal, usar `client_snapshot` (inmutable)**
 - `document_number` debe ser único por tipo
+- `related_document_id` permite vincular una Factura a su Proforma o Presupuesto de origen (trazabilidad del flujo de ventas)
+  - Ejemplo: Una Factura puede tener `related_document_id` apuntando a su Proforma de origen
+  - Facilita el seguimiento del flujo: Presupuesto → Proforma → Factura
 - `rectifies_document_id` solo se usa cuando `type = 'rectificativa'`
   - **CRÍTICO**: Las rectificativas SOLO pueden crearse desde facturas (`type = 'factura'`)
   - No se pueden crear rectificativas desde presupuestos ni proformas
@@ -1074,9 +1084,110 @@ Cada presupuesto se organiza en dos apartados principales:
 
 ---
 
+## Módulo: Logística (Albaranes)
+
+Gestiona el movimiento físico de material sin impacto contable inmediato. Permite desvincular el flujo logístico del flujo financiero para gestionar alquileres y proyectos de larga duración.
+
+### Tabla: `delivery_notes`
+
+Cabecera de albaranes (entregas y devoluciones de material).
+
+| Campo | Tipo | Descripción | Ejemplo |
+|------|------|-------------|---------|
+| `id` | PK (UUID) | Identificador único | UUID |
+| `document_number` | TEXT | Número de albarán (único) | `"ALB-25001"` |
+| `project_id` | FK (UUID) | **Proyecto asociado (OBLIGATORIO)** | UUID → `projects.id` |
+| `client_id` | FK (UUID) | Cliente asociado (opcional, para referencia) | UUID → `clients.id` |
+| `type` | ENUM | Tipo de movimiento | `outbound` (salida/entrega), `inbound` (retorno/devolución) |
+| `status` | ENUM | Estado del albarán | `draft` (borrador), `confirmed` (confirmado), `cancelled` (cancelado) |
+| `date_issued` | DATE | Fecha efectiva del movimiento | `2025-01-15` |
+| `notes` | TEXT | Observaciones logísticas | Notas sobre el movimiento |
+| `created_at` | TIMESTAMPTZ | Fecha de creación | Auto |
+| `updated_at` | TIMESTAMPTZ | Fecha de última actualización | Auto |
+
+**Tipos de movimiento:**
+- `outbound`: Salida de material del almacén hacia un proyecto (entrega)
+- `inbound`: Retorno de material desde un proyecto al almacén (devolución)
+
+**Estados:**
+- `draft`: Albarán en creación (no afecta stock)
+- `confirmed`: Albarán confirmado (afecta stock: `outbound` disminuye `stock_warehouse`, `inbound` aumenta `stock_warehouse`)
+- `cancelled`: Albarán cancelado (no afecta stock)
+
+**Notas CRÍTICAS:**
+- **Todo movimiento pertenece a un proyecto**: `project_id` es OBLIGATORIO
+- Al confirmar un albarán `outbound`, se actualiza automáticamente:
+  - `inventory_items.stock_warehouse` disminuye
+  - `inventory_items.stock_rented` aumenta (calculado desde albaranes confirmados sin retorno)
+- Al confirmar un albarán `inbound`, se actualiza automáticamente:
+  - `inventory_items.stock_warehouse` aumenta
+  - `inventory_items.stock_rented` disminuye (se elimina del cálculo)
+- El formato de `document_number` es `ALB-{YY}{NNNNN}` (ej: `ALB-25001`)
+- `client_id` es opcional pero útil para referencia rápida
+
+---
+
+### Tabla: `delivery_note_lines`
+
+Líneas individuales de cada albarán (ítems físicos movidos).
+
+| Campo | Tipo | Descripción | Ejemplo |
+|------|------|-------------|---------|
+| `id` | PK (UUID) | Identificador único | UUID |
+| `delivery_note_id` | FK (UUID) | Albarán padre | UUID → `delivery_notes.id` |
+| `item_id` | FK (UUID) | Producto físico del inventario | UUID → `inventory_items.id` |
+| `quantity` | NUMERIC(10, 2) | Cantidad movida | `5.00` |
+| `description` | TEXT | Descripción (copiado del item o personalizado) | `"Pantalla LED 2x2"` |
+| `serial_number` | TEXT | Número de serie (opcional, para trazabilidad futura) | `"LED-2025-001"` |
+| `created_at` | TIMESTAMPTZ | Fecha de creación | Auto |
+
+**Notas:**
+- `item_id` debe apuntar a un `inventory_item` con `is_stockable = true`
+- `quantity` puede ser decimal para casos especiales (ej: metros de cable)
+- `serial_number` es opcional pero preparado para futura trazabilidad de equipos
+- `description` se puede copiar automáticamente del `inventory_item.name` o personalizar
+
+---
+
 ## Módulo: Compras y Gastos
 
-Control de compras, gastos y proveedores. Corresponde a `/gastos` y `/proveedores`. Permite controlar el margen real de los proyectos.
+Control de compras, gastos y proveedores. Corresponde a `/compras` y `/proveedores`. Permite controlar el margen real de los proyectos mediante previsión de costes vs. costes reales.
+
+**📚 Documentación completa del módulo de Proveedores**: Ver `docs/proveedores.md` para la guía completa de desarrollo, estructura de páginas, componentes y funcionalidades por tipo de proveedor.
+
+### Tabla: `purchase_orders`
+
+Pedidos de compra / Previsión de gasto. Permite registrar cotizaciones de proveedores antes de recibir la factura para control de costes (previsión vs. real).
+
+| Campo | Tipo | Descripción | Ejemplo |
+|------|------|-------------|---------|
+| `id` | PK (UUID) | Identificador único | UUID |
+| `project_id` | FK (UUID) | **Proyecto asociado (OBLIGATORIO)** - Para imputación de costes | UUID → `projects.id` |
+| `supplier_id` | FK (UUID) | Proveedor asociado (opcional) | UUID → `suppliers.id` |
+| `document_number` | TEXT | Referencia interna de pedido | `"PO-25001"` |
+| `description` | TEXT | Descripción del pedido | `"Servicio Técnico Sonido Evento X"` |
+| `estimated_amount` | NUMERIC(10, 2) | **Importe Cotizado (Previsión)** | `500.00` |
+| `status` | ENUM | Estado del pedido | `pending` (pendiente), `fulfilled` (cumplido), `cancelled` (cancelado) |
+| `created_at` | TIMESTAMPTZ | Fecha de creación | Auto |
+| `updated_at` | TIMESTAMPTZ | Fecha de última actualización | Auto |
+
+**Estados:**
+- `pending`: Pedido pendiente (previsión activa)
+- `fulfilled`: Pedido cumplido (se recibió la factura real vinculada)
+- `cancelled`: Pedido cancelado (no se realizará)
+
+**Notas CRÍTICAS:**
+- **Lógica de Control de Costes:**
+  - Se crea un `purchase_order` con el presupuesto que nos da el proveedor (ej: 500€)
+  - En el Dashboard del Proyecto, se muestra: "Previsto: 500€"
+  - Cuando llega la factura real, se sube a `expenses` y se vincula al `purchase_order` mediante `expenses.purchase_order_id`
+  - Si la factura es de 550€, el Dashboard actualiza: "Real: 550€ (Desvío +50€)"
+- `project_id` es OBLIGATORIO para imputar costes a proyectos
+- `estimated_amount` es el importe cotizado por el proveedor (previsión)
+- El formato de `document_number` es `PO-{YY}{NNNNN}` (ej: `PO-25001`)
+- Cuando un `expense` tiene `purchase_order_id`, significa que es la "realización" de esa previsión
+
+---
 
 **📚 Documentación completa del módulo de Proveedores**: Ver `docs/proveedores.md` para la guía completa de desarrollo, estructura de páginas, componentes y funcionalidades por tipo de proveedor.
 
@@ -1131,6 +1242,7 @@ Gastos y compras de la empresa.
 | `id` | PK (UUID) | Identificador único | UUID |
 | `supplier_id` | FK (UUID) | Proveedor asociado | UUID → `suppliers.id` |
 | `project_id` | FK (UUID) | Proyecto asociado (para imputar coste) | UUID → `projects.id` |
+| `purchase_order_id` | FK (UUID) | **Pedido de compra asociado** (si este gasto es la realización de una previsión) | UUID → `purchase_orders.id` |
 | `category_id` | FK (UUID) | Categoría de gasto (opcional) | UUID → `expense_categories.id` |
 | `description` | TEXT | Descripción del gasto | `"Compra de cableado"` |
 | `amount_base` | NUMERIC(10,2) | Importe base (sin IVA) | `500.00` |
@@ -1151,8 +1263,12 @@ Gastos y compras de la empresa.
 
 **Notas:**
 - `project_id` permite imputar gastos a proyectos para calcular márgenes
+- `purchase_order_id` vincula el gasto real con su previsión (pedido de compra)
+  - Si esta columna tiene valor, el gasto es la "realización" de esa previsión
+  - Permite comparar previsión (`purchase_orders.estimated_amount`) vs. real (`expenses.amount_total`)
+  - Cuando se vincula un gasto a un pedido, el estado del pedido puede cambiar a `fulfilled`
 - `file_url` almacena la foto/escaneo del ticket o factura
-- Corresponde a `/gastos/tickets`
+- Corresponde a `/compras/gastos` (renombrado desde `/gastos/tickets`)
 
 ---
 
@@ -1201,9 +1317,21 @@ inventory_items (1) ──> sales_document_lines (N) ──> sales_documents (1)
 
 suppliers (1) ──┬──> expenses (N)
                 │
+                ├──> purchase_orders (N)
+                │
                 └──> project_staffing (N) [si es freelance]
 
 inventory_categories (1) ──> inventory_items (N)
+
+projects (1) ──┬──> delivery_notes (N)
+               │
+               └──> purchase_orders (N)
+
+delivery_notes (1) ──> delivery_note_lines (N)
+
+delivery_note_lines (N) ──> inventory_items (1)
+
+purchase_orders (1) ──> expenses (N) [mediante purchase_order_id]
 ```
 
 ### Relaciones Clave
@@ -1223,9 +1351,17 @@ inventory_categories (1) ──> inventory_items (N)
    - El precio real se guarda en `sales_document_lines.unit_price` (independiente del item)
    - El `subtype` del item determina cómo se agrupa en el PDF
 
-4. **Proyectos → Gastos**
+4. **Proyectos → Gastos y Previsiones**
    - Los gastos se pueden imputar a proyectos para calcular márgenes
-   - Permite análisis de rentabilidad por proyecto
+   - Los pedidos de compra (`purchase_orders`) permiten registrar previsiones de costes
+   - Cuando un gasto (`expense`) se vincula a un pedido (`purchase_order_id`), se puede comparar previsión vs. real
+   - Permite análisis de rentabilidad por proyecto y control de desvíos
+
+5. **Proyectos → Logística (Albaranes)**
+   - Todo movimiento de material (`delivery_notes`) pertenece a un proyecto
+   - Los albaranes de salida (`outbound`) disminuyen `stock_warehouse` y aumentan `stock_rented`
+   - Los albaranes de entrada (`inbound`) aumentan `stock_warehouse` y disminuyen `stock_rented`
+   - Permite gestionar alquileres y controlar el stock físico sin impacto contable inmediato
 
 5. **Usuarios → Proyectos**
    - Los freelances solo ven proyectos donde están asignados (`project_staffing`)

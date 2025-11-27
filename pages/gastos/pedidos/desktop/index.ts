@@ -1,0 +1,2 @@
+export { PedidosDesktop } from "./Pedidos";
+

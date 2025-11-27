@@ -1,0 +1,2 @@
+export { PedidosTabletHorizontal } from "./Pedidos";
+

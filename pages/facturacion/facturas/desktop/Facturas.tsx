@@ -127,8 +127,16 @@ export function FacturasDesktop() {
   }, []);
 
   const handleFacturaClick = (factura: SalesDocumentData) => {
-    // TODO: Implementar navegación al detalle de la factura
     console.log("Factura seleccionada:", factura);
+  };
+
+  const reloadFacturas = async () => {
+    try {
+      const data = await fetchFacturas();
+      setFacturas(data);
+    } catch (error) {
+      console.error("Error al recargar facturas:", error);
+    }
   };
   
   const config = {
@@ -228,6 +236,9 @@ export function FacturasDesktop() {
               showFilters={true}
               showTools={true}
               onFacturaClick={handleFacturaClick}
+              onFacturaCreated={reloadFacturas}
+              onFacturaUpdated={reloadFacturas}
+              onFacturaDeleted={reloadFacturas}
             />
           )}
         </div>

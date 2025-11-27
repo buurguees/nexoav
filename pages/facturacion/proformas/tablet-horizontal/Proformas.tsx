@@ -27,6 +27,15 @@ export function ProformasTabletHorizontal() {
     console.log("Proforma seleccionada:", proforma);
   };
 
+  const reloadProformas = async () => {
+    try {
+      const data = await fetchProformas();
+      setProformas(data);
+    } catch (error) {
+      console.error("Error al recargar proformas:", error);
+    }
+  };
+
   return (
     <div
       style={{
@@ -57,6 +66,9 @@ export function ProformasTabletHorizontal() {
           showFilters={true}
           showTools={true}
           onProformaClick={handleProformaClick}
+          onProformaCreated={reloadProformas}
+          onProformaUpdated={reloadProformas}
+          onProformaDeleted={reloadProformas}
         />
       )}
     </div>

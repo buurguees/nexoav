@@ -77,8 +77,8 @@ export function ComprasTabletHorizontal() {
       style={{
         display: "flex",
         flexDirection: "row",
-        gap: "var(--spacing-xs)",
-        padding: "var(--spacing-xs)",
+        gap: "var(--spacing-sm)",
+        padding: "var(--spacing-sm)",
         height: "100%",
         width: "100%",
         boxSizing: "border-box",
@@ -89,7 +89,7 @@ export function ComprasTabletHorizontal() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "var(--spacing-xs)",
+          gap: "var(--spacing-sm)",
           width: "70%",
           height: "100%",
           minHeight: 0,
@@ -100,7 +100,7 @@ export function ComprasTabletHorizontal() {
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr 1fr",
-            gap: "var(--spacing-xs)",
+            gap: "var(--spacing-sm)",
             height: "35px",
             flexShrink: 0,
           }}
@@ -120,22 +120,22 @@ export function ComprasTabletHorizontal() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "var(--spacing-xs)",
+          gap: "var(--spacing-sm)",
           width: "30%",
           height: "100%",
           minHeight: 0,
           overflow: "hidden",
         }}
       >
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "var(--spacing-xs)", height: "35px", flexShrink: 0 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "var(--spacing-sm)", height: "35px", flexShrink: 0 }}>
           <SpaceBlock label="Resumen" height="100%" color="var(--background-secondary)" />
           <SpaceBlock label="Filtro" height="100%" color="rgba(255, 165, 0, 0.15)" />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "var(--spacing-xs)", flexShrink: 0 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "var(--spacing-sm)", flexShrink: 0 }}>
           <SpaceBlock label="Total Compras" height="60px" color="rgba(0, 200, 117, 0.2)" borderWidth="2px" />
           <SpaceBlock label="Pagadas" height="60px" color="rgba(67, 83, 255, 0.2)" borderWidth="2px" />
         </div>
-        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: "var(--spacing-xs)" }}>
+        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: "var(--spacing-sm)" }}>
           <SpaceBlock label="Gráfico: Compras por Estado" height="100%" color="rgba(67, 83, 255, 0.15)" />
         </div>
       </div>

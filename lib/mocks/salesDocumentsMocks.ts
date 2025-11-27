@@ -50,6 +50,7 @@ export interface SalesDocumentData {
     total_vat?: number;
   }; // JSONB: Totales del documento estructurado
   template_id?: string | null; // FK (UUID) → document_templates.id
+  related_document_id?: string | null; // FK (UUID) → sales_documents.id (documento relacionado, ej: Factura vinculada a su Proforma/Presupuesto de origen)
   rectifies_document_id?: string | null; // FK (UUID) → sales_documents.id (si es rectificativa)
   created_at: string; // Fecha de creación (ISO 8601)
   updated_at: string; // Fecha de última actualización (ISO 8601)
@@ -211,5 +212,294 @@ export async function fetchRectificativaById(
 
   const rectificativas = await fetchRectificativas();
   return rectificativas.find((doc) => doc.id === id) || null;
+}
+
+/**
+ * Convierte un presupuesto aceptado en una proforma manteniendo el número base
+ * Regla: E250001 -> FP250001 (mismo sufijo, distinto prefijo)
+ */
+export async function convertPresupuestoToProforma(
+  presupuestoId: string
+): Promise<SalesDocumentData> {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const original = (salesDocumentsData as any[]).find(
+    (doc) => doc.id === presupuestoId && doc.type === "presupuesto"
+  ) as SalesDocumentData | undefined;
+
+  if (!original) {
+    throw new Error("Presupuesto no encontrado");
+  }
+
+  const originalNumber = original.document_number; // E250001
+  const suffix = originalNumber.slice(1); // 250001
+  const newNumber = `FP${suffix}`;
+
+  const now = new Date();
+  const dateIssued = now.toISOString().split("T")[0];
+  const dueDate = new Date(now);
+  dueDate.setDate(dueDate.getDate() + 30);
+  const dateDue = dueDate.toISOString().split("T")[0];
+
+  const newDocument: SalesDocumentData = {
+    ...original,
+    id: crypto.randomUUID(),
+    type: "proforma",
+    document_number: newNumber,
+    date_issued: dateIssued,
+    date_due,
+    status: "enviado",
+    related_document_id: original.id,
+    rectifies_document_id: null,
+    created_at: now.toISOString(),
+    updated_at: now.toISOString(),
+  };
+
+  (salesDocumentsData as any[]).push(newDocument as any);
+
+  return newDocument;
+}
+
+/**
+ * Convierte un presupuesto o proforma en una factura manteniendo el número base
+ * Reglas:
+ *  - Presupuesto: E250001 -> F-250001
+ *  - Proforma:    FP250001 -> F-250001
+ */
+export async function convertToFactura(
+  documentId: string
+): Promise<SalesDocumentData> {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const original = (salesDocumentsData as any[]).find(
+    (doc) =>
+      doc.id === documentId &&
+      (doc.type === "presupuesto" || doc.type === "proforma")
+  ) as SalesDocumentData | undefined;
+
+  if (!original) {
+    throw new Error("Documento origen no encontrado para conversión a factura");
+  }
+
+  const originalNumber = original.document_number;
+  let suffix = "";
+
+  if (originalNumber.startsWith("E")) {
+    suffix = originalNumber.slice(1);
+  } else if (originalNumber.startsWith("FP")) {
+    suffix = originalNumber.slice(2);
+  } else {
+    // Fallback: usar numeración automática estándar
+    const year = new Date().getFullYear();
+    const autoNumber = generateDocumentNumber("factura", year);
+    suffix = autoNumber.replace("F-", "");
+  }
+
+  const newNumber = `F-${suffix}`;
+
+  const now = new Date();
+  const dateIssued = now.toISOString().split("T")[0];
+  const dueDate = new Date(now);
+  dueDate.setDate(dueDate.getDate() + 30);
+  const dateDue = dueDate.toISOString().split("T")[0];
+
+  const newDocument: SalesDocumentData = {
+    ...original,
+    id: crypto.randomUUID(),
+    type: "factura",
+    document_number: newNumber,
+    date_issued: dateIssued,
+    date_due: dateDue,
+    status: "enviado",
+    related_document_id: original.id,
+    rectifies_document_id: null,
+    created_at: now.toISOString(),
+    updated_at: now.toISOString(),
+  };
+
+  (salesDocumentsData as any[]).push(newDocument as any);
+
+  return newDocument;
+}
+
+/**
+ * Convierte una factura en una rectificativa manteniendo el número base
+ * Regla: F-250001 -> RT-250001
+ */
+export async function convertFacturaToRectificativa(
+  facturaId: string
+): Promise<SalesDocumentData> {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const original = (salesDocumentsData as any[]).find(
+    (doc) => doc.id === facturaId && doc.type === "factura"
+  ) as SalesDocumentData | undefined;
+
+  if (!original) {
+    throw new Error("Factura no encontrada para conversión a rectificativa");
+  }
+
+  const originalNumber = original.document_number; // F-250001
+  const suffix = originalNumber.startsWith("F-")
+    ? originalNumber.slice(2)
+    : originalNumber;
+  const newNumber = `RT-${suffix}`;
+
+  const now = new Date();
+  const dateIssued = now.toISOString().split("T")[0];
+
+  const newDocument: SalesDocumentData = {
+    ...original,
+    id: crypto.randomUUID(),
+    type: "rectificativa",
+    document_number: newNumber,
+    date_issued: dateIssued,
+    // Las rectificativas no necesitan vencimiento
+    date_due: null,
+    status: "borrador",
+    related_document_id: original.related_document_id || original.id,
+    rectifies_document_id: original.id,
+    created_at: now.toISOString(),
+    updated_at: now.toISOString(),
+  };
+
+  (salesDocumentsData as any[]).push(newDocument as any);
+
+  return newDocument;
+}
+
+/**
+ * Genera el número de documento automáticamente según el tipo
+ * Formato: E{YY}{NNNNN} para presupuestos, FP{YY}{NNNNN} para proformas, F-{YY}{NNNNN} para facturas, RT-{YY}{NNNNN} para rectificativas
+ */
+function generateDocumentNumber(
+  type: SalesDocumentData["type"],
+  year: number = new Date().getFullYear()
+): string {
+  const yearShort = year.toString().slice(-2);
+  const prefix = {
+    presupuesto: "E",
+    proforma: "FP",
+    factura: "F-",
+    rectificativa: "RT-",
+  }[type];
+
+  // Obtener el último número del año
+  const documentsOfYear = (salesDocumentsData as any[]).filter((doc) => {
+    if (doc.type !== type) return false;
+    const docYear = parseInt(doc.document_number.slice(prefix.length, prefix.length + 2));
+    return docYear === parseInt(yearShort);
+  });
+
+  let maxNumber = 0;
+  documentsOfYear.forEach((doc) => {
+    const numberPart = doc.document_number.slice(prefix.length + 2);
+    const num = parseInt(numberPart) || 0;
+    if (num > maxNumber) maxNumber = num;
+  });
+
+  const nextNumber = maxNumber + 1;
+  const numberStr = String(nextNumber).padStart(5, "0");
+
+  return `${prefix}${yearShort}${numberStr}`;
+}
+
+/**
+ * Crea un snapshot del cliente para inmutabilidad fiscal
+ */
+function createClientSnapshot(clientId: string): SalesDocumentData["client_snapshot"] | undefined {
+  const client = (clientsData as any[]).find((c) => c.id === clientId);
+  if (!client) return undefined;
+
+  return {
+    fiscal_name: client.fiscal_name,
+    commercial_name: client.commercial_name,
+    vat_number: client.vat_number,
+    address: client.billing_address ? {
+      street: client.billing_address.street,
+      city: client.billing_address.city,
+      zip: client.billing_address.zip,
+      province: client.billing_address.province,
+      country: client.billing_address.country,
+    } : undefined,
+    phone: undefined, // TODO: Añadir si existe en client
+    email: undefined, // TODO: Añadir si existe en client
+  };
+}
+
+/**
+ * Simula una llamada al backend para crear un nuevo documento de venta
+ */
+export async function createSalesDocument(
+  documentData: Omit<
+    SalesDocumentData,
+    "id" | "document_number" | "created_at" | "updated_at" | "client_snapshot"
+  > & {
+    client_snapshot?: SalesDocumentData["client_snapshot"];
+  }
+): Promise<SalesDocumentData> {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  const now = new Date().toISOString();
+  const year = new Date().getFullYear();
+  const documentNumber = generateDocumentNumber(documentData.type, year);
+
+  // Crear client_snapshot si no se proporciona
+  const clientSnapshot = documentData.client_snapshot || createClientSnapshot(documentData.client_id);
+
+  const newDocument: SalesDocumentData = {
+    id: crypto.randomUUID(),
+    ...documentData,
+    document_number: documentNumber,
+    client_snapshot: clientSnapshot,
+    created_at: now,
+    updated_at: now,
+  };
+
+  // En producción, esto se guardaría en la BD
+  // Por ahora, solo retornamos el documento creado
+  (salesDocumentsData as any[]).push(newDocument);
+
+  return newDocument;
+}
+
+/**
+ * Simula una llamada al backend para actualizar un documento de venta
+ */
+export async function updateSalesDocument(
+  id: string,
+  updates: Partial<Omit<SalesDocumentData, "id" | "document_number" | "created_at" | "type">>
+): Promise<SalesDocumentData | null> {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  const documentIndex = (salesDocumentsData as any[]).findIndex((doc) => doc.id === id);
+  if (documentIndex === -1) return null;
+
+  const existingDoc = salesDocumentsData[documentIndex] as any;
+  const updatedDoc: SalesDocumentData = {
+    ...existingDoc,
+    ...updates,
+    updated_at: new Date().toISOString(),
+  };
+
+  // En producción, esto se actualizaría en la BD
+  (salesDocumentsData as any[])[documentIndex] = updatedDoc;
+
+  return updatedDoc;
+}
+
+/**
+ * Simula una llamada al backend para eliminar un documento de venta
+ */
+export async function deleteSalesDocument(id: string): Promise<boolean> {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const documentIndex = (salesDocumentsData as any[]).findIndex((doc) => doc.id === id);
+  if (documentIndex === -1) return false;
+
+  // En producción, esto se eliminaría de la BD
+  (salesDocumentsData as any[]).splice(documentIndex, 1);
+
+  return true;
 }
 

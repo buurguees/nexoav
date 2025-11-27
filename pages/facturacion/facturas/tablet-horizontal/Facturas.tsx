@@ -27,6 +27,15 @@ export function FacturasTabletHorizontal() {
     console.log("Factura seleccionada:", factura);
   };
 
+  const reloadFacturas = async () => {
+    try {
+      const data = await fetchFacturas();
+      setFacturas(data);
+    } catch (error) {
+      console.error("Error al recargar facturas:", error);
+    }
+  };
+
   return (
     <div
       style={{
@@ -57,6 +66,9 @@ export function FacturasTabletHorizontal() {
           showFilters={true}
           showTools={true}
           onFacturaClick={handleFacturaClick}
+          onFacturaCreated={reloadFacturas}
+          onFacturaUpdated={reloadFacturas}
+          onFacturaDeleted={reloadFacturas}
         />
       )}
     </div>

@@ -1,0 +1,2 @@
+export { FacturasGastosTabletHorizontal } from "./FacturasGastos";
+

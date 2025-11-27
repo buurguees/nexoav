@@ -76,8 +76,8 @@ export function ComprasTablet() {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "var(--spacing-xs)",
-        padding: "var(--spacing-xs)",
+        gap: "var(--spacing-sm)",
+        padding: "var(--spacing-sm)",
         height: "100%",
         width: "100%",
         boxSizing: "border-box",
@@ -89,7 +89,7 @@ export function ComprasTablet() {
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gridTemplateRows: "1fr 1fr",
-          gap: "var(--spacing-xs)",
+          gap: "var(--spacing-sm)",
           height: "120px",
           flexShrink: 0,
           minHeight: "120px",
@@ -100,8 +100,8 @@ export function ComprasTablet() {
         <SpaceBlock label="Importe Total" height="100%" color="rgba(255, 165, 0, 0.2)" borderWidth="2px" />
         <SpaceBlock label="Pendientes" height="100%" color="rgba(220, 53, 69, 0.2)" borderWidth="2px" />
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-xs)", flex: 1, minHeight: 0, overflow: "hidden" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--spacing-xs)", height: "35px", flexShrink: 0 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-sm)", flex: 1, minHeight: 0, overflow: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--spacing-sm)", height: "35px", flexShrink: 0 }}>
           <SpaceBlock label="Filtros" height="100%" color="rgba(255, 165, 0, 0.15)" />
           <SpaceBlock label="Título: Compras" height="100%" color="var(--background-secondary)" />
           <SpaceBlock label="Herramientas" height="100%" color="rgba(67, 83, 255, 0.15)" />

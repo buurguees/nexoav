@@ -1,0 +1,2 @@
+export { FacturasGastosMobile } from "./FacturasGastos";
+

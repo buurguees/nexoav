@@ -15,6 +15,8 @@ import inventoryCategoriesData from "../../data/inventory/inventory_categories.j
 import salesDocumentLinesData from "../../data/billing/sales_document_lines.json";
 import salesDocumentsData from "../../data/billing/sales_documents.json";
 import supplierRatesData from "../../data/expenses/supplier_rates.json";
+import deliveryNotesData from "../../data/logistics/delivery_notes.json";
+import deliveryNoteLinesData from "../../data/logistics/delivery_note_lines.json";
 
 // Tipo para los datos de inventario según el schema de la BD
 export interface InventoryItemData {
@@ -33,7 +35,9 @@ export interface InventoryItemData {
   rental_price_18m?: number;
   rental_price_daily?: number;
   is_stockable: boolean;
-  stock_current?: number | null;
+  stock_warehouse?: number | null; // Cantidad física en almacén
+  stock_rented?: number | null; // Cantidad actualmente en proyectos (calculado desde albaranes)
+  stock_committed?: number | null; // Cantidad reservada en presupuestos aceptados pero no entregados
   stock_min?: number | null;
   unit: string;
   is_active: boolean;
@@ -109,6 +113,71 @@ export async function fetchInventoryItems(type?: "producto" | "servicio"): Promi
     }
   });
 
+  // Calcular stock_rented desde albaranes confirmados sin retorno
+  // stock_rented = suma de cantidades de albaranes outbound confirmados que no tienen albarán inbound correspondiente
+  const confirmedOutboundNoteIds = (deliveryNotesData as any[])
+    .filter((note) => note.type === "outbound" && note.status === "confirmed")
+    .map((note) => note.id);
+
+  const confirmedInboundNoteIds = (deliveryNotesData as any[])
+    .filter((note) => note.type === "inbound" && note.status === "confirmed")
+    .map((note) => note.id);
+
+  // Albaranes outbound que no tienen inbound correspondiente del mismo proyecto
+  const outboundWithoutReturn = (deliveryNotesData as any[])
+    .filter((note) => 
+      note.type === "outbound" && 
+      note.status === "confirmed" &&
+      !(deliveryNotesData as any[]).some((inboundNote) =>
+        inboundNote.type === "inbound" &&
+        inboundNote.status === "confirmed" &&
+        inboundNote.project_id === note.project_id
+      )
+    )
+    .map((note) => note.id);
+
+  const stockRentedByItem = (deliveryNoteLinesData as any[]).reduce((acc, line) => {
+    if (outboundWithoutReturn.includes(line.delivery_note_id)) {
+      acc[line.item_id] = (acc[line.item_id] || 0) + (line.quantity || 0);
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Calcular stock_committed desde presupuestos aceptados sin albarán de salida
+  // stock_committed = suma de cantidades de presupuestos aceptados que no tienen albarán outbound confirmado
+  const acceptedPresupuestoIds = (salesDocumentsData as any[])
+    .filter((doc) => doc.type === "presupuesto" && doc.status === "aceptado")
+    .map((doc) => doc.id);
+
+  const presupuestosWithOutbound = (salesDocumentsData as any[])
+    .filter((doc) => {
+      if (doc.type !== "presupuesto" || doc.status !== "aceptado" || !doc.project_id) {
+        return false;
+      }
+      // Verificar si hay albarán outbound confirmado para este proyecto
+      return (deliveryNotesData as any[]).some((note) =>
+        note.type === "outbound" &&
+        note.status === "confirmed" &&
+        note.project_id === doc.project_id
+      );
+    })
+    .map((doc) => doc.id);
+
+  const presupuestosWithoutOutbound = acceptedPresupuestoIds.filter(
+    (id) => !presupuestosWithOutbound.includes(id)
+  );
+
+  const stockCommittedByItem = (salesDocumentLinesData as any[]).reduce((acc, line) => {
+    if (
+      line.item_id &&
+      presupuestosWithoutOutbound.includes(line.document_id) &&
+      (inventoryItemsData as any[]).some((item) => item.id === line.item_id && item.is_stockable)
+    ) {
+      acc[line.item_id] = (acc[line.item_id] || 0) + (line.quantity || 0);
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
   // Enriquecer items con nombre de categoría y datos calculados
   const enrichedItems = items.map((item: any) => ({
     ...item,
@@ -116,6 +185,10 @@ export async function fetchInventoryItems(type?: "producto" | "servicio"): Promi
     units_sold: unitsSoldByItem[item.id] || 0,
     total_billing: totalBillingByItem[item.id] || 0,
     average_cost: averageCostByItem[item.id] || item.cost_price || 0,
+    // Actualizar campos de stock
+    stock_warehouse: item.stock_warehouse ?? item.stock_current ?? (item.is_stockable ? 0 : null),
+    stock_rented: item.is_stockable ? (stockRentedByItem[item.id] || 0) : null,
+    stock_committed: item.is_stockable ? (stockCommittedByItem[item.id] || 0) : null,
   })) as InventoryItemData[];
 
   return enrichedItems;
@@ -164,5 +237,117 @@ export async function fetchProducts(): Promise<InventoryItemData[]> {
  */
 export async function fetchServices(): Promise<InventoryItemData[]> {
   return fetchInventoryItems("servicio");
+}
+
+/**
+ * Crear un nuevo item de inventario (producto o servicio)
+ *
+ * @param data - Datos base del item (sin id ni timestamps ni campos calculados)
+ * @returns Promise con el item creado (incluyendo campos enriquecidos)
+ */
+export async function createInventoryItem(
+  data: Omit<
+    InventoryItemData,
+    | "id"
+    | "created_at"
+    | "updated_at"
+    | "category_name"
+    | "units_sold"
+    | "total_billing"
+    | "average_cost"
+    | "stock_rented"
+    | "stock_committed"
+  >
+): Promise<InventoryItemData> {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const now = new Date().toISOString();
+  const id = crypto.randomUUID();
+
+  const newItem: any = {
+    id,
+    ...data,
+    created_at: now,
+    updated_at: now,
+  };
+
+  // Añadir al array base (simula inserción en BD)
+  (inventoryItemsData as any[]).push(newItem);
+
+  // Devolver versión enriquecida usando el flujo normal
+  const created = await fetchInventoryItemById(id);
+  if (!created) {
+    throw new Error("Error al crear el item de inventario");
+  }
+  return created;
+}
+
+/**
+ * Actualizar un item de inventario existente
+ *
+ * @param id - ID del item
+ * @param data - Campos a actualizar
+ * @returns Promise con el item actualizado (enriquecido)
+ */
+export async function updateInventoryItem(
+  id: string,
+  data: Partial<
+    Omit<
+      InventoryItemData,
+      | "id"
+      | "created_at"
+      | "category_name"
+      | "units_sold"
+      | "total_billing"
+      | "average_cost"
+      | "stock_rented"
+      | "stock_committed"
+    >
+  >
+): Promise<InventoryItemData> {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const index = (inventoryItemsData as any[]).findIndex((item) => item.id === id);
+  if (index === -1) {
+    throw new Error(`Item de inventario con ID ${id} no encontrado`);
+  }
+
+  const existing: any = (inventoryItemsData as any[])[index];
+  const updated: any = {
+    ...existing,
+    ...data,
+    updated_at: new Date().toISOString(),
+  };
+
+  (inventoryItemsData as any[])[index] = updated;
+
+  const result = await fetchInventoryItemById(id);
+  if (!result) {
+    throw new Error("Error al actualizar el item de inventario");
+  }
+  return result;
+}
+
+/**
+ * Eliminar (lógicamente) un item de inventario
+ *
+ * De momento marcamos `is_active = false` para evitar incoherencias con otros datos mock.
+ *
+ * @param id - ID del item
+ */
+export async function deleteInventoryItem(id: string): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 200));
+
+  const index = (inventoryItemsData as any[]).findIndex((item) => item.id === id);
+  if (index === -1) {
+    throw new Error(`Item de inventario con ID ${id} no encontrado`);
+  }
+
+  const existing: any = (inventoryItemsData as any[])[index];
+  (inventoryItemsData as any[])[index] = {
+    ...existing,
+    is_active: false,
+    updated_at: new Date().toISOString(),
+  };
 }
 

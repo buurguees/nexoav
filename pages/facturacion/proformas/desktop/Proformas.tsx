@@ -127,8 +127,16 @@ export function ProformasDesktop() {
   }, []);
 
   const handleProformaClick = (proforma: SalesDocumentData) => {
-    // TODO: Implementar navegación al detalle de la proforma
     console.log("Proforma seleccionada:", proforma);
+  };
+
+  const reloadProformas = async () => {
+    try {
+      const data = await fetchProformas();
+      setProformas(data);
+    } catch (error) {
+      console.error("Error al recargar proformas:", error);
+    }
   };
   
   const config = {
@@ -228,6 +236,9 @@ export function ProformasDesktop() {
               showFilters={true}
               showTools={true}
               onProformaClick={handleProformaClick}
+              onProformaCreated={reloadProformas}
+              onProformaUpdated={reloadProformas}
+              onProformaDeleted={reloadProformas}
             />
           )}
         </div>

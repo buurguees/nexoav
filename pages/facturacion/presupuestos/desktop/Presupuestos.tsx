@@ -136,8 +136,8 @@ export function PresupuestosDesktop() {
   
   const config = {
     small: {
-      padding: "var(--spacing-xs)",
-      gap: "var(--spacing-xs)",
+      padding: "var(--spacing-sm)",
+      gap: "var(--spacing-sm)",
       headerHeight: "35px",
       tableHeaderHeight: "35px",
       cardsMinHeight: "140px",
@@ -146,8 +146,8 @@ export function PresupuestosDesktop() {
       fontSize: "11px",
     },
     medium: {
-      padding: "var(--spacing-xs)",
-      gap: "var(--spacing-xs)",
+      padding: "var(--spacing-sm)",
+      gap: "var(--spacing-sm)",
       headerHeight: "40px",
       tableHeaderHeight: "40px",
       cardsMinHeight: "160px",
@@ -231,6 +231,18 @@ export function PresupuestosDesktop() {
               showFilters={true}
               showTools={true}
               onPresupuestoClick={handlePresupuestoClick}
+              onPresupuestoCreated={async () => {
+                const data = await fetchPresupuestos();
+                setPresupuestos(data);
+              }}
+              onPresupuestoUpdated={async () => {
+                const data = await fetchPresupuestos();
+                setPresupuestos(data);
+              }}
+              onPresupuestoDeleted={async () => {
+                const data = await fetchPresupuestos();
+                setPresupuestos(data);
+              }}
             />
           )}
         </div>

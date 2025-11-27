@@ -1,0 +1,66 @@
+[
+  {
+    "id": "f11e8400-e29b-41d4-a716-446655440701",
+    "delivery_note_id": "f10e8400-e29b-41d4-a716-446655440700",
+    "item_id": "d70e8400-e29b-41d4-a716-446655440660",
+    "quantity": 5.00,
+    "description": "Cabinet LED ALS P2.604 indoor 1000x500mm (sin módulos)",
+    "serial_number": null,
+    "created_at": "2025-01-15T09:00:00Z"
+  },
+  {
+    "id": "f12e8400-e29b-41d4-a716-446655440702",
+    "delivery_note_id": "f10e8400-e29b-41d4-a716-446655440700",
+    "item_id": "d80e8400-e29b-41d4-a716-446655440670",
+    "quantity": 40.00,
+    "description": "Módulo ALS P2.604 250x250 mm",
+    "serial_number": null,
+    "created_at": "2025-01-15T09:00:00Z"
+  },
+  {
+    "id": "f21e8400-e29b-41d4-a716-446655440711",
+    "delivery_note_id": "f20e8400-e29b-41d4-a716-446655440710",
+    "item_id": "d60e8400-e29b-41d4-a716-446655440650",
+    "quantity": 3.00,
+    "description": "Cabinet LED ALS P2.604 outdoor 1000x500mm (sin módulos)",
+    "serial_number": null,
+    "created_at": "2025-01-20T08:00:00Z"
+  },
+  {
+    "id": "f22e8400-e29b-41d4-a716-446655440712",
+    "delivery_note_id": "f20e8400-e29b-41d4-a716-446655440710",
+    "item_id": "d80e8400-e29b-41d4-a716-446655440670",
+    "quantity": 24.00,
+    "description": "Módulo ALS P2.604 250x250 mm",
+    "serial_number": null,
+    "created_at": "2025-01-20T08:00:00Z"
+  },
+  {
+    "id": "f31e8400-e29b-41d4-a716-446655440721",
+    "delivery_note_id": "f30e8400-e29b-41d4-a716-446655440720",
+    "item_id": "d70e8400-e29b-41d4-a716-446655440660",
+    "quantity": 5.00,
+    "description": "Cabinet LED ALS P2.604 indoor 1000x500mm (sin módulos)",
+    "serial_number": null,
+    "created_at": "2025-01-18T16:00:00Z"
+  },
+  {
+    "id": "f32e8400-e29b-41d4-a716-446655440722",
+    "delivery_note_id": "f30e8400-e29b-41d4-a716-446655440720",
+    "item_id": "d80e8400-e29b-41d4-a716-446655440670",
+    "quantity": 40.00,
+    "description": "Módulo ALS P2.604 250x250 mm",
+    "serial_number": null,
+    "created_at": "2025-01-18T16:00:00Z"
+  },
+  {
+    "id": "f41e8400-e29b-41d4-a716-446655440731",
+    "delivery_note_id": "f40e8400-e29b-41d4-a716-446655440730",
+    "item_id": "d60e8400-e29b-41d4-a716-446655440650",
+    "quantity": 2.00,
+    "description": "Cabinet LED ALS P2.604 outdoor 1000x500mm (sin módulos)",
+    "serial_number": null,
+    "created_at": "2025-01-22T10:00:00Z"
+  }
+]
+

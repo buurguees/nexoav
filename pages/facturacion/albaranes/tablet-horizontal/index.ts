@@ -1,0 +1,2 @@
+export { AlbaranesTabletHorizontal } from "./Albaranes";
+

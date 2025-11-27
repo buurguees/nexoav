@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { SalesDocumentData } from "../../../../lib/mocks/salesDocumentsMocks";
 import {
   SalesDocumentsList,
   SalesDocumentsListProps,
 } from "../../components/SalesDocumentsList";
+import { RectificativaDetail } from "./RectificativaDetail";
 
 export interface RectificativasListProps {
   rectificativas: SalesDocumentData[];
@@ -19,22 +21,37 @@ export function RectificativasList({
   showTools = true,
   onRectificativaClick,
 }: RectificativasListProps) {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
   const labels: SalesDocumentsListProps["labels"] = {
     title: "Rectificativas",
     searchPlaceholder: "Buscar rectificativa...",
-    newButtonLabel: "+ Nueva Rectificativa",
+    newButtonLabel: "", // No se puede crear manualmente, solo desde factura
     emptyMessage: "No hay rectificativas disponibles",
     documentSingular: "rectificativa",
   };
 
+  const handleClick = (doc: SalesDocumentData) => {
+    setSelectedId(doc.id);
+    if (onRectificativaClick) onRectificativaClick(doc);
+  };
+
   return (
-    <SalesDocumentsList
-      documents={rectificativas}
-      showFilters={showFilters}
-      showTools={showTools}
-      onDocumentClick={onRectificativaClick}
-      labels={labels}
-    />
+    <>
+      <SalesDocumentsList
+        documents={rectificativas}
+        showFilters={showFilters}
+        showTools={showTools}
+        onDocumentClick={handleClick}
+        labels={labels}
+      />
+      {selectedId && (
+        <RectificativaDetail
+          rectificativaId={selectedId}
+          onClose={() => setSelectedId(null)}
+        />
+      )}
+    </>
   );
 }
 

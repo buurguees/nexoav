@@ -1,0 +1,2 @@
+export { PedidosMobile } from "./Pedidos";
+

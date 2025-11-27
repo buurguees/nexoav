@@ -1,0 +1,2 @@
+export { PedidosList } from "./PedidosList";
+

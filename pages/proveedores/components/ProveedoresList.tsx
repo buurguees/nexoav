@@ -3,6 +3,9 @@
 import { DataList, DataListColumn } from "../../../components/list";
 import { useState, useMemo } from "react";
 import { useBreakpoint } from "../../../hooks/useBreakpoint";
+import { NewSupplierModal } from "./NewSupplierModal";
+import { SupplierDetail } from "./SupplierDetail";
+import { createSupplier } from "../../../lib/mocks/supplierMocks";
 
 /**
  * Componente de listado de proveedores usando el componente reutilizable DataList
@@ -99,6 +102,8 @@ export function ProveedoresList({
 }: ProveedoresListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterActive, setFilterActive] = useState<boolean | null>(null);
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(null);
   const breakpoint = useBreakpoint();
 
   // Filtrar proveedores según los filtros aplicados
@@ -536,6 +541,7 @@ export function ProveedoresList({
     >
       <button
         type="button"
+        onClick={() => setIsNewModalOpen(true)}
         style={{
           padding: "var(--spacing-sm) var(--spacing-md)",
           borderRadius: "var(--radius-md)",
@@ -580,19 +586,63 @@ export function ProveedoresList({
     </div>
   );
 
+  // Manejar creación de proveedor
+  const handleCreateSupplier = async (supplierData: SupplierData) => {
+    try {
+      const newSupplier = await createSupplier(supplierData);
+      onSupplierCreated?.(newSupplier);
+      setIsNewModalOpen(false);
+      // TODO: Mostrar mensaje de éxito
+    } catch (error) {
+      console.error("Error al crear proveedor:", error);
+      // TODO: Mostrar mensaje de error
+      throw error;
+    }
+  };
+
+  // Manejar click en proveedor
+  const handleSupplierClickInternal = (supplier: SupplierData) => {
+    if (onSupplierClick) {
+      onSupplierClick(supplier);
+    } else {
+      setSelectedSupplierId(supplier.id);
+    }
+  };
+
   return (
-    <DataList
-      title={getTitleByCategory(category)}
-      data={filteredSuppliers}
-      columns={columns}
-      showFilters={showFilters}
-      showTools={showTools}
-      renderFilters={renderFilters}
-      renderTools={renderTools}
-      onRowClick={onSupplierClick}
-      emptyMessage="No se encontraron proveedores"
-      customGridColumns={suppliersGridColumns}
-    />
+    <>
+      <DataList
+        title={getTitleByCategory(category)}
+        data={filteredSuppliers}
+        columns={columns}
+        showFilters={showFilters}
+        showTools={showTools}
+        renderFilters={renderFilters}
+        renderTools={renderTools}
+        onRowClick={handleSupplierClickInternal}
+        emptyMessage="No se encontraron proveedores"
+        customGridColumns={suppliersGridColumns}
+      />
+      <NewSupplierModal
+        isOpen={isNewModalOpen}
+        onClose={() => setIsNewModalOpen(false)}
+        onSave={handleCreateSupplier}
+      />
+      {selectedSupplierId && (
+        <SupplierDetail
+          supplierId={selectedSupplierId}
+          onClose={() => setSelectedSupplierId(null)}
+          onUpdated={() => {
+            setSelectedSupplierId(null);
+            // Recargar proveedores si es necesario
+          }}
+          onDeleted={() => {
+            setSelectedSupplierId(null);
+            // Recargar proveedores si es necesario
+          }}
+        />
+      )}
+    </>
   );
 }
 

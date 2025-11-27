@@ -24,6 +24,7 @@ export interface SalesDocumentsListProps {
   showFilters?: boolean;
   showTools?: boolean;
   onDocumentClick?: (document: SalesDocumentData) => void;
+  onNewClick?: () => void;
   labels: SalesDocumentsListLabels;
 }
 
@@ -433,6 +434,7 @@ export function SalesDocumentsList({
   showFilters = true,
   showTools = true,
   onDocumentClick,
+  onNewClick,
   labels,
 }: SalesDocumentsListProps) {
   const breakpoint = useBreakpoint();
@@ -845,8 +847,9 @@ export function SalesDocumentsList({
     >
       <button
         onClick={() => {
-          // TODO: Implementar acción para crear nuevo documento
-          console.log(`Nuevo ${labels.documentSingular}`);
+          if (onNewClick) {
+            onNewClick();
+          }
         }}
         style={{
           padding: "var(--spacing-sm) var(--spacing-md)",
