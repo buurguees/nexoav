@@ -20,6 +20,16 @@ Proyectos principales de la empresa (instalaciones, eventos, etc.).
 - `end_date`: Fecha de finalización (TIMESTAMPTZ)
 - `budget_estimated`: Presupuesto estimado
 
+**Campos calculados (no están en el JSON pero se calculan automáticamente):**
+- `total_billing`: **Total facturado del proyecto** - Suma de todas las facturas del proyecto (calculado automáticamente)
+  - Se calcula desde `sales_documents` donde:
+    - `project_id = projects.id`
+    - `type = 'factura'` (solo facturas definitivas, no presupuestos ni proformas)
+    - `status IN ('cobrada', 'aceptada')` (solo facturas cobradas o aceptadas)
+  - Permite mostrar el total facturado en el listado de proyectos
+  - Se actualiza automáticamente cuando se crean/modifican/eliminan facturas
+  - **IMPORTANTE**: El cálculo se realiza automáticamente al cargar los proyectos, mostrando la suma total de facturación de cada proyecto
+
 **Notas:**
 - El nombre del proyecto NO incluye el nombre del cliente (se asigna mediante `client_id`)
 - `location_coords` permite mostrar el proyecto en el mapa (`/mapa`)
@@ -27,6 +37,55 @@ Proyectos principales de la empresa (instalaciones, eventos, etc.).
   - Los proyectos pueden incluir contratos de alquiler de 12 o 18 meses
   - Estos contratos requerirán tareas de mantenimiento automáticas cada 3 meses
   - Las tareas se generarán automáticamente y aparecerán en el calendario
+
+---
+
+## 📝 Formulario de Nuevo Proyecto
+
+**Documentación completa**: Ver `docs/base-de-datos.md` sección "Formulario de Nuevo Proyecto"
+
+### Resumen Rápido:
+
+**Campos Automáticos (NO implementar en formulario):**
+- ✅ `id` - UUID generado automáticamente
+- ✅ `internal_ref` - Generado por trigger (0034, 0035...)
+- ✅ `total_billing` - Inicializado en 0.00, calculado automáticamente
+- ✅ `created_at` - Timestamp automático
+- ✅ `updated_at` - Timestamp automático
+
+**Campos a Implementar:**
+
+1. **Cliente** (Obligatorio):
+   - `client_id` ✅ (dropdown con clientes activos)
+   - **NOTA IMPORTANTE**: El proyecto SIEMPRE debe estar asignado a un cliente
+
+2. **Número de Pedido del Cliente** (Opcional):
+   - `client_po_number` (input texto, ej: "PO-2025-001")
+
+3. **Información del Proyecto**:
+   - `name` ✅ (obligatorio)
+   - `status` (dropdown, default: "borrador")
+   - `description` (textarea opcional)
+   - `budget_estimated` (número, formato moneda)
+
+4. **Ubicación** (Opcional):
+   - `location_name` (input texto)
+   - `location_address` (estructura JSONB: street, city, zip, province, country)
+   - Formato título para direcciones
+
+5. **Fechas** (Opcional):
+   - `start_date` (date picker)
+   - `end_date` (date picker, validar que sea >= start_date)
+
+**Validaciones:**
+- Cliente obligatorio
+- Nombre obligatorio
+- Presupuesto numérico si se rellena
+- Código postal 5 dígitos si se rellena
+- Fecha fin >= fecha inicio
+
+**Transformaciones:**
+- Direcciones → Formato título antes de guardar
 
 ### `project_staffing.json`
 Gestiona quién trabaja en cada proyecto (asignación de personal).

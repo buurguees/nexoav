@@ -1,0 +1,2 @@
+export { ComprasTabletHorizontal } from './Compras';
+

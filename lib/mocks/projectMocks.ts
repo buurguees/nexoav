@@ -4,104 +4,71 @@
  * Estas funciones leen datos desde archivos JSON locales (provisional)
  * para simular una base de datos y facilitar la transición cuando el backend esté listo.
  * 
- * TODO: Reemplazar con llamadas reales al backend
+ * TODO: Reemplazar con llamadas reales al backend (Supabase)
+ * 
+ * Basado en el schema de la tabla `projects` (docs/base-de-datos.md, línea 493)
  */
 
-import projectsData from "../../data/projects/projects-2025.json";
-import projectTasksData from "../../data/tasks/tasks.json";
+import { ProjectData } from "../../pages/proyectos/components/ProyectosList";
 
-/**
- * Interfaz de Proyecto (simplificada para mock)
- */
-export interface Project {
-  id: string;
-  code: string;
-  name: string;
-  description?: string;
-  status: string;
-  progress: number;
-  client_id: string;
-  client_name?: string;
-  client_code?: string;
-  start_date?: string;
-  estimated_end_date?: string;
-  actual_end_date?: string;
-  estimated_hours?: number;
-  actual_hours?: number;
-  quote_id?: string | null;
-  phases: ProjectPhase[];
-  address?: string;
-  city?: string;
-  postal_code?: string;
-  country?: string;
-  location_coordinates?: { lat: number; lng: number };
-  assigned_technicians?: string[];
-  project_manager_id?: string;
-  created_at: string;
-  updated_at: string;
-  created_by?: string;
-  updated_by?: string;
-  notes?: string;
-  internal_notes?: string;
-}
-
-/**
- * Interfaz de Fase de Proyecto
- */
-export interface ProjectPhase {
-  id: string;
-  project_id: string;
-  name: string;
-  description?: string;
-  order: number;
-  status: string;
-  progress: number;
-  required_for_next_phase?: boolean;
-  estimated_start_date?: string;
-  estimated_end_date?: string;
-  actual_start_date?: string;
-  actual_end_date?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-/**
- * Interfaz de Tarea de Proyecto
- */
-export interface ProjectTask {
-  id: string;
-  project_id: string;
-  phase_id?: string | null;
-  title: string;
-  description?: string;
-  startDate: string;
-  endDate: string;
-  type: string;
-  status: string;
-  order?: number;
-  assigned_to?: string[];
-  priority?: string;
-  estimated_hours?: number;
-  actual_hours?: number;
-  startTime?: string;
-  endTime?: string;
-  address?: string;
-  city?: string;
-  postal_code?: string;
-  country?: string;
-  notes?: string;
-}
+// Importar datos JSON (en producción esto vendría del backend)
+import projectsData from "../../data/operations/projects.json";
+import clientsData from "../../data/crm/clients.json";
+import salesDocumentsData from "../../data/billing/sales_documents.json";
 
 /**
  * Simula una llamada al backend para obtener todos los proyectos
+ * Lee desde archivos JSON locales y enriquece con información del cliente
  * 
- * @returns Promise con array de proyectos
+ * @returns Promise con array de proyectos con client_name calculado
  */
-export async function fetchProjects(): Promise<Project[]> {
+export async function fetchProjects(): Promise<ProjectData[]> {
   // Simular delay de red
   await new Promise((resolve) => setTimeout(resolve, 300));
 
-  return projectsData as Project[];
+  // Crear un mapa de clientes por ID para búsqueda rápida
+  const clientsMap = new Map(
+    (clientsData as any[]).map((client) => [
+      client.id,
+      {
+        fiscal_name: client.fiscal_name,
+        commercial_name: client.commercial_name,
+      },
+    ])
+  );
+
+  // Calcular total de facturación por proyecto
+  const billingByProject = (salesDocumentsData as any[]).reduce((acc, document) => {
+    // Solo contar facturas definitivas (no presupuestos ni proformas)
+    if (document.type !== "factura") return acc;
+    
+    // Solo contar facturas cobradas o aceptadas
+    if (!["cobrada", "aceptada"].includes(document.status)) return acc;
+    
+    // Solo si tiene project_id
+    if (!document.project_id) return acc;
+    
+    const projectId = document.project_id;
+    const total = document.totals_data?.total || 0;
+    
+    acc[projectId] = (acc[projectId] || 0) + total;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Enriquecer proyectos con información del cliente y total_billing
+  const projects = (projectsData as any[]).map((project) => {
+    const client = clientsMap.get(project.client_id);
+    // Priorizar nombre comercial, si no existe usar fiscal_name
+    const clientName = client?.commercial_name || client?.fiscal_name || "-";
+
+    return {
+      ...project,
+      client_name: clientName,
+      total_billing: billingByProject[project.id] || 0,
+    } as ProjectData;
+  });
+
+  return projects;
 }
 
 /**
@@ -110,91 +77,96 @@ export async function fetchProjects(): Promise<Project[]> {
  * @param projectId - ID del proyecto
  * @returns Promise con el proyecto o null si no existe
  */
-export async function fetchProject(projectId: string): Promise<Project | null> {
+export async function fetchProjectById(projectId: string): Promise<ProjectData | null> {
   // Simular delay de red
   await new Promise((resolve) => setTimeout(resolve, 200));
 
-  const projects = projectsData as Project[];
+  const projects = await fetchProjects();
   return projects.find((p) => p.id === projectId) || null;
 }
 
 /**
- * Simula una llamada al backend para obtener las fases de un proyecto
+ * Simula una llamada al backend para obtener proyectos por cliente
  * 
- * @param projectId - ID del proyecto
- * @returns Promise con array de fases
+ * @param clientId - ID del cliente
+ * @returns Promise con array de proyectos del cliente
  */
-export async function fetchProjectPhases(projectId: string): Promise<ProjectPhase[]> {
+export async function fetchProjectsByClient(clientId: string): Promise<ProjectData[]> {
   // Simular delay de red
   await new Promise((resolve) => setTimeout(resolve, 200));
 
-  const project = await fetchProject(projectId);
-  if (!project) return [];
-
-  return project.phases || [];
+  const projects = await fetchProjects();
+  return projects.filter((p) => p.client_id === clientId);
 }
 
 /**
- * Simula una llamada al backend para obtener las tareas de un proyecto
+ * Simula una llamada al backend para obtener proyectos por estado
  * 
- * @param projectId - ID del proyecto
- * @param phaseId - ID de la fase (opcional, para filtrar por fase)
- * @returns Promise con array de tareas
+ * @param status - Estado del proyecto
+ * @returns Promise con array de proyectos con ese estado
  */
-export async function fetchProjectTasks(
-  projectId: string,
-  phaseId?: string
-): Promise<ProjectTask[]> {
+export async function fetchProjectsByStatus(
+  status: ProjectData["status"]
+): Promise<ProjectData[]> {
   // Simular delay de red
   await new Promise((resolve) => setTimeout(resolve, 200));
 
-  const tasks = projectTasksData as ProjectTask[];
-  
-  // Filtrar por project_id
-  let filteredTasks = tasks.filter((task) => task.project_id === projectId);
-  
-  // Si se especifica phase_id, filtrar también por fase
-  if (phaseId) {
-    filteredTasks = filteredTasks.filter((task) => task.phase_id === phaseId);
-  }
-
-  return filteredTasks;
+  const projects = await fetchProjects();
+  return projects.filter((p) => p.status === status);
 }
 
 /**
- * Simula una llamada al backend para obtener todas las tareas de proyectos
- * (útil para calendarios que muestran tareas de múltiples proyectos)
+ * Simula una llamada al backend para crear un nuevo proyecto
  * 
- * @returns Promise con array de todas las tareas de proyectos
+ * @param projectData - Datos del proyecto a crear (sin campos automáticos)
+ * @returns Promise con el proyecto creado (incluyendo campos automáticos)
  */
-export async function fetchAllProjectTasks(): Promise<ProjectTask[]> {
-  // Simular delay de red
-  await new Promise((resolve) => setTimeout(resolve, 200));
-
-  return projectTasksData as ProjectTask[];
-}
-
-/**
- * Simula crear una nueva tarea para un proyecto
- * 
- * @param task - Datos de la tarea a crear (debe incluir project_id)
- * @returns Promise con la tarea creada (incluyendo ID generado)
- */
-export async function createProjectTask(
-  task: Omit<ProjectTask, "id">
-): Promise<ProjectTask> {
+export async function createProject(
+  projectData: Omit<
+    ProjectData,
+    "id" | "internal_ref" | "created_at" | "updated_at" | "client_name"
+  >
+): Promise<ProjectData> {
   // Simular delay de red
   await new Promise((resolve) => setTimeout(resolve, 500));
 
-  // Simular generación de ID por el backend
-  const newTask: ProjectTask = {
-    ...task,
-    id: `task-proj-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  // Obtener proyectos existentes para generar el siguiente código
+  const existingProjects = await fetchProjects();
+  const lastRef = existingProjects
+    .map((p) => parseInt(p.internal_ref))
+    .sort((a, b) => b - a)[0] || 0;
+
+  const nextRef = String(lastRef + 1).padStart(4, "0");
+
+  // Obtener nombre del cliente
+  const clients = await import("../../data/crm/clients.json").then((m) => m.default);
+  const client = (clients as any[]).find((c) => c.id === projectData.client_id);
+  const clientName = client?.commercial_name || client?.fiscal_name || "-";
+
+  // Crear nuevo proyecto con campos automáticos
+  const newProject: ProjectData = {
+    id: crypto.randomUUID(),
+    internal_ref: nextRef,
+    client_id: projectData.client_id,
+    client_po_number: projectData.client_po_number || undefined,
+    name: projectData.name,
+    status: projectData.status || "borrador",
+    location_name: projectData.location_name || undefined,
+    location_address: projectData.location_address || undefined,
+    location_coords: projectData.location_coords || undefined,
+    start_date: projectData.start_date || undefined,
+    end_date: projectData.end_date || undefined,
+    description: projectData.description || undefined,
+    budget_estimated: projectData.budget_estimated || undefined,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    client_name: clientName,
+    total_billing: 0, // Nuevo proyecto, sin facturas aún
   };
 
-  // En producción, aquí se insertaría en la tabla tasks con project_id
-  // INSERT INTO tasks (project_id, phase_id, title, ...) VALUES (...)
+  // En producción, aquí se haría un POST a la API
+  // Por ahora, solo retornamos el proyecto creado
+  // TODO: Implementar guardado real en Supabase cuando esté listo
 
-  return newTask;
+  return newProject;
 }
-

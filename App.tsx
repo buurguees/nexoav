@@ -11,14 +11,18 @@ import { Tecnicos } from './pages/proveedores/tecnicos';
 import { Materiales } from './pages/proveedores/materiales';
 import { Softwares } from './pages/proveedores/softwares';
 import { Externos } from './pages/proveedores/externos';
+// TODO: Migrar estas importaciones cuando se renombren las carpetas
 import { Gastos } from './pages/gastos';
 import { Tickets } from './pages/gastos/tickets';
+import { FacturasGastos } from './pages/gastos/facturas';
 import { Categorias } from './pages/gastos/categorias';
+import { Pedidos } from './pages/gastos/pedidos';
 import { Facturacion } from './pages/facturacion';
 import { Presupuestos } from './pages/facturacion/presupuestos';
 import { Proformas } from './pages/facturacion/proformas';
 import { Facturas } from './pages/facturacion/facturas';
 import { Rectificativas } from './pages/facturacion/rectificativas';
+import { Albaranes } from './pages/facturacion/albaranes';
 import { Inventario } from './pages/inventario';
 import { Productos } from './pages/inventario/productos';
 import { Servicios } from './pages/inventario/servicios';
@@ -121,36 +125,45 @@ function AppContent({
       return <Externos />;
     }
 
-    // Gastos
-    if (currentPath === '/gastos') {
+    // Compras (antes Gastos)
+    if (currentPath === '/compras') {
       return <Gastos />;
     }
 
-    // Gastos - Submenús
-    if (currentPath === '/gastos/tickets') {
+    // Compras - Submenús
+    if (currentPath === '/compras/gastos') {
       return <Tickets />;
     }
-    if (currentPath === '/gastos/categorias') {
+    if (currentPath === '/compras/facturas') {
+      return <FacturasGastos />;
+    }
+    if (currentPath === '/compras/categorias') {
       return <Categorias />;
     }
+    if (currentPath === '/compras/pedidos') {
+      return <Pedidos />;
+    }
 
-    // Facturación
-    if (currentPath === '/facturacion') {
+    // Ventas (antes Facturación)
+    if (currentPath === '/ventas') {
       return <Facturacion />;
     }
 
-    // Facturación - Submenús
-    if (currentPath === '/facturacion/presupuestos') {
+    // Ventas - Submenús
+    if (currentPath === '/ventas/presupuestos') {
       return <Presupuestos />;
     }
-    if (currentPath === '/facturacion/proformas') {
+    if (currentPath === '/ventas/proformas') {
       return <Proformas />;
     }
-    if (currentPath === '/facturacion/facturas') {
+    if (currentPath === '/ventas/facturas') {
       return <Facturas />;
     }
-    if (currentPath === '/facturacion/rectificativas') {
+    if (currentPath === '/ventas/rectificativas') {
       return <Rectificativas />;
+    }
+    if (currentPath === '/ventas/albaranes') {
+      return <Albaranes />;
     }
 
     // Inventario

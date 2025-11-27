@@ -1,0 +1,2 @@
+export { ComprasDesktop } from './Compras';
+

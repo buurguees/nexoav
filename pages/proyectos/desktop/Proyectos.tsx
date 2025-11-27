@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { ProyectosList } from "../components/ProyectosList";
+import { fetchProjects } from "../../../lib/mocks/projectMocks";
+import { ProjectData } from "../components/ProyectosList";
 
 /**
  * Página de Proyectos - Versión Desktop (> 1024px)
@@ -104,6 +107,68 @@ function SpaceBlock({
   );
 }
 
+// Componente interno para el listado de proyectos
+function ProyectosListContent() {
+  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Cargar datos de proyectos
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchProjects();
+        setProjects(data);
+      } catch (error) {
+        console.error("Error al cargar proyectos:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProjects();
+  }, []);
+
+  // Handler para cuando se hace click en un proyecto
+  const handleProjectClick = (project: ProjectData) => {
+    console.log("Proyecto seleccionado:", project);
+    // TODO: Navegar a la página de detalle del proyecto
+  };
+
+  // Handler para cuando se crea un nuevo proyecto
+  const handleProjectCreated = (newProject: ProjectData) => {
+    // Agregar el nuevo proyecto a la lista
+    setProjects((prev) => [newProject, ...prev]);
+    // TODO: Mostrar mensaje de éxito
+  };
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          color: "var(--foreground-secondary)",
+        }}
+      >
+        Cargando proyectos...
+      </div>
+    );
+  }
+
+  return (
+    <ProyectosList
+      projects={projects}
+      showFilters={true}
+      showTools={true}
+      onProjectClick={handleProjectClick}
+      onProjectCreated={handleProjectCreated}
+    />
+  );
+}
+
 export function ProyectosDesktop() {
   const desktopSize = useDesktopSize();
   
@@ -188,118 +253,15 @@ export function ProyectosDesktop() {
             overflow: "hidden",
           }}
         >
-          {/* Encabezado del Listado - Fijo - 3 Bloques */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: currentConfig.gap,
-              height: currentConfig.headerHeight,
-              flexShrink: 0,
-              minHeight: currentConfig.headerHeight,
-            }}
-          >
-            {/* Bloque 1: Filtros */}
-            <SpaceBlock
-              label="Filtros"
-              height="100%"
-              color="rgba(255, 165, 0, 0.15)"
-              description="Filtros de búsqueda y filtrado: búsqueda, estado, cliente, tipo, etc."
-              fontSize={currentConfig.fontSize}
-            />
-            {/* Bloque 2: Título */}
-            <SpaceBlock
-              label="Título: Proyectos"
-              height="100%"
-              color="var(--background-secondary)"
-              description="Título de la sección de proyectos"
-              fontSize={currentConfig.fontSize}
-            />
-            {/* Bloque 3: Herramientas */}
-            <SpaceBlock
-              label="Herramientas"
-              height="100%"
-              color="rgba(67, 83, 255, 0.15)"
-              description="Herramientas de gestión: añadir, exportar, acciones masivas, etc."
-              fontSize={currentConfig.fontSize}
-            />
-          </div>
-          {/* Cabecera de la Tabla - Fija con mínimo 5 columnas */}
-          <div 
-            style={{ 
-              flexShrink: 0, 
-              minHeight: currentConfig.tableHeaderHeight,
-              display: "grid",
-              gridTemplateColumns: desktopSize === 'small' 
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr"  // 5 columnas para small
-                : desktopSize === 'medium'
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr"  // 6 columnas para medium
-                : desktopSize === 'large'
-                ? "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr 0.8fr"  // 7 columnas para large
-                : "1fr 2.5fr 1.2fr 1.2fr 1.1fr 1fr 0.8fr 0.7fr",  // 8 columnas para xlarge
-              gap: "2px",
-            }}
-          >
-            {desktopSize === 'small' ? (
-              // 5 columnas para small
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Cliente" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Presupuesto" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : desktopSize === 'medium' ? (
-              // 6 columnas para medium
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Cliente" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Presupuesto" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha Inicio" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : desktopSize === 'large' ? (
-              // 7 columnas para large
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Cliente" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Presupuesto" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha Inicio" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha Fin" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            ) : (
-              // 8 columnas para xlarge
-              <>
-                <SpaceBlock label="Código" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Nombre" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Cliente" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Estado" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Presupuesto" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha Inicio" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Fecha Fin" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-                <SpaceBlock label="Acciones" height={currentConfig.tableHeaderHeight} color="rgba(0, 200, 117, 0.15)" fontSize={currentConfig.fontSize} />
-              </>
-            )}
-          </div>
-          {/* Contenido del Listado - Con scroll */}
+          {/* El componente ProyectosList maneja su propio header con filtros, título y herramientas */}
           <div
             style={{
               flex: 1,
               minHeight: 0,
-              overflowY: "auto",
-              overflowX: "hidden",
+              overflow: "hidden",
             }}
           >
-            <SpaceBlock
-              label="Listado de Proyectos"
-              height="100%"
-              color="rgba(0, 200, 117, 0.1)"
-              description="Tabla/Lista con información de cada proyecto (código, nombre, cliente, estado, presupuesto, fecha inicio, etc.)"
-              fontSize={currentConfig.fontSize}
-            />
+            <ProyectosListContent />
           </div>
         </div>
 

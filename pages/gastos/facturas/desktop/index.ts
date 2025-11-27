@@ -1,0 +1,2 @@
+export { FacturasGastosDesktop } from "./FacturasGastos";
+

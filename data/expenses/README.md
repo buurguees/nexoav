@@ -2,6 +2,8 @@
 
 Este módulo gestiona proveedores, gastos y compras de la empresa.
 
+**📚 Documentación completa**: Ver `docs/proveedores.md` para la guía completa de desarrollo del módulo de Proveedores.
+
 ## Tablas
 
 ### `suppliers.json`
@@ -15,7 +17,17 @@ Proveedores y suministradores de la empresa.
 - `contact_email`: Email de contacto
 - `contact_phone`: Teléfono de contacto
 - `payment_terms_days`: Días de pago
+- `total_billing`: **Total pagado al proveedor** (calculado automáticamente desde `expenses`)
 - `freelance_profile_id`: Si es técnico, perfil asociado (UUID)
+
+**Campos calculados (no están en el JSON pero se calculan automáticamente):**
+- `total_billing`: **Total pagado al proveedor** - Suma de todas las facturas/gastos del proveedor (calculado automáticamente)
+  - Se calcula desde `expenses` donde:
+    - `supplier_id = suppliers.id`
+    - `status IN ('aprobado', 'pagado')` (solo gastos aprobados o pagados)
+  - Permite mostrar el total pagado en el listado de proveedores
+  - Se actualiza automáticamente cuando se crean/modifican/eliminan gastos
+  - **IMPORTANTE**: El cálculo se realiza automáticamente al cargar los proveedores, mostrando la suma total pagada a cada proveedor
 
 **Categorías:**
 - `tecnico_freelance`: Técnicos y freelances

@@ -1,81 +1,114 @@
-import { Client } from "../types/client";
-import clientsData from "../../data/clients/clients.json";
+/**
+ * Funciones Mock para Clientes
+ * 
+ * Estas funciones leen datos desde archivos JSON locales (provisional)
+ * para simular una base de datos y facilitar la transición cuando el backend esté listo.
+ * 
+ * TODO: Reemplazar con llamadas reales al backend (Supabase)
+ * 
+ * Basado en el schema de la tabla `clients` (docs/base-de-datos.md, línea 179)
+ */
+
+import { ClientData } from "../../pages/clientes/components/ClientesList";
+
+// Importar datos JSON (en producción esto vendría del backend)
+import clientsData from "../../data/crm/clients.json";
+import projectsData from "../../data/operations/projects.json";
 
 /**
- * Convertir datos JSON a objetos Client con fechas parseadas
+ * Simula una llamada al backend para obtener todos los clientes
+ * Lee desde archivos JSON locales (provisional)
+ * 
+ * @returns Promise con array de clientes con projects_count calculado
  */
-function parseClientDates(client: any): Client {
-  return {
-    ...client,
-    created_at: new Date(client.created_at),
-    updated_at: new Date(client.updated_at),
-    last_activity: client.last_activity ? new Date(client.last_activity) : undefined,
-    contacts: client.contacts?.map((contact: any) => ({
-      ...contact,
-      created_at: new Date(contact.created_at),
-      updated_at: new Date(contact.updated_at),
-    })),
-    locations: client.locations?.map((location: any) => ({
-      ...location,
-      created_at: new Date(location.created_at),
-      updated_at: new Date(location.updated_at),
-    })),
-    bank_accounts: client.bank_accounts?.map((account: any) => ({
-      ...account,
-      created_at: new Date(account.created_at),
-      updated_at: new Date(account.updated_at),
-    })),
-  };
-}
+export async function fetchClients(): Promise<ClientData[]> {
+  // Simular delay de red
+  await new Promise((resolve) => setTimeout(resolve, 300));
 
-/**
- * Datos mock de clientes cargados desde clients.json
- * Elimina duplicados por ID para asegurar que cada cliente aparece solo una vez
- */
-export const mockClients: Client[] = (() => {
-  const parsed = (clientsData as any[]).map(parseClientDates);
-  // Eliminar duplicados por ID (por si acaso)
-  const uniqueClients = new Map<string, Client>();
-  parsed.forEach(client => {
-    if (!uniqueClients.has(client.id)) {
-      uniqueClients.set(client.id, client);
+  // Contar proyectos por cliente
+  const projectsByClient = (projectsData as any[]).reduce((acc, project) => {
+    const clientId = project.client_id;
+    if (clientId) {
+      acc[clientId] = (acc[clientId] || 0) + 1;
     }
-  });
-  return Array.from(uniqueClients.values());
-})();
+    return acc;
+  }, {} as Record<string, number>);
 
-/**
- * Obtener todos los clientes
- */
-export function fetchClients(): Promise<Client[]> {
-  return Promise.resolve(mockClients);
+  // Agregar total_projects a cada cliente (según schema de BD)
+  const clients = (clientsData as ClientData[]).map((client) => ({
+    ...client,
+    total_projects: projectsByClient[client.id] || 0,
+    projects_count: projectsByClient[client.id] || 0, // Alias para compatibilidad
+  }));
+
+  return clients;
 }
 
 /**
- * Obtener un cliente por ID
+ * Simula una llamada al backend para obtener un cliente por ID
+ * 
+ * @param clientId - ID del cliente
+ * @returns Promise con el cliente o null si no existe
  */
-export function fetchClientById(id: string): Promise<Client | null> {
-  const client = mockClients.find(c => c.id === id);
-  return Promise.resolve(client || null);
+export async function fetchClientById(clientId: string): Promise<ClientData | null> {
+  // Simular delay de red
+  await new Promise((resolve) => setTimeout(resolve, 200));
+
+  const clients = await fetchClients();
+  return clients.find((client) => client.id === clientId) || null;
 }
 
 /**
- * Filtrar clientes por estado
+ * Simula una llamada al backend para obtener clientes activos
+ * 
+ * @returns Promise con array de clientes activos
  */
-export function filterClientsByStatus(clients: Client[], status: Client["status"]): Client[] {
-  return clients.filter(client => client.status === status);
+export async function fetchActiveClients(): Promise<ClientData[]> {
+  const clients = await fetchClients();
+  return clients.filter((client) => client.is_active);
 }
 
 /**
- * Buscar clientes por texto
+ * Simula una llamada al backend para crear un nuevo cliente
+ * 
+ * @param clientData - Datos del cliente a crear (sin campos automáticos)
+ * @returns Promise con el cliente creado (incluyendo campos automáticos)
  */
-export function searchClients(clients: Client[], query: string): Client[] {
-  const lowerQuery = query.toLowerCase();
-  return clients.filter(client => 
-    client.name.toLowerCase().includes(lowerQuery) ||
-    client.code.toLowerCase().includes(lowerQuery) ||
-    client.city?.toLowerCase().includes(lowerQuery) ||
-    client.primary_contact?.name.toLowerCase().includes(lowerQuery) ||
-    client.primary_contact?.email.toLowerCase().includes(lowerQuery)
-  );
+export async function createClient(clientData: Omit<ClientData, "id" | "internal_code" | "total_billing" | "total_projects" | "created_at" | "updated_at">): Promise<ClientData> {
+  // Simular delay de red
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  // Obtener clientes existentes para generar el siguiente código
+  const existingClients = await fetchClients();
+  const lastCode = existingClients
+    .map((c) => parseInt(c.internal_code.replace("CLI-", "")))
+    .sort((a, b) => b - a)[0] || 0;
+  
+  const nextCode = `CLI-${String(lastCode + 1).padStart(4, "0")}`;
+
+  // Crear nuevo cliente con campos automáticos
+  const newClient: ClientData = {
+    id: crypto.randomUUID(),
+    internal_code: nextCode,
+    fiscal_name: clientData.fiscal_name,
+    commercial_name: clientData.commercial_name || undefined,
+    vat_number: clientData.vat_number,
+    billing_address: clientData.billing_address,
+    shipping_address: clientData.shipping_address,
+    payment_terms: clientData.payment_terms || undefined,
+    payment_method: clientData.payment_method || undefined,
+    total_billing: 0.00,
+    total_projects: 0,
+    projects_count: 0, // Alias para compatibilidad
+    notes: clientData.notes || undefined,
+    is_active: clientData.is_active ?? true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  // En producción, aquí se haría un POST a la API
+  // Por ahora, solo retornamos el cliente creado
+  // TODO: Implementar guardado real en Supabase cuando esté listo
+
+  return newClient;
 }
